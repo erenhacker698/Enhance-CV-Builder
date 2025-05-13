@@ -1,17 +1,22 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import {
   FilePlus,
   MoveVertical,
   Layout,
 } from "lucide-react"
+import AddSectionModal from "./add-section-modal"
+import { useState } from "react"
 
 export default function Sidebar() {
+  const [showAddSectionModal, setShowAddSectionModal] = useState(false)
 
   return (
     <div className="w-[180px] bg-white rounded-lg shadow-sm p-4 space-y-4 h-fit">
 
       <div className="space-y-1">
-        <Button variant="ghost" className="w-full justify-start text-sm font-normal">
+        <Button variant="ghost" className="w-full justify-start text-sm font-normal cursor-pointer" onClick={() => setShowAddSectionModal(true)}>
           <FilePlus size={16} className="mr-2" />
           Add section
         </Button>
@@ -33,6 +38,8 @@ export default function Sidebar() {
           <span className="translate-x-4 pointer-events-none inline-block h-3 w-3 transform rounded-full bg-teal-500 shadow ring-0 transition duration-200 ease-in-out"></span>
         </div>
       </div>
+
+      <AddSectionModal isOpen={showAddSectionModal} onClose={() => setShowAddSectionModal(false)} />
     </div>
   )
 }

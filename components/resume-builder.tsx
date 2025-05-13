@@ -9,11 +9,13 @@ import { reorderSections } from "@/lib/features/resume/resumeSlice"
 import Sidebar from "@/components/sidebar"
 import ResumeSection from "@/components/resume-section"
 import { Button } from "@/components/ui/button"
-import { Sun } from "lucide-react"
+import { PlusCircle, Sun } from "lucide-react"
+import AddSectionModal from "./add-section-modal"
 
 export default function ResumeBuilder() {
   const dispatch = useDispatch()
   const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
+  const [showAddSectionModal, setShowAddSectionModal] = useState(false)
   const [draggedSection, setDraggedSection] = useState<string | null>(null)
   const [dragOverSection, setDragOverSection] = useState<string | null>(null)
 
@@ -80,8 +82,18 @@ export default function ResumeBuilder() {
               <ResumeSection section={section} isActive={section.id === activeSectionId} />
             </div>
           ))}
+
+          <div className="mt-6 flex justify-center">
+            <Button variant="outline" onClick={() => setShowAddSectionModal(true)} className="flex items-center gap-1 cursor-pointer">
+              <PlusCircle size={16} />
+              Add New Section
+            </Button>
+          </div>
+
         </div>
       </div>
+
+      <AddSectionModal isOpen={showAddSectionModal} onClose={() => setShowAddSectionModal(false)} />
     </div>
   )
 }
