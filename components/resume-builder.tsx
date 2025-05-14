@@ -5,16 +5,17 @@ import type React from "react"
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "@/lib/store"
-import { reorderSections } from "@/lib/features/resume/resumeSlice"
+import { reorderSections, setActiveSection } from "@/lib/features/resume/resumeSlice"
 import Sidebar from "@/components/sidebar"
 import ResumeSection from "@/components/resume-section"
 import { Button } from "@/components/ui/button"
 import { PlusCircle, Sun } from "lucide-react"
 import AddSectionModal from "./add-section-modal"
+import ResumeHeader from "./resume-header"
 
 export default function ResumeBuilder() {
   const dispatch = useDispatch()
-  const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
+  const { header, sections, activeSectionId } = useSelector((state: RootState) => state.resume)
   const [showAddSectionModal, setShowAddSectionModal] = useState(false)
   const [draggedSection, setDraggedSection] = useState<string | null>(null)
   const [dragOverSection, setDragOverSection] = useState<string | null>(null)
@@ -56,6 +57,10 @@ export default function ResumeBuilder() {
     setDragOverSection(null)
   }
 
+  const handleHeaderClick = () => {
+    dispatch(setActiveSection({ sectionId: null }))
+  }
+
   return (
     <div className="flex flex-col md:flex-row gap-4">
       <Sidebar />
@@ -68,6 +73,9 @@ export default function ResumeBuilder() {
         </div>
 
         <div className="max-w-4xl mx-auto bg-white p-8 min-h-[842px]">
+          <div onClick={handleHeaderClick}>
+            <ResumeHeader isActive={activeSectionId === null} />
+          </div>
           {sections.map((section) => (
             <div
               key={section.id}
