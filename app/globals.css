@@ -122,6 +122,10 @@
   }
 }
 
+.max-w-4xl {
+  max-width: 56rem;
+}
+
 .section-blocks-layout-wrapper {
   display: flex;
   flex-direction: column;

@@ -22,7 +22,7 @@ import SectionToolbar from "@/components/section-toolbar"
 import SkillsSection from "@/components/skills-section"
 import LanguageSection from "@/components/language-section"
 import AchievementsSection from "@/components/achievements-section"
-import CustomSection from "@/components/custom-section"
+import CustomSection from "./custom-section"
 
 interface ResumeSectionProps {
     section: Section

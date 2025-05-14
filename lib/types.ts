@@ -55,15 +55,15 @@ export interface Language {
   id: string
   name: string
   level: string
-  proficiency: number
+  proficiency: number // 1-5
   visibility: LanguageVisibility
-  sliderStyle: number
+  sliderStyle: number // 0-4 for different styles
 }
 
 export interface SkillGroup {
   id: string
-  category: string
-  items: string[]
+  name: string
+  skills: string[]
 }
 
 export interface Achievement {
@@ -85,11 +85,12 @@ export interface CustomItem {
 export interface Section {
   id: string
   type: "text" | "entries" | "skills" | "languages" | "achievements" | "custom"
+  column: "left" | "right"
   content: {
     title: string
     text?: string
     entries?: Entry[]
-    skills?: SkillGroup[]
+    skillGroups?: SkillGroup[]
     languages?: Language[]
     achievements?: Achievement[]
     items?: CustomItem[]

@@ -36,80 +36,9 @@ const initialState: ResumeState = {
   },
   sections: [
     {
-      id: "section-summary",
-      type: "text",
-      content: {
-        title: "SUMMARY",
-        text: "Briefly explain why you're a great fit for the role - use the AI assistant to tailor this summary for each job posting.",
-      },
-    },
-    {
-      id: "section-languages",
-      type: "languages",
-      content: {
-        title: "LANGUAGES",
-        languages: [
-          {
-            id: "lang-1",
-            name: "HTML",
-            level: "Beginner",
-            proficiency: 1,
-            visibility: {
-              proficiency: true,
-              slider: true,
-            },
-            sliderStyle: 0,
-          },
-          {
-            id: "lang-2",
-            name: "CSS",
-            level: "Intermediate",
-            proficiency: 2,
-            visibility: {
-              proficiency: true,
-              slider: true,
-            },
-            sliderStyle: 0,
-          },
-          {
-            id: "lang-3",
-            name: "JavaScript",
-            level: "Advanced",
-            proficiency: 3,
-            visibility: {
-              proficiency: true,
-              slider: true,
-            },
-            sliderStyle: 0,
-          },
-          {
-            id: "lang-4",
-            name: "C",
-            level: "Proficient",
-            proficiency: 4,
-            visibility: {
-              proficiency: true,
-              slider: true,
-            },
-            sliderStyle: 0,
-          },
-          {
-            id: "lang-5",
-            name: "TypeScript",
-            level: "Native",
-            proficiency: 5,
-            visibility: {
-              proficiency: true,
-              slider: true,
-            },
-            sliderStyle: 0,
-          },
-        ],
-      },
-    },
-    {
       id: "section-education",
       type: "entries",
+      column: "left",
       content: {
         title: "EDUCATION",
         entries: [
@@ -136,29 +65,16 @@ const initialState: ResumeState = {
       },
     },
     {
-      id: "section-experience",
-      type: "entries",
+      id: "section-skills",
+      type: "skills",
+      column: "right",
       content: {
-        title: "EXPERIENCE",
-        entries: [
+        title: "SKILLS",
+        skillGroups: [
           {
-            id: "entry-2",
-            title: "Title",
-            subtitle: "Company Name",
-            dateRange: "Date period",
-            location: "Location",
-            description: "Company Description",
-            bullets: ["Highlight your accomplishments, using numbers if possible."],
-            visibility: {
-              title: true,
-              subtitle: true,
-              dateRange: true,
-              location: true,
-              description: true,
-              bullets: true,
-              link: false,
-              logo: false,
-            },
+            id: "group-1",
+            name: "Technical Skills",
+            skills: ["HTML", "CSS", "JavaScript", "React"],
           },
         ],
       },
@@ -226,9 +142,19 @@ export const resumeSlice = createSlice({
       state.activeSectionId = action.payload.sectionId
     },
 
-    addSection: (state, action: PayloadAction<Section>) => {
-      state.sections.push(action.payload)
-      state.activeSectionId = action.payload.id
+    addSection: (
+      state,
+      action: PayloadAction<{
+        section: Section
+        column: "left" | "right"
+      }>,
+    ) => {
+      const newSection = {
+        ...action.payload.section,
+        column: action.payload.column,
+      }
+      state.sections.push(newSection)
+      state.activeSectionId = newSection.id
     },
 
     removeSection: (state, action: PayloadAction<{ sectionId: string }>) => {
@@ -266,6 +192,8 @@ export const resumeSlice = createSlice({
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.entries) {
         section.content.entries.push(action.payload.entry)
+      } else if (section) {
+        section.content.entries = [action.payload.entry]
       }
     },
 
@@ -314,6 +242,86 @@ export const resumeSlice = createSlice({
         const entry = section.content.entries.find((e) => e.id === action.payload.entryId)
         if (entry && entry.visibility) {
           entry.visibility[action.payload.field] = action.payload.value
+        }
+      }
+    },
+
+    // Skills actions
+    addSkillGroup: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        skillGroup: SkillGroup
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.skillGroups) {
+        section.content.skillGroups.push(action.payload.skillGroup)
+      } else if (section) {
+        section.content.skillGroups = [action.payload.skillGroup]
+      }
+    },
+
+    updateSkillGroup: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        groupId: string
+        name: string
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.skillGroups) {
+        const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
+        if (group) {
+          group.name = action.payload.name
+        }
+      }
+    },
+
+    removeSkillGroup: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        groupId: string
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.skillGroups) {
+        section.content.skillGroups = section.content.skillGroups.filter((group) => group.id !== action.payload.groupId)
+      }
+    },
+
+    addSkill: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        groupId: string
+        skill: string
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.skillGroups) {
+        const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
+        if (group) {
+          group.skills.push(action.payload.skill)
+        }
+      }
+    },
+
+    removeSkill: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        groupId: string
+        skillIndex: number
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.skillGroups) {
+        const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
+        if (group) {
+          group.skills.splice(action.payload.skillIndex, 1)
         }
       }
     },
@@ -400,85 +408,6 @@ export const resumeSlice = createSlice({
       }
     },
 
-    // Skills actions
-    addSkillGroup: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        skillGroup: SkillGroup
-      }>,
-    ) => {
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skills) {
-        section.content.skills.push(action.payload.skillGroup)
-      }
-    },
-
-    updateSkillGroup: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        groupId: string
-        field: string
-        value: string | string[]
-      }>,
-    ) => {
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skills) {
-        const group = section.content.skills.find((g) => g.id === action.payload.groupId)
-        if (group) {
-          ; (group as any)[action.payload.field] = action.payload.value
-        }
-      }
-    },
-
-    removeSkillGroup: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        groupId: string
-      }>,
-    ) => {
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skills) {
-        section.content.skills = section.content.skills.filter((group) => group.id !== action.payload.groupId)
-      }
-    },
-
-    addSkill: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        groupId: string
-        skill: string
-      }>,
-    ) => {
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skills) {
-        const group = section.content.skills.find((g) => g.id === action.payload.groupId)
-        if (group) {
-          group.items.push(action.payload.skill)
-        }
-      }
-    },
-
-    removeSkill: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        groupId: string
-        skillIndex: number
-      }>,
-    ) => {
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skills) {
-        const group = section.content.skills.find((g) => g.id === action.payload.groupId)
-        if (group) {
-          group.items.splice(action.payload.skillIndex, 1)
-        }
-      }
-    },
-
     // Achievements actions
     addAchievement: (
       state,
@@ -490,6 +419,8 @@ export const resumeSlice = createSlice({
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.achievements) {
         section.content.achievements.push(action.payload.achievement)
+      } else if (section) {
+        section.content.achievements = [action.payload.achievement]
       }
     },
 
@@ -537,6 +468,8 @@ export const resumeSlice = createSlice({
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.items) {
         section.content.items.push(action.payload.item)
+      } else if (section) {
+        section.content.items = [action.payload.item]
       }
     },
 
@@ -604,16 +537,16 @@ export const {
   removeEntry,
   updateEntry,
   toggleFieldVisibility,
-  addLanguage,
-  updateLanguage,
-  removeLanguage,
-  toggleLanguageVisibility,
-  toggleSliderStyle,
   addSkillGroup,
   updateSkillGroup,
   removeSkillGroup,
   addSkill,
   removeSkill,
+  addLanguage,
+  updateLanguage,
+  removeLanguage,
+  toggleLanguageVisibility,
+  toggleSliderStyle,
   addAchievement,
   updateAchievement,
   removeAchievement,
