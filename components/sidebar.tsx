@@ -11,6 +11,7 @@ import { useState } from "react"
 
 export default function Sidebar() {
   const [showAddSectionModal, setShowAddSectionModal] = useState(false)
+  const [showRearrangeModal, setShowRearrangeModal] = useState(false)
 
   return (
     <div className="w-[180px] bg-white rounded-lg shadow-sm p-4 space-y-4 h-fit">
@@ -20,7 +21,7 @@ export default function Sidebar() {
           <FilePlus size={16} className="mr-2" />
           Add section
         </Button>
-        <Button variant="ghost" className="w-full justify-start text-sm font-normal">
+        <Button variant="ghost" className="w-full justify-start text-sm font-normal" onClick={() => setShowRearrangeModal(true)}>
           <MoveVertical size={16} className="mr-2" />
           Rearrange
         </Button>

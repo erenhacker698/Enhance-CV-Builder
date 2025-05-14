@@ -116,7 +116,23 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+.section-blocks-layout-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .section-blocks-layout-wrapper {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 1fr 40%;
+    column-gap: 12px;
   }
 }

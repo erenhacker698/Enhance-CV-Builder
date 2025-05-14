@@ -76,20 +76,40 @@ export default function ResumeBuilder() {
           <div onClick={handleHeaderClick}>
             <ResumeHeader isActive={activeSectionId === null} />
           </div>
-          {sections.map((section) => (
-            <div
-              key={section.id}
-              draggable
-              onDragStart={() => handleDragStart(section.id)}
-              onDragOver={(e) => handleDragOver(e, section.id)}
-              onDragEnd={handleDragEnd}
-              onDragLeave={handleDragLeave}
-              className={`${dragOverSection === section.id ? "border-2 border-teal-500 rounded-md" : ""} ${draggedSection === section.id ? "opacity-50" : ""
-                }`}
-            >
-              <ResumeSection section={section} isActive={section.id === activeSectionId} />
+          <div className="section-blocks-layout-wrapper">
+            <div className="w-full">
+              {sections.map((section) => (
+                <div
+                  key={section.id}
+                  draggable
+                  onDragStart={() => handleDragStart(section.id)}
+                  onDragOver={(e) => handleDragOver(e, section.id)}
+                  onDragEnd={handleDragEnd}
+                  onDragLeave={handleDragLeave}
+                  className={`${dragOverSection === section.id ? "border-2 border-teal-500 rounded-md" : ""} ${draggedSection === section.id ? "opacity-50" : ""
+                    }`}
+                >
+                  <ResumeSection section={section} isActive={section.id === activeSectionId} />
+                </div>
+              ))}
             </div>
-          ))}
+            <div className="w-full">
+              {sections.map((section) => (
+                <div
+                  key={section.id}
+                  draggable
+                  onDragStart={() => handleDragStart(section.id)}
+                  onDragOver={(e) => handleDragOver(e, section.id)}
+                  onDragEnd={handleDragEnd}
+                  onDragLeave={handleDragLeave}
+                  className={`${dragOverSection === section.id ? "border-2 border-teal-500 rounded-md" : ""} ${draggedSection === section.id ? "opacity-50" : ""
+                    }`}
+                >
+                  <ResumeSection section={section} isActive={section.id === activeSectionId} />
+                </div>
+              ))}
+            </div>
+          </div>
 
           <div className="mt-6 flex justify-center">
             <Button variant="outline" onClick={() => setShowAddSectionModal(true)} className="flex items-center gap-1 cursor-pointer">

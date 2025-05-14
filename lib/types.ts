@@ -46,17 +46,24 @@ export interface Entry {
   visibility: FieldVisibility
 }
 
-export interface SkillGroup {
-  id: string
-  category: string
-  items: string[]
+export interface LanguageVisibility {
+  proficiency: boolean
+  slider: boolean
 }
 
 export interface Language {
   id: string
   name: string
   level: string
-  proficiency: number // 1-5
+  proficiency: number
+  visibility: LanguageVisibility
+  sliderStyle: number
+}
+
+export interface SkillGroup {
+  id: string
+  category: string
+  items: string[]
 }
 
 export interface Achievement {

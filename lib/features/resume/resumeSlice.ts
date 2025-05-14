@@ -44,6 +44,70 @@ const initialState: ResumeState = {
       },
     },
     {
+      id: "section-languages",
+      type: "languages",
+      content: {
+        title: "LANGUAGES",
+        languages: [
+          {
+            id: "lang-1",
+            name: "HTML",
+            level: "Beginner",
+            proficiency: 1,
+            visibility: {
+              proficiency: true,
+              slider: true,
+            },
+            sliderStyle: 0,
+          },
+          {
+            id: "lang-2",
+            name: "CSS",
+            level: "Intermediate",
+            proficiency: 2,
+            visibility: {
+              proficiency: true,
+              slider: true,
+            },
+            sliderStyle: 0,
+          },
+          {
+            id: "lang-3",
+            name: "JavaScript",
+            level: "Advanced",
+            proficiency: 3,
+            visibility: {
+              proficiency: true,
+              slider: true,
+            },
+            sliderStyle: 0,
+          },
+          {
+            id: "lang-4",
+            name: "C",
+            level: "Proficient",
+            proficiency: 4,
+            visibility: {
+              proficiency: true,
+              slider: true,
+            },
+            sliderStyle: 0,
+          },
+          {
+            id: "lang-5",
+            name: "TypeScript",
+            level: "Native",
+            proficiency: 5,
+            visibility: {
+              proficiency: true,
+              slider: true,
+            },
+            sliderStyle: 0,
+          },
+        ],
+      },
+    },
+    {
       id: "section-education",
       type: "entries",
       content: {
@@ -254,6 +318,88 @@ export const resumeSlice = createSlice({
       }
     },
 
+    // Language actions
+    addLanguage: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        language: Language
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.languages) {
+        section.content.languages.push(action.payload.language)
+      } else if (section) {
+        section.content.languages = [action.payload.language]
+      }
+    },
+
+    updateLanguage: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        langId: string
+        field: string
+        value: string | number
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.languages) {
+        const language = section.content.languages.find((l) => l.id === action.payload.langId)
+        if (language) {
+          ; (language as any)[action.payload.field] = action.payload.value
+        }
+      }
+    },
+
+    removeLanguage: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        langId: string
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.languages) {
+        section.content.languages = section.content.languages.filter((lang) => lang.id !== action.payload.langId)
+      }
+    },
+
+    toggleLanguageVisibility: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        langId: string
+        field: string
+        value: boolean
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.languages) {
+        const language = section.content.languages.find((l) => l.id === action.payload.langId)
+        if (language && language.visibility) {
+          ; (language.visibility as any)[action.payload.field] = action.payload.value
+        }
+      }
+    },
+
+    toggleSliderStyle: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        langId: string
+        value: number
+      }>,
+    ) => {
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.languages) {
+        const language = section.content.languages.find((l) => l.id === action.payload.langId)
+        if (language) {
+          language.sliderStyle = action.payload.value
+        }
+      }
+    },
+
     // Skills actions
     addSkillGroup: (
       state,
@@ -330,51 +476,6 @@ export const resumeSlice = createSlice({
         if (group) {
           group.items.splice(action.payload.skillIndex, 1)
         }
-      }
-    },
-
-    // Languages actions
-    addLanguage: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        language: Language
-      }>,
-    ) => {
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.languages) {
-        section.content.languages.push(action.payload.language)
-      }
-    },
-
-    updateLanguage: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        langId: string
-        field: string
-        value: string | number
-      }>,
-    ) => {
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.languages) {
-        const language = section.content.languages.find((l) => l.id === action.payload.langId)
-        if (language) {
-          ; (language as any)[action.payload.field] = action.payload.value
-        }
-      }
-    },
-
-    removeLanguage: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        langId: string
-      }>,
-    ) => {
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.languages) {
-        section.content.languages = section.content.languages.filter((lang) => lang.id !== action.payload.langId)
       }
     },
 
@@ -503,14 +604,16 @@ export const {
   removeEntry,
   updateEntry,
   toggleFieldVisibility,
+  addLanguage,
+  updateLanguage,
+  removeLanguage,
+  toggleLanguageVisibility,
+  toggleSliderStyle,
   addSkillGroup,
   updateSkillGroup,
   removeSkillGroup,
   addSkill,
   removeSkill,
-  addLanguage,
-  updateLanguage,
-  removeLanguage,
   addAchievement,
   updateAchievement,
   removeAchievement,

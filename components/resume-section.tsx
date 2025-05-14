@@ -11,12 +11,17 @@ import {
     removeEntry,
     updateEntry,
     toggleFieldVisibility,
+    addSkillGroup,
+    addAchievement,
+    addCustomItem,
 } from "@/lib/features/resume/resumeSlice"
 import type { Section, Entry, FieldVisibility } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, Trash2, MoveVertical, Calendar, MapPin, Settings } from "lucide-react"
+import { PlusCircle, Trash2, MoveVertical, Calendar, MapPin, Settings, Info, Award, icons } from "lucide-react"
 import { cn } from "@/lib/utils"
 import EditableText from "@/components/editable-text"
+import FieldVisibilityMenu from "@/components/field-visibility-menu"
+import LanguageSection from "@/components/language-section"
 
 interface ResumeSectionProps {
     section: Section
@@ -27,6 +32,7 @@ export default function ResumeSection({ section, isActive }: ResumeSectionProps)
     const dispatch = useDispatch()
     const [isHovered, setIsHovered] = useState(false)
     const [showVisibilityMenu, setShowVisibilityMenu] = useState(false)
+    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
     const sectionRef = useRef<HTMLDivElement>(null)
 
@@ -97,6 +103,7 @@ export default function ResumeSection({ section, isActive }: ResumeSectionProps)
         } else {
             setActiveEntryId(null)
         }
+        setMenuPosition({ x: e.clientX, y: e.clientY })
         setShowVisibilityMenu(true)
     }
 
@@ -126,6 +133,54 @@ export default function ResumeSection({ section, isActive }: ResumeSectionProps)
         }
     }, [showVisibilityMenu])
 
+    const renderIcon = (iconName: string) => {
+        switch (iconName) {
+            case "info":
+                return <Info size={16} />
+            case "award":
+                return <Award size={16} />
+            default:
+                return <Info size={16} />
+        }
+    }
+
+    const handleAddSkillGroup = () => {
+        dispatch(
+            addSkillGroup({
+                sectionId: section.id,
+                skillGroup: { id: `skillgroup-${Date.now()}`, category: "New Skill Group", items: [] },
+            }),
+        )
+    }
+
+    const handleAddAchievement = () => {
+        dispatch(
+            addAchievement({
+                sectionId: section.id,
+                achievement: {
+                    id: `achievement-${Date.now()}`,
+                    title: "New Achievement",
+                    description: "Achievement Description",
+                    icon: `${renderIcon("award")}`
+                },
+            }),
+        )
+    }
+
+    const handleAddCustomItem = () => {
+        dispatch(
+            addCustomItem({
+                sectionId: section.id,
+                customItem: {
+                    id: `customitem-${Date.now()}`,
+                    title: "New Item",
+                    description: "Item Description",
+                    featured: false,
+                },
+            }),
+        )
+    }
+
     return (
         <div
             ref={sectionRef}
@@ -139,14 +194,25 @@ export default function ResumeSection({ section, isActive }: ResumeSectionProps)
                     <Button variant="ghost" size="icon" className="h-8 w-8 bg-white border shadow-sm cursor-move">
                         <MoveVertical size={14} />
                     </Button>
-                    <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 bg-white border shadow-sm"
-                        onClick={() => handleAddEntry()}
-                    >
-                        <PlusCircle size={14} />
-                    </Button>
+                    {(section.type === "entries" ||
+                        section.type === "skills" ||
+                        section.type === "achievements" ||
+                        section.type === "custom") && (
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 bg-white border shadow-sm"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    if (section.type === "entries") handleAddEntry()
+                                    if (section.type === "skills") handleAddSkillGroup()
+                                    if (section.type === "achievements") handleAddAchievement()
+                                    if (section.type === "custom") handleAddCustomItem()
+                                }}
+                            >
+                                <PlusCircle size={14} />
+                            </Button>
+                        )}
                     <Button
                         variant="ghost"
                         size="icon"
@@ -281,6 +347,19 @@ export default function ResumeSection({ section, isActive }: ResumeSectionProps)
                         </Button>
                     )}
                 </div>
+            )}
+
+            {section.type === "languages" && section.content.languages && (
+                <LanguageSection section={section} isActive={isActive} />
+            )}
+
+            {showVisibilityMenu && activeEntryId && (
+                <FieldVisibilityMenu
+                    position={menuPosition}
+                    onClose={() => setShowVisibilityMenu(false)}
+                    visibility={section.content.entries?.find((e) => e.id === activeEntryId)?.visibility || {}}
+                    onToggle={handleToggleVisibility}
+                />
             )}
         </div>
     )
