@@ -40,7 +40,7 @@ export default function Sidebar() {
         </div>
       </div>
 
-      <AddSectionModal isOpen={showAddSectionModal} onClose={() => setShowAddSectionModal(false)} />
+      <AddSectionModal column="left" isOpen={showAddSectionModal} onClose={() => setShowAddSectionModal(false)} />
     </div>
   )
 }
