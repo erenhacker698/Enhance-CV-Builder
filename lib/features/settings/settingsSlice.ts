@@ -6,6 +6,7 @@ const initialState: SettingsState = {
     theme: "light",
     fontSize: 1,
     fontFamily: "Inter",
+    template: "standard",
 }
 
 export const settingsSlice = createSlice({
@@ -27,9 +28,13 @@ export const settingsSlice = createSlice({
         setFontFamily: (state, action: PayloadAction<string>) => {
             state.fontFamily = action.payload
         },
+
+        setTemplate: (state, action: PayloadAction<{ template: string }>) => {
+            state.template = action.payload.template
+        },
     },
 })
 
-export const { toggleBranding, setTheme, setFontSize, setFontFamily } = settingsSlice.actions
+export const { toggleBranding, setTheme, setFontSize, setFontFamily, setTemplate } = settingsSlice.actions
 
 export default settingsSlice.reducer

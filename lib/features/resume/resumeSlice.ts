@@ -81,12 +81,67 @@ const initialState: ResumeState = {
     },
   ],
   activeSectionId: null,
+  history: {
+    past: [],
+    future: [],
+  },
+}
+
+// Helper function to save current state to history
+const saveToHistory = (state: ResumeState) => {
+  const currentState = {
+    header: JSON.parse(JSON.stringify(state.header)),
+    sections: JSON.parse(JSON.stringify(state.sections)),
+  }
+
+  state.history.past.push(currentState)
+
+  // Limit history size to prevent memory issues
+  if (state.history.past.length > 30) {
+    state.history.past.shift()
+  }
+
+  // Clear future when a new action is performed
+  state.history.future = []
 }
 
 export const resumeSlice = createSlice({
   name: "resume",
   initialState,
   reducers: {
+    // Undo/Redo actions
+    undo: (state) => {
+      const previous = state.history.past.pop()
+      if (previous) {
+        // Save current state to future
+        const currentState = {
+          header: JSON.parse(JSON.stringify(state.header)),
+          sections: JSON.parse(JSON.stringify(state.sections)),
+        }
+        state.history.future.push(currentState)
+
+        // Restore previous state
+        state.header = previous.header
+        state.sections = previous.sections
+      }
+    },
+
+    redo: (state) => {
+      const next = state.history.future.pop()
+      if (next) {
+        // Save current state to past
+        const currentState = {
+          header: JSON.parse(JSON.stringify(state.header)),
+          sections: JSON.parse(JSON.stringify(state.sections)),
+        }
+        state.history.past.push(currentState)
+
+        // Restore next state
+        state.header = next.header
+        state.sections = next.sections
+      }
+    },
+
     // Header actions
     updateHeaderField: (
       state,
@@ -95,6 +150,7 @@ export const resumeSlice = createSlice({
         value: string
       }>,
     ) => {
+      saveToHistory(state)
       const { field, value } = action.payload
         ; (state.header as any)[field] = value
     },
@@ -106,6 +162,7 @@ export const resumeSlice = createSlice({
         value: boolean
       }>,
     ) => {
+      saveToHistory(state)
       const { field, value } = action.payload
       state.header.visibility[field as keyof typeof state.header.visibility] = value
     },
@@ -116,6 +173,7 @@ export const resumeSlice = createSlice({
         value: boolean
       }>,
     ) => {
+      saveToHistory(state)
       state.header.uppercaseName = action.payload.value
     },
 
@@ -125,6 +183,7 @@ export const resumeSlice = createSlice({
         value: boolean
       }>,
     ) => {
+      saveToHistory(state)
       state.header.roundPhoto = action.payload.value
     },
 
@@ -134,6 +193,7 @@ export const resumeSlice = createSlice({
         photoUrl: string
       }>,
     ) => {
+      saveToHistory(state)
       state.header.photoUrl = action.payload.photoUrl
     },
 
@@ -149,6 +209,7 @@ export const resumeSlice = createSlice({
         column: "left" | "right"
       }>,
     ) => {
+      saveToHistory(state)
       const newSection = {
         ...action.payload.section,
         column: action.payload.column,
@@ -158,6 +219,7 @@ export const resumeSlice = createSlice({
     },
 
     removeSection: (state, action: PayloadAction<{ sectionId: string }>) => {
+      saveToHistory(state)
       state.sections = state.sections.filter((section) => section.id !== action.payload.sectionId)
       if (state.activeSectionId === action.payload.sectionId) {
         state.activeSectionId = null
@@ -171,6 +233,7 @@ export const resumeSlice = createSlice({
         content: Section["content"]
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section) {
         section.content = action.payload.content
@@ -178,7 +241,22 @@ export const resumeSlice = createSlice({
     },
 
     reorderSections: (state, action: PayloadAction<{ sections: Section[] }>) => {
+      saveToHistory(state)
       state.sections = action.payload.sections
+    },
+
+    updateSectionColumn: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        column: "left" | "right"
+      }>,
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section) {
+        section.column = action.payload.column
+      }
     },
 
     // Entry actions
@@ -189,6 +267,7 @@ export const resumeSlice = createSlice({
         entry: Entry
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.entries) {
         section.content.entries.push(action.payload.entry)
@@ -204,6 +283,7 @@ export const resumeSlice = createSlice({
         entryId: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.entries) {
         section.content.entries = section.content.entries.filter((entry) => entry.id !== action.payload.entryId)
@@ -219,6 +299,7 @@ export const resumeSlice = createSlice({
         value: string | string[]
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.entries) {
         const entry = section.content.entries.find((e) => e.id === action.payload.entryId)
@@ -237,6 +318,7 @@ export const resumeSlice = createSlice({
         value: boolean
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.entries) {
         const entry = section.content.entries.find((e) => e.id === action.payload.entryId)
@@ -254,6 +336,7 @@ export const resumeSlice = createSlice({
         skillGroup: SkillGroup
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.skillGroups) {
         section.content.skillGroups.push(action.payload.skillGroup)
@@ -270,6 +353,7 @@ export const resumeSlice = createSlice({
         name: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.skillGroups) {
         const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
@@ -286,6 +370,7 @@ export const resumeSlice = createSlice({
         groupId: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.skillGroups) {
         section.content.skillGroups = section.content.skillGroups.filter((group) => group.id !== action.payload.groupId)
@@ -300,6 +385,7 @@ export const resumeSlice = createSlice({
         skill: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.skillGroups) {
         const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
@@ -317,6 +403,7 @@ export const resumeSlice = createSlice({
         skillIndex: number
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.skillGroups) {
         const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
@@ -334,6 +421,7 @@ export const resumeSlice = createSlice({
         language: Language
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.languages) {
         section.content.languages.push(action.payload.language)
@@ -351,6 +439,7 @@ export const resumeSlice = createSlice({
         value: string | number
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.languages) {
         const language = section.content.languages.find((l) => l.id === action.payload.langId)
@@ -367,6 +456,7 @@ export const resumeSlice = createSlice({
         langId: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.languages) {
         section.content.languages = section.content.languages.filter((lang) => lang.id !== action.payload.langId)
@@ -382,6 +472,7 @@ export const resumeSlice = createSlice({
         value: boolean
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.languages) {
         const language = section.content.languages.find((l) => l.id === action.payload.langId)
@@ -399,6 +490,7 @@ export const resumeSlice = createSlice({
         value: number
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.languages) {
         const language = section.content.languages.find((l) => l.id === action.payload.langId)
@@ -416,6 +508,7 @@ export const resumeSlice = createSlice({
         achievement: Achievement
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.achievements) {
         section.content.achievements.push(action.payload.achievement)
@@ -433,6 +526,7 @@ export const resumeSlice = createSlice({
         value: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.achievements) {
         const achievement = section.content.achievements.find((a) => a.id === action.payload.achievementId)
@@ -449,6 +543,7 @@ export const resumeSlice = createSlice({
         achievementId: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.achievements) {
         section.content.achievements = section.content.achievements.filter(
@@ -465,6 +560,7 @@ export const resumeSlice = createSlice({
         item: CustomItem
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.items) {
         section.content.items.push(action.payload.item)
@@ -482,6 +578,7 @@ export const resumeSlice = createSlice({
         value: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.items) {
         const item = section.content.items.find((i) => i.id === action.payload.itemId)
@@ -498,6 +595,7 @@ export const resumeSlice = createSlice({
         itemId: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.items) {
         section.content.items = section.content.items.filter((item) => item.id !== action.payload.itemId)
@@ -511,6 +609,7 @@ export const resumeSlice = createSlice({
         itemId: string
       }>,
     ) => {
+      saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.items) {
         const item = section.content.items.find((i) => i.id === action.payload.itemId)
@@ -533,6 +632,7 @@ export const {
   removeSection,
   updateSectionContent,
   reorderSections,
+  updateSectionColumn,
   addEntry,
   removeEntry,
   updateEntry,
@@ -554,6 +654,8 @@ export const {
   updateCustomItem,
   removeCustomItem,
   toggleCustomItemFeatured,
+  undo,
+  redo,
 } = resumeSlice.actions
 
 export default resumeSlice.reducer

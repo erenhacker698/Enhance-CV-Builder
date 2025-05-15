@@ -101,6 +101,16 @@ export interface ResumeState {
   header: Header
   sections: Section[]
   activeSectionId: string | null
+  history: {
+    past: Array<{
+      header: Header
+      sections: Section[]
+    }>
+    future: Array<{
+      header: Header
+      sections: Section[]
+    }>
+  }
 }
 
 export interface SettingsState {
@@ -108,6 +118,7 @@ export interface SettingsState {
   theme: "light" | "dark"
   fontSize: number
   fontFamily: string
+  template: string
 }
 
 export interface RootState {

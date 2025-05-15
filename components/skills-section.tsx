@@ -19,9 +19,10 @@ import type { Section, SkillGroup } from "@/lib/types"
 interface SkillsSectionProps {
     section: Section
     isActive: boolean
+    darkMode?: boolean
 }
 
-export default function SkillsSection({ section, isActive }: SkillsSectionProps) {
+export default function SkillsSection({ section, isActive, darkMode = false }: SkillsSectionProps) {
     const dispatch = useDispatch()
     const [newSkill, setNewSkill] = useState("")
     const skillGroups = section.content.skillGroups || []
@@ -91,7 +92,12 @@ export default function SkillsSection({ section, isActive }: SkillsSectionProps)
     // If no skill groups exist, create a default one
     if (skillGroups.length === 0 && isActive) {
         return (
-            <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleAddGroup}>
+            <Button
+                variant="outline"
+                size="sm"
+                className={cn("w-full mt-2", darkMode && "border-slate-600 text-white hover:bg-slate-700")}
+                onClick={handleAddGroup}
+            >
                 <Plus size={14} className="mr-1" />
                 Add Skill Group
             </Button>
@@ -106,7 +112,10 @@ export default function SkillsSection({ section, isActive }: SkillsSectionProps)
                         <Button
                             variant="ghost"
                             size="icon"
-                            className="absolute right-0 top-0 h-6 w-6 text-gray-400 hover:text-red-500"
+                            className={cn(
+                                "absolute right-0 top-0 h-6 w-6",
+                                darkMode ? "text-gray-300 hover:text-red-400" : "text-gray-400 hover:text-red-500",
+                            )}
                             onClick={() => handleRemoveGroup(group.id)}
                         >
                             <X size={14} />
@@ -117,14 +126,21 @@ export default function SkillsSection({ section, isActive }: SkillsSectionProps)
                         {group.skills.map((skill, index) => (
                             <div
                                 key={index}
-                                className={cn("px-2 py-1 bg-gray-100 rounded-md flex items-center", isActive && "group/skill")}
+                                className={cn(
+                                    "px-2 py-1 rounded-md flex items-center",
+                                    isActive && "group/skill",
+                                    darkMode ? "bg-slate-700 text-white" : "bg-gray-100",
+                                )}
                             >
                                 <span>{skill}</span>
                                 {isActive && (
                                     <Button
                                         variant="ghost"
                                         size="icon"
-                                        className="h-4 w-4 ml-1 text-gray-400 hover:text-red-500 opacity-0 group-hover/skill:opacity-100"
+                                        className={cn(
+                                            "h-4 w-4 ml-1 opacity-0 group-hover/skill:opacity-100",
+                                            darkMode ? "text-gray-300 hover:text-red-400" : "text-gray-400 hover:text-red-500",
+                                        )}
                                         onClick={() => handleRemoveSkill(group.id, index)}
                                     >
                                         <X size={10} />
@@ -134,14 +150,17 @@ export default function SkillsSection({ section, isActive }: SkillsSectionProps)
                         ))}
 
                         {isActive && (
-                            <div className="px-2 py-1 bg-gray-100 rounded-md">
+                            <div className={cn("px-2 py-1 rounded-md", darkMode ? "bg-slate-700" : "bg-gray-100")}>
                                 <input
                                     type="text"
                                     value={newSkill}
                                     onChange={(e) => setNewSkill(e.target.value)}
                                     onKeyDown={(e) => handleKeyDown(e, group.id)}
                                     placeholder="Your Skill"
-                                    className="w-20 bg-transparent border-none focus:outline-none text-sm"
+                                    className={cn(
+                                        "w-20 bg-transparent border-none focus:outline-none text-sm",
+                                        darkMode && "text-white placeholder:text-gray-400",
+                                    )}
                                 />
                             </div>
                         )}
@@ -150,7 +169,12 @@ export default function SkillsSection({ section, isActive }: SkillsSectionProps)
             ))}
 
             {isActive && (
-                <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleAddGroup}>
+                <Button
+                    variant="outline"
+                    size="sm"
+                    className={cn("w-full mt-2", darkMode && "border-slate-600 text-white hover:bg-slate-700")}
+                    onClick={handleAddGroup}
+                >
                     <Plus size={14} className="mr-1" />
                     Add Skill Group
                 </Button>

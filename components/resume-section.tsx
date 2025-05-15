@@ -11,6 +11,7 @@ import {
     removeEntry,
     updateEntry,
     toggleFieldVisibility,
+    updateSectionColumn,
 } from "@/lib/features/resume/resumeSlice"
 import type { Section, Entry, FieldVisibility } from "@/lib/types"
 import { Button } from "@/components/ui/button"
@@ -128,6 +129,15 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
         if (onDragStart) {
             onDragStart(section.id)
         }
+    }
+
+    const handleMoveToColumn = (targetColumn: "left" | "right") => {
+        dispatch(
+            updateSectionColumn({
+                sectionId: section.id,
+                column: targetColumn,
+            }),
+        )
     }
 
     useEffect(() => {
@@ -289,6 +299,7 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                     section={section}
                     onAddEntry={section.type === "entries" ? handleAddEntry : undefined}
                     onDragStart={handleDragStartSection}
+                    onMoveToColumn={handleMoveToColumn}
                 />
             )}
 
