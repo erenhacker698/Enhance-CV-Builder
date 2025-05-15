@@ -1,21 +1,26 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "@/lib/store"
-import { setActiveSection } from "@/lib/features/resume/resumeSlice"
+import { setActiveSection, reorderSections } from "@/lib/features/resume/resumeSlice"
 import Sidebar from "@/components/sidebar"
 import ResumeHeader from "@/components/resume-header"
 import ResumeSection from "@/components/resume-section"
 import AddSectionModal from "@/components/add-section-modal"
 import { Button } from "@/components/ui/button"
 import { PlusCircle } from "lucide-react"
+import type { Section } from "@/lib/types"
 
 export default function ResumeBuilder() {
   const dispatch = useDispatch()
   const { header, sections, activeSectionId } = useSelector((state: RootState) => state.resume)
   const [showAddSectionModal, setShowAddSectionModal] = useState(false)
   const [addToColumn, setAddToColumn] = useState<"left" | "right">("left")
+  const [draggedSection, setDraggedSection] = useState<string | null>(null)
+  const [dragOverSection, setDragOverSection] = useState<string | null>(null)
 
   const handleHeaderClick = () => {
     dispatch(setActiveSection({ sectionId: null }))
@@ -29,6 +34,100 @@ export default function ResumeBuilder() {
   // Filter sections by column
   const leftSections = sections.filter((section) => section.column === "left")
   const rightSections = sections.filter((section) => section.column === "right")
+
+  // Drag and drop handlers
+  const handleDragStart = (sectionId: string) => {
+    setDraggedSection(sectionId)
+  }
+
+  const handleDragOver = (e: React.DragEvent, sectionId: string) => {
+    e.preventDefault()
+    if (draggedSection !== sectionId) {
+      setDragOverSection(sectionId)
+    }
+  }
+
+  const handleDragEnd = () => {
+    if (draggedSection && dragOverSection) {
+      const draggedSectionObj = sections.find((s) => s.id === draggedSection)
+      const dragOverSectionObj = sections.find((s) => s.id === dragOverSection)
+
+      if (draggedSectionObj && dragOverSectionObj && draggedSectionObj.column === dragOverSectionObj.column) {
+        const column = draggedSectionObj.column
+        const columnSections = sections.filter((s) => s.column === column)
+
+        const oldIndex = columnSections.findIndex((s) => s.id === draggedSection)
+        const newIndex = columnSections.findIndex((s) => s.id === dragOverSection)
+
+        if (oldIndex !== -1 && newIndex !== -1) {
+          // Create a new array with the reordered sections
+          const newColumnSections = [...columnSections]
+          const [movedSection] = newColumnSections.splice(oldIndex, 1)
+          newColumnSections.splice(newIndex, 0, movedSection)
+
+          // Create a new array with all sections, replacing the reordered column
+          const newSections = sections.filter((s) => s.column !== column).concat(newColumnSections)
+
+          dispatch(reorderSections({ sections: newSections }))
+        }
+      }
+    }
+
+    setDraggedSection(null)
+    setDragOverSection(null)
+  }
+
+  const handleDragLeave = () => {
+    setDragOverSection(null)
+  }
+
+  // Render a column of sections
+  const renderSectionColumn = (columnSections: Section[], column: "left" | "right") => {
+    return (
+      <div className="flex-1">
+        {columnSections.length > 0 ? (
+          columnSections.map((section) => (
+            <div
+              key={section.id}
+              draggable
+              onDragStart={() => handleDragStart(section.id)}
+              onDragOver={(e) => handleDragOver(e, section.id)}
+              onDragEnd={handleDragEnd}
+              onDragLeave={handleDragLeave}
+              className={`${dragOverSection === section.id ? "border-2 border-teal-500 rounded-md" : ""} ${draggedSection === section.id ? "opacity-50" : ""
+                }`}
+            >
+              <ResumeSection
+                key={section.id}
+                section={section}
+                isActive={section.id === activeSectionId}
+                onDragStart={handleDragStart}
+              />
+            </div>
+          ))
+        ) : (
+          <div className="bg-gray-100 rounded-md p-8 flex flex-col items-center justify-center min-h-[200px]">
+            <Button
+              variant="default"
+              onClick={() => handleAddSectionClick(column)}
+              className="bg-indigo-600 hover:bg-indigo-700"
+            >
+              Add New Section
+            </Button>
+          </div>
+        )}
+
+        {columnSections.length > 0 && (
+          <div className="mt-4 flex justify-center">
+            <Button variant="outline" onClick={() => handleAddSectionClick(column)} className="flex items-center gap-1">
+              <PlusCircle size={16} />
+              Add New Section
+            </Button>
+          </div>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="flex gap-4">
@@ -95,68 +194,10 @@ export default function ResumeBuilder() {
 
           <div className="flex gap-6 mt-6">
             {/* Left Column */}
-            <div className="flex-1">
-              {leftSections.length > 0 ? (
-                leftSections.map((section) => (
-                  <ResumeSection key={section.id} section={section} isActive={section.id === activeSectionId} />
-                ))
-              ) : (
-                <div className="bg-gray-100 rounded-md p-8 flex flex-col items-center justify-center min-h-[200px]">
-                  <Button
-                    variant="default"
-                    onClick={() => handleAddSectionClick("left")}
-                    className="bg-indigo-600 hover:bg-indigo-700"
-                  >
-                    Add New Section
-                  </Button>
-                </div>
-              )}
-
-              {leftSections.length > 0 && (
-                <div className="mt-4 flex justify-center">
-                  <Button
-                    variant="outline"
-                    onClick={() => handleAddSectionClick("left")}
-                    className="flex items-center gap-1"
-                  >
-                    <PlusCircle size={16} />
-                    Add New Section
-                  </Button>
-                </div>
-              )}
-            </div>
+            {renderSectionColumn(leftSections, "left")}
 
             {/* Right Column */}
-            <div className="flex-1">
-              {rightSections.length > 0 ? (
-                rightSections.map((section) => (
-                  <ResumeSection key={section.id} section={section} isActive={section.id === activeSectionId} />
-                ))
-              ) : (
-                <div className="bg-gray-100 rounded-md p-8 flex flex-col items-center justify-center min-h-[200px]">
-                  <Button
-                    variant="default"
-                    onClick={() => handleAddSectionClick("right")}
-                    className="bg-indigo-600 hover:bg-indigo-700"
-                  >
-                    Add New Section
-                  </Button>
-                </div>
-              )}
-
-              {rightSections.length > 0 && (
-                <div className="mt-4 flex justify-center">
-                  <Button
-                    variant="outline"
-                    onClick={() => handleAddSectionClick("right")}
-                    className="flex items-center gap-1"
-                  >
-                    <PlusCircle size={16} />
-                    Add New Section
-                  </Button>
-                </div>
-              )}
-            </div>
+            {renderSectionColumn(rightSections, "right")}
           </div>
         </div>
       </div>

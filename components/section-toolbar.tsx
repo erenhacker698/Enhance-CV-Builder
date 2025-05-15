@@ -1,5 +1,7 @@
 "use client"
 
+import type React from "react"
+
 import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { Button } from "@/components/ui/button"
@@ -10,14 +12,22 @@ import type { Section } from "@/lib/types"
 interface SectionToolbarProps {
     section: Section
     onAddEntry?: () => void
+    onDragStart?: () => void
 }
 
-export default function SectionToolbar({ section, onAddEntry }: SectionToolbarProps) {
+export default function SectionToolbar({ section, onAddEntry, onDragStart }: SectionToolbarProps) {
     const dispatch = useDispatch()
     const [showDropdown, setShowDropdown] = useState(false)
 
     const handleRemoveSection = () => {
         dispatch(removeSection({ sectionId: section.id }))
+    }
+
+    const handleDragStart = (e: React.MouseEvent) => {
+        e.stopPropagation()
+        if (onDragStart) {
+            onDragStart()
+        }
     }
 
     return (
@@ -97,11 +107,11 @@ export default function SectionToolbar({ section, onAddEntry }: SectionToolbarPr
                 <ChevronDown size={16} />
             </Button>
 
-            <Button variant="ghost" size="sm" className="h-8 w-8 hover:bg-gray-100 hidden">
+            <Button variant="ghost" size="sm" className="h-8 w-8 hover:bg-gray-100">
                 <Type size={16} />
             </Button>
 
-            <Button variant="ghost" size="sm" className="h-8 w-8 hover:bg-gray-100 hidden">
+            <Button variant="ghost" size="sm" className="h-8 w-8 hover:bg-gray-100">
                 <Calendar size={16} />
             </Button>
 
@@ -117,7 +127,13 @@ export default function SectionToolbar({ section, onAddEntry }: SectionToolbarPr
                 <Trash2 size={16} />
             </Button>
 
-            <Button variant="ghost" size="sm" className="h-8 w-8 hover:bg-gray-100 cursor-move hidden">
+            <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 hover:bg-gray-100 cursor-move"
+                draggable
+                onMouseDown={handleDragStart}
+            >
                 <MoveVertical size={16} />
             </Button>
 

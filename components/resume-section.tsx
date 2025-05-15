@@ -27,9 +27,10 @@ import CustomSection from "@/components/custom-section"
 interface ResumeSectionProps {
     section: Section
     isActive: boolean
+    onDragStart?: (sectionId: string) => void
 }
 
-export default function ResumeSection({ section, isActive }: ResumeSectionProps) {
+export default function ResumeSection({ section, isActive, onDragStart }: ResumeSectionProps) {
     const dispatch = useDispatch()
     const [isHovered, setIsHovered] = useState(false)
     const [showVisibilityMenu, setShowVisibilityMenu] = useState(false)
@@ -120,6 +121,12 @@ export default function ResumeSection({ section, isActive }: ResumeSectionProps)
                     value,
                 }),
             )
+        }
+    }
+
+    const handleDragStartSection = () => {
+        if (onDragStart) {
+            onDragStart(section.id)
         }
     }
 
@@ -278,7 +285,11 @@ export default function ResumeSection({ section, isActive }: ResumeSectionProps)
             onClick={handleActivateSection}
         >
             {(isActive || isHovered) && (
-                <SectionToolbar section={section} onAddEntry={section.type === "entries" ? handleAddEntry : undefined} />
+                <SectionToolbar
+                    section={section}
+                    onAddEntry={section.type === "entries" ? handleAddEntry : undefined}
+                    onDragStart={handleDragStartSection}
+                />
             )}
 
             <div className="border-b border-gray-800 mb-2">
