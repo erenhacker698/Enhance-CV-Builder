@@ -132,6 +132,30 @@
   gap: 12px;
 }
 
+.resume-editor-overlay {
+  background: rgba(80, 77, 98, .2);
+  position: relative;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  animation: fadein .4s ease-out forwards !important;
+}
+
+@keyframes fadein {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+.resume-header-active,
+.resume-section-active {
+  background: #fff;
+}
+
 @media (min-width: 1024px) {
   .section-blocks-layout-wrapper {
     display: grid;

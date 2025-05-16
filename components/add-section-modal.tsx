@@ -169,7 +169,6 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
         const section = sectionTypes.find((s) => s.id === sectionType)
 
         if (section) {
-            // Create different section structures based on type
             switch (section.id) {
                 case "skills":
                     const skillsSection: Section = {
@@ -299,18 +298,18 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
 
     return (
         <Dialog open={showAddSectionModal} onOpenChange={(open) => dispatch(setAddSectionModal({ isOpen: open }))}>
-            <DialogContent className="max-w-4xl p-0 overflow-hidden">
+            <DialogContent className="max-w-4xl max-h-[95vh] p-0 overflow-auto">
                 <DialogHeader className="p-6 pb-2">
                     <div className="flex justify-between items-center">
                         <DialogTitle className="text-2xl font-bold">Add a new section</DialogTitle>
-                        <Button
+                        {/* <Button
                             variant="ghost"
                             size="icon"
                             className="h-8 w-8 rounded-full"
                             onClick={() => dispatch(setAddSectionModal({ isOpen: false }))}
                         >
                             <X size={18} />
-                        </Button>
+                        </Button> */}
                     </div>
                     <p className="text-gray-600">Click on a section to add it to your resume</p>
                 </DialogHeader>

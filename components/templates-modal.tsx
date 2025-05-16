@@ -15,19 +15,19 @@ const templates = [
         id: "double-column",
         name: "Double Column",
         description: "Classic two-column layout",
-        image: "/templates/double-column.png",
+        image: "/templates/Double Column.png",
     },
     {
         id: "elegant",
         name: "Elegant",
         description: "Professional design with sidebar",
-        image: "/templates/elegant.png",
+        image: "/templates/Elegent.png",
     },
     {
         id: "timeline",
         name: "Timeline",
         description: "Chronological timeline format",
-        image: "/templates/timeline.png",
+        image: "/templates/Timeline.png",
     },
 ]
 
@@ -51,20 +51,10 @@ export default function TemplatesModal({ }: TemplatesModalProps) {
 
     return (
         <Dialog open={showTemplatesModal} onOpenChange={(open) => dispatch(setTemplatesModal(open))}>
-            <DialogContent className="max-w-4xl p-0 overflow-hidden">
+            <DialogContent className="max-w-4xl max-h-[95vh] p-0 overflow-auto">
                 <DialogHeader className="p-6 pb-2">
                     <div className="flex justify-between items-center">
                         <DialogTitle className="text-2xl font-bold">Choose a template</DialogTitle>
-                        <DialogClose asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 rounded-full"
-                                onClick={() => dispatch(setTemplatesModal(false))}
-                            >
-                                <X size={18} />
-                            </Button>
-                        </DialogClose>
                     </div>
                     <p className="text-gray-600">Select a template to change the look of your resume</p>
                 </DialogHeader>

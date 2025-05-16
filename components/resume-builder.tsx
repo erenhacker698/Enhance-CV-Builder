@@ -11,13 +11,14 @@ import ResumeTemplateDoubleColumn from "@/components/resume-template-double-colu
 import ResumeTemplateElegant from "@/components/resume-template-elegant"
 import ResumeTemplateTimeline from "@/components/resume-template-timeline"
 import { undo, redo } from "@/lib/features/resume/resumeSlice"
+import { cn } from "@/lib/utils"
 
 export default function ResumeBuilder() {
   const dispatch = useDispatch()
   const { template } = useSelector((state: RootState) => state.settings)
   const { history } = useSelector((state: RootState) => state.resume)
   const resumeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
-  const [showTemplatesModal, setShowTemplatesModal] = useState(false)
+  const { activeSectionId } = useSelector((state: RootState) => state.resume)
 
   const handleAddSectionClick = (column: "left" | "right") => {
     dispatch({
@@ -70,7 +71,7 @@ export default function ResumeBuilder() {
     <div className="flex gap-4">
       <Sidebar />
 
-      <div className="flex-1 bg-white rounded-lg shadow-sm overflow-hidden p-3">
+      <div className={cn("flex-1 bg-white shadow-md overflow-hidden relative")}>
         {renderTemplate()}
       </div>
     </div>

@@ -13,6 +13,7 @@ import type { RootState } from "@/lib/store"
 import type { Section } from "@/lib/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
+import { cn } from "@/lib/utils"
 
 interface ResumeTemplateTimelineProps {
     resumeRef: React.RefObject<HTMLDivElement>
@@ -134,7 +135,7 @@ export default function ResumeTemplateTimeline({ resumeRef }: ResumeTemplateTime
     }
 
     return (
-        <div className="max-w-4xl mx-auto bg-white p-8 min-h-[842px]" ref={resumeRef}>
+        <div className={cn("w-full mx-auto bg-white p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
             <div onClick={handleHeaderClick}>
                 <ResumeHeader isActive={activeSectionId === null} />
             </div>
@@ -217,7 +218,7 @@ export default function ResumeTemplateTimeline({ resumeRef }: ResumeTemplateTime
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="w-full border-dashed border-gray-300"
+                                                className="w-auto flex mx-auto border-dashed border-gray-300"
                                                 onClick={() => handleAddSectionClick("left")}
                                             >
                                                 <Plus size={16} className="mr-2" /> Add Section
@@ -255,7 +256,7 @@ export default function ResumeTemplateTimeline({ resumeRef }: ResumeTemplateTime
                                             <Button
                                                 variant="outline"
                                                 size="sm"
-                                                className="w-full border-dashed border-gray-300"
+                                                className="w-auto flex mx-auto border-dashed border-gray-300"
                                                 onClick={() => handleAddSectionClick("right")}
                                             >
                                                 <Plus size={16} className="mr-2" /> Add Section

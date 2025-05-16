@@ -8,6 +8,7 @@ import ResumeHeader from "@/components/resume-header"
 import ResumeSection from "@/components/resume-section"
 import type { RootState } from "@/lib/store"
 import type { Section } from "@/lib/types"
+import { cn } from "@/lib/utils"
 
 interface ResumeTemplateModernProps {
     resumeRef: React.RefObject<HTMLDivElement>
@@ -33,7 +34,7 @@ export default function ResumeTemplateModern({ resumeRef }: ResumeTemplateModern
     })
 
     return (
-        <div className="max-w-4xl mx-auto bg-white p-8 min-h-[842px]" ref={resumeRef}>
+        <div className={cn("w-full mx-auto bg-white p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
             <div onClick={handleHeaderClick} className="flex items-start">
                 <div className="flex-1">
                     <ResumeHeader isActive={activeSectionId === null} />

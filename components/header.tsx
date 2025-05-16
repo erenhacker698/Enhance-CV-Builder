@@ -1,12 +1,10 @@
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import Image from "next/image"
 import Logo from '@/public/Logo.svg'
-import PDFExportButton from "./pdf-export-button"
-import { useRef } from "react"
+import { Github } from "lucide-react"
 
 export default function Header() {
-  const resumeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
 
   return (
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
@@ -20,10 +18,7 @@ export default function Header() {
         </div>
 
         <div className="flex items-center space-x-2">
-          <PDFExportButton resumeRef={resumeRef} />
-          <Button size="sm" className="bg-teal-500 hover:bg-teal-600">
-            Upgrade
-          </Button>
+          <Link href="https://github.com/coderomm/Enhance-CV" target="_blank" className={buttonVariants({ variant: "outline" })}><Github/> Github</Link>
         </div>
       </div>
     </header>

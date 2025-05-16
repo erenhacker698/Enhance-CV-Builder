@@ -66,7 +66,7 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
         <div
             className={cn(
                 "relative border border-transparent rounded-md transition-all",
-                isActive && "ring-2 ring-teal-500",
+                isActive && "ring-1 ring-teal-500 resume-header-active",
                 (isActive || isHovered) && "border-gray-200",
             )}
             onMouseEnter={() => setIsHovered(true)}

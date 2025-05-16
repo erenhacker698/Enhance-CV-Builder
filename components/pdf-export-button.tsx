@@ -24,11 +24,9 @@ export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
         setIsExporting(true)
 
         try {
-            // Create a clone of the resume element to modify for PDF export
             const resumeElement = resumeRef.current
             const clone = resumeElement.cloneNode(true) as HTMLElement
 
-            // Apply some styling for better PDF output
             clone.style.width = "794px" // A4 width in pixels at 96 DPI
             clone.style.height = "1123px" // A4 height in pixels at 96 DPI
             clone.style.padding = "40px"
@@ -37,11 +35,9 @@ export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
             clone.style.left = "-9999px"
             document.body.appendChild(clone)
 
-            // Remove any buttons or interactive elements from the clone
             const buttons = clone.querySelectorAll("button")
             buttons.forEach((button) => button.remove())
 
-            // Remove any hover effects or unnecessary styling
             const hoverElements = clone.querySelectorAll(".group, .hover\\:bg-gray-50")
             hoverElements.forEach((el) => {
                 if (el instanceof HTMLElement) {
@@ -49,7 +45,6 @@ export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
                 }
             })
 
-            // Generate canvas from the clone
             const canvas = await html2canvas(clone, {
                 scale: 2, // Higher scale for better quality
                 useCORS: true,
@@ -57,10 +52,8 @@ export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
                 backgroundColor: "#ffffff",
             })
 
-            // Remove the clone from the DOM
             document.body.removeChild(clone)
 
-            // Create PDF
             const imgData = canvas.toDataURL("image/png")
             const pdf = new jsPDF({
                 orientation: "portrait",
@@ -68,16 +61,13 @@ export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
                 format: "a4",
             })
 
-            // Calculate dimensions
             const imgWidth = 210 // A4 width in mm
             const imgHeight = (canvas.height * imgWidth) / canvas.width
 
             pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
 
-            // Generate filename from header name or use default
             const fileName = header.name ? `${header.name.toLowerCase().replace(/\s+/g, "_")}_resume.pdf` : "resume.pdf"
 
-            // Download PDF
             pdf.save(fileName)
         } catch (error) {
             console.error("Error generating PDF:", error)
@@ -88,7 +78,7 @@ export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
     }
 
     return (
-        <Button onClick={handleExport} disabled={isExporting} className="bg-teal-500 hover:bg-teal-600 text-white">
+        <Button onClick={handleExport} disabled={isExporting} variant="ghost" className="w-full justify-start text-sm font-normal cursor-pointer">
             {isExporting ? (
                 <>
                     <Loader2 size={16} className="mr-2 animate-spin" />
@@ -97,7 +87,7 @@ export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
             ) : (
                 <>
                     <Download size={16} className="mr-2" />
-                    Export as PDF
+                    Download
                 </>
             )}
         </Button>

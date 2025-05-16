@@ -13,6 +13,7 @@ import type { Section } from "@/lib/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import ResumeHeader from "@/components/resume-header"
 import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
+import { cn } from "@/lib/utils"
 
 interface ResumeTemplateElegantProps {
     resumeRef: React.RefObject<HTMLDivElement>
@@ -116,7 +117,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
     }
 
     return (
-        <div className="max-w-4xl mx-auto bg-white min-h-[842px] flex" ref={resumeRef}>
+        <div className={cn("w-full mx-auto bg-white p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
             <div className="w-[65%] p-8">
                 {/* Header - Name and title only */}
                 <div onClick={handleHeaderClick}>
@@ -153,7 +154,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="w-full border-dashed border-gray-300"
+                                            className="w-auto flex mx-auto border-dashed border-gray-300"
                                             onClick={() => handleAddSectionClick("left")}
                                         >
                                             <Plus size={16} className="mr-2" /> Add Section
@@ -237,7 +238,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="w-full border-dashed border-slate-600 text-white hover:bg-slate-700"
+                                            className="w-auto flex mx-auto border-dashed border-slate-600 text-white hover:bg-slate-700"
                                             onClick={() => handleAddSectionClick("right")}
                                         >
                                             <Plus size={16} className="mr-2" /> Add Section

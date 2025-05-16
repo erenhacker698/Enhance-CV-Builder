@@ -300,7 +300,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         return (
             <div
                 ref={sectionRef}
-                className={cn("mb-6 relative group", isActive && "ring-1 ring-gray-300 rounded-md")}
+                className={cn("mb-6 relative group", isActive && "ring-1 ring-gray-300 rounded-md resume-header-active")}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => {
                     setIsHovered(false)
@@ -335,7 +335,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     return (
         <div
             ref={sectionRef}
-            className={cn("mb-6 relative group", isActive && "ring-1 ring-gray-300 rounded-md")}
+            className={cn("mb-6 relative group", isActive && "ring-1 ring-gray-300 rounded-md p-4 resume-section-active")}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => {
                 setIsHovered(false)

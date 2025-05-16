@@ -127,9 +127,9 @@ export default function SkillsSection({ section, isActive, darkMode = false }: S
                             <div
                                 key={index}
                                 className={cn(
-                                    "px-2 py-1 rounded-md flex items-center",
+                                    "px-2 py-1 flex items-center",
                                     isActive && "group/skill",
-                                    darkMode ? "bg-slate-700 text-white" : "bg-gray-100",
+                                    darkMode ? "border-b border-gray-500 text-white" : "border-b border-gray-300",
                                 )}
                             >
                                 <span>{skill}</span>
