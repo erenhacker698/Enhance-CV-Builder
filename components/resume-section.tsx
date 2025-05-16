@@ -29,9 +29,10 @@ interface ResumeSectionProps {
     section: Section
     isActive: boolean
     onDragStart?: (sectionId: string) => void
+    darkMode?: boolean
 }
 
-export default function ResumeSection({ section, isActive, onDragStart }: ResumeSectionProps) {
+export default function ResumeSection({ section, isActive, onDragStart, darkMode = false }: ResumeSectionProps) {
     const dispatch = useDispatch()
     const [isHovered, setIsHovered] = useState(false)
     const [showVisibilityMenu, setShowVisibilityMenu] = useState(false)
@@ -168,7 +169,7 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                                 }),
                             )
                         }
-                        className="text-sm text-gray-700"
+                        className={cn("text-sm", darkMode ? "text-white" : "text-gray-700")}
                         multiline
                     />
                 )
@@ -178,7 +179,11 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                         {section.content.entries?.map((entry: Entry) => (
                             <div
                                 key={entry.id}
-                                className={cn("relative p-2 -mx-2 group/entry", isActive && "hover:bg-gray-50 rounded")}
+                                className={cn(
+                                    "relative p-2 -mx-2 group/entry",
+                                    isActive && "hover:bg-gray-50 rounded",
+                                    darkMode && isActive && "hover:bg-slate-700 rounded",
+                                )}
                                 onContextMenu={(e) => handleContextMenu(e, entry.id)}
                             >
                                 {isActive && (
@@ -186,7 +191,7 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                                         <Button
                                             variant="ghost"
                                             size="icon"
-                                            className="h-6 w-6 text-gray-400 hover:text-red-500"
+                                            className={cn("h-6 w-6 hover:text-red-500", darkMode ? "text-gray-300" : "text-gray-400")}
                                             onClick={() => handleRemoveEntry(entry.id)}
                                         >
                                             <Trash2 size={14} />
@@ -198,7 +203,7 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                                     <EditableText
                                         value={entry.title}
                                         onChange={(value) => handleEntryChange(entry.id, "title", value)}
-                                        className="font-medium"
+                                        className={cn("font-medium", darkMode && "text-white")}
                                     />
                                 )}
 
@@ -206,11 +211,13 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                                     <EditableText
                                         value={entry.subtitle}
                                         onChange={(value) => handleEntryChange(entry.id, "subtitle", value)}
-                                        className="text-teal-500"
+                                        className={cn(darkMode ? "text-teal-300" : "text-teal-500")}
                                     />
                                 )}
 
-                                <div className="flex items-center text-sm text-gray-500 mt-1 gap-4">
+                                <div
+                                    className={cn("flex items-center text-sm mt-1 gap-4", darkMode ? "text-gray-300" : "text-gray-500")}
+                                >
                                     {entry.visibility?.dateRange !== false && (
                                         <div className="flex items-center">
                                             <Calendar size={12} className="mr-1" />
@@ -238,14 +245,14 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                                     <EditableText
                                         value={entry.description}
                                         onChange={(value) => handleEntryChange(entry.id, "description", value)}
-                                        className="text-sm mt-1"
+                                        className={cn("text-sm mt-1", darkMode && "text-gray-300")}
                                     />
                                 )}
 
                                 {entry.visibility?.bullets !== false && (
                                     <ul className="list-disc pl-5 mt-1">
                                         {entry.bullets.map((bullet, index) => (
-                                            <li key={index} className="text-sm">
+                                            <li key={index} className={cn("text-sm", darkMode && "text-gray-300")}>
                                                 <EditableText
                                                     value={bullet}
                                                     onChange={(value) => {
@@ -263,7 +270,12 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                         ))}
 
                         {(!section.content.entries || section.content.entries.length === 0) && isActive && (
-                            <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleAddEntry}>
+                            <Button
+                                variant="outline"
+                                size="sm"
+                                className={cn("w-full mt-2", darkMode && "border-slate-600 text-white hover:bg-slate-700")}
+                                onClick={handleAddEntry}
+                            >
                                 <PlusCircle size={14} className="mr-1" />
                                 Add Entry
                             </Button>
@@ -271,16 +283,53 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                     </div>
                 )
             case "skills":
-                return <SkillsSection section={section} isActive={isActive} />
+                return <SkillsSection section={section} isActive={isActive} darkMode={darkMode} />
             case "languages":
-                return <LanguageSection section={section} isActive={isActive} />
+                return <LanguageSection section={section} isActive={isActive} darkMode={darkMode} />
             case "achievements":
-                return <AchievementsSection section={section} isActive={isActive} />
+                return <AchievementsSection section={section} isActive={isActive} darkMode={darkMode} />
             case "custom":
-                return <CustomSection section={section} isActive={isActive} />
+                return <CustomSection section={section} isActive={isActive} darkMode={darkMode} />
             default:
                 return null
         }
+    }
+
+    // Don't render the title if it's empty (for the Elegant template sidebar)
+    if (section.content.title === "") {
+        return (
+            <div
+                ref={sectionRef}
+                className={cn("mb-6 relative group", isActive && "ring-1 ring-gray-300 rounded-md")}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => {
+                    setIsHovered(false)
+                    if (!isActive) setShowToolbar(false)
+                }}
+                onClick={handleActivateSection}
+            >
+                {(isActive || isHovered) && (
+                    <SectionToolbar
+                        section={section}
+                        onAddEntry={section.type === "entries" ? handleAddEntry : undefined}
+                        onDragStart={handleDragStartSection}
+                        onMoveToColumn={handleMoveToColumn}
+                        darkMode={darkMode}
+                    />
+                )}
+
+                {renderSectionContent()}
+
+                {showVisibilityMenu && activeEntryId && (
+                    <FieldVisibilityMenu
+                        position={menuPosition}
+                        onClose={() => setShowVisibilityMenu(false)}
+                        visibility={section.content.entries?.find((e) => e.id === activeEntryId)?.visibility || {}}
+                        onToggle={handleToggleVisibility}
+                    />
+                )}
+            </div>
+        )
     }
 
     return (
@@ -300,14 +349,15 @@ export default function ResumeSection({ section, isActive, onDragStart }: Resume
                     onAddEntry={section.type === "entries" ? handleAddEntry : undefined}
                     onDragStart={handleDragStartSection}
                     onMoveToColumn={handleMoveToColumn}
+                    darkMode={darkMode}
                 />
             )}
 
-            <div className="border-b border-gray-800 mb-2">
+            <div className={cn("border-b mb-2", darkMode ? "border-slate-600" : "border-gray-800")}>
                 <EditableText
                     value={section.content.title}
                     onChange={handleTitleChange}
-                    className="text-xl font-bold uppercase"
+                    className={cn("text-xl font-bold uppercase", darkMode && "text-white")}
                 />
             </div>
 

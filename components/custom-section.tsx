@@ -15,9 +15,10 @@ import type { Section, CustomItem } from "@/lib/types"
 interface CustomSectionProps {
     section: Section
     isActive: boolean
+    darkMode?: boolean
 }
 
-export default function CustomSection({ section, isActive }: CustomSectionProps) {
+export default function CustomSection({ section, isActive, darkMode = false }: CustomSectionProps) {
     const dispatch = useDispatch()
     const items = section.content.items || []
 

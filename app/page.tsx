@@ -3,7 +3,8 @@ import { Provider } from "react-redux"
 import { store } from "@/lib/store"
 import ResumeBuilder from "@/components/resume-builder"
 import Header from "@/components/header"
-import Footer from "@/components/footer"
+import AddSectionModal from "@/components/add-section-modal"
+import TemplatesModal from "@/components/templates-modal"
 
 export default function Home() {
   return (
@@ -13,7 +14,8 @@ export default function Home() {
         <main className="container mx-auto py-6 px-4">
           <ResumeBuilder />
         </main>
-        <Footer />
+        <AddSectionModal />
+        <TemplatesModal />
       </div>
     </Provider>
   )

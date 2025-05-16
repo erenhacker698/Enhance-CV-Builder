@@ -119,6 +119,9 @@ export interface SettingsState {
   fontSize: number
   fontFamily: string
   template: string
+  showTemplatesModal: boolean
+  showAddSectionModal: boolean
+  addSectionColumn: "left" | "right"
 }
 
 export interface RootState {

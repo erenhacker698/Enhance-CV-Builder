@@ -1,73 +1,78 @@
 "use client"
 
-import { useState, useRef } from "react"
+import type React from "react"
+
+import { useState, useRef, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "@/lib/store"
 import Sidebar from "@/components/sidebar"
-import AddSectionModal from "@/components/add-section-modal"
 import PDFExportButton from "@/components/pdf-export-button"
-import TemplatesModal from "@/components/templates-modal"
-import ResumeTemplateStandard from "@/components/resume-template-standard"
-import ResumeTemplateModern from "@/components/resume-template-modern"
+import ResumeTemplateDoubleColumn from "@/components/resume-template-double-column"
+import ResumeTemplateElegant from "@/components/resume-template-elegant"
 import ResumeTemplateTimeline from "@/components/resume-template-timeline"
-import { Button } from "@/components/ui/button"
+import { undo, redo } from "@/lib/features/resume/resumeSlice"
 
 export default function ResumeBuilder() {
+  const dispatch = useDispatch()
   const { template } = useSelector((state: RootState) => state.settings)
-  const [showAddSectionModal, setShowAddSectionModal] = useState(false)
-  const [showTemplatesModal, setShowTemplatesModal] = useState(false)
-  const [addToColumn, setAddToColumn] = useState<"left" | "right">("left")
+  const { history } = useSelector((state: RootState) => state.resume)
   const resumeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
+  const [showTemplatesModal, setShowTemplatesModal] = useState(false)
 
   const handleAddSectionClick = (column: "left" | "right") => {
-    setAddToColumn(column)
-    setShowAddSectionModal(true)
+    dispatch({
+      type: "resume/setAddSectionModal",
+      payload: { isOpen: true, column },
+    })
   }
 
+  const canUndo = history.past.length > 0
+  const canRedo = history.future.length > 0
+
+  const handleUndo = () => {
+    dispatch(undo())
+  }
+
+  const handleRedo = () => {
+    dispatch(redo())
+  }
+
+  // Listen for addSection events from templates
+  useEffect(() => {
+    const handleAddSectionEvent = (event: Event) => {
+      const customEvent = event as CustomEvent
+      if (customEvent.detail && customEvent.detail.column) {
+        handleAddSectionClick(customEvent.detail.column)
+      }
+    }
+
+    window.addEventListener("addSection", handleAddSectionEvent)
+
+    return () => {
+      window.removeEventListener("addSection", handleAddSectionEvent)
+    }
+  }, [])
+
+  // Render the appropriate template based on settings
   const renderTemplate = () => {
     switch (template) {
-      case "modern":
-        return <ResumeTemplateModern resumeRef={resumeRef} />
+      case "elegant":
+        return <ResumeTemplateElegant resumeRef={resumeRef} />
       case "timeline":
         return <ResumeTemplateTimeline resumeRef={resumeRef} />
-      case "standard":
+      case "double-column":
       default:
-        return <ResumeTemplateStandard resumeRef={resumeRef} />
+        return <ResumeTemplateDoubleColumn resumeRef={resumeRef} />
     }
   }
 
   return (
     <div className="flex gap-4">
-      <Sidebar onTemplatesClick={() => setShowTemplatesModal(true)} />
+      <Sidebar />
 
-      <div className="flex-1 bg-white rounded-lg shadow-sm overflow-hidden">
-        <div className="p-4 flex justify-between items-center">
-          <div className="flex space-x-2">
-            <Button variant="outline" onClick={() => setShowTemplatesModal(true)} className="flex items-center gap-1">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
-                <line x1="9" y1="3" x2="9" y2="21" stroke="currentColor" strokeWidth="2" />
-              </svg>
-              Templates
-            </Button>
-            <Button variant="outline" onClick={() => handleAddSectionClick("left")} className="flex items-center gap-1">
-              Add Section
-            </Button>
-          </div>
-
-          <PDFExportButton resumeRef={resumeRef} />
-        </div>
-
+      <div className="flex-1 bg-white rounded-lg shadow-sm overflow-hidden p-3">
         {renderTemplate()}
       </div>
-
-      <AddSectionModal
-        isOpen={showAddSectionModal}
-        onClose={() => setShowAddSectionModal(false)}
-        column={addToColumn}
-      />
-
-      <TemplatesModal isOpen={showTemplatesModal} onClose={() => setShowTemplatesModal(false)} />
     </div>
   )
 }

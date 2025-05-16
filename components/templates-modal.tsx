@@ -5,39 +5,36 @@ import { useDispatch, useSelector } from "react-redux"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { X, Check } from "lucide-react"
-import { setTemplate } from "@/lib/features/settings/settingsSlice"
+import { setTemplate, setTemplatesModal } from "@/lib/features/settings/settingsSlice"
 import type { RootState } from "@/lib/store"
 
-interface TemplatesModalProps {
-    isOpen: boolean
-    onClose: () => void
-}
+type TemplatesModalProps = {}
 
 const templates = [
     {
-        id: "standard",
-        name: "Standard",
+        id: "double-column",
+        name: "Double Column",
         description: "Classic two-column layout",
-        image: "/placeholder.svg?height=200&width=150",
+        image: "/templates/double-column.png",
     },
     {
-        id: "modern",
-        name: "Modern",
-        description: "Clean single-column design",
-        image: "/placeholder.svg?height=200&width=150",
+        id: "elegant",
+        name: "Elegant",
+        description: "Professional design with sidebar",
+        image: "/templates/elegant.png",
     },
     {
         id: "timeline",
         name: "Timeline",
-        description: "Vertical timeline format",
-        image: "/placeholder.svg?height=200&width=150",
+        description: "Chronological timeline format",
+        image: "/templates/timeline.png",
     },
 ]
 
-export default function TemplatesModal({ isOpen, onClose }: TemplatesModalProps) {
+export default function TemplatesModal({ }: TemplatesModalProps) {
     const dispatch = useDispatch()
-    const currentTemplate = useSelector((state: RootState) => state.settings.template)
-    const [selectedTemplate, setSelectedTemplate] = useState(currentTemplate)
+    const { template, showTemplatesModal } = useSelector((state: RootState) => state.settings)
+    const [selectedTemplate, setSelectedTemplate] = useState(template)
 
     const handleSelectTemplate = (templateId: string) => {
         setSelectedTemplate(templateId)
@@ -48,14 +45,23 @@ export default function TemplatesModal({ isOpen, onClose }: TemplatesModalProps)
         onClose()
     }
 
+    const onClose = () => {
+        dispatch(setTemplatesModal(false))
+    }
+
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={showTemplatesModal} onOpenChange={(open) => dispatch(setTemplatesModal(open))}>
             <DialogContent className="max-w-4xl p-0 overflow-hidden">
                 <DialogHeader className="p-6 pb-2">
                     <div className="flex justify-between items-center">
                         <DialogTitle className="text-2xl font-bold">Choose a template</DialogTitle>
                         <DialogClose asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 rounded-full"
+                                onClick={() => dispatch(setTemplatesModal(false))}
+                            >
                                 <X size={18} />
                             </Button>
                         </DialogClose>
@@ -90,10 +96,16 @@ export default function TemplatesModal({ isOpen, onClose }: TemplatesModalProps)
                 </div>
 
                 <div className="flex justify-end p-4 border-t border-gray-200">
-                    <Button variant="outline" onClick={onClose} className="mr-2">
+                    <Button variant="outline" onClick={() => dispatch(setTemplatesModal(false))} className="mr-2">
                         Cancel
                     </Button>
-                    <Button onClick={handleApplyTemplate} className="bg-teal-500 hover:bg-teal-600">
+                    <Button
+                        onClick={() => {
+                            dispatch(setTemplate({ template: selectedTemplate }))
+                            dispatch(setTemplatesModal(false))
+                        }}
+                        className="bg-teal-500 hover:bg-teal-600"
+                    >
                         Apply Template
                     </Button>
                 </div>

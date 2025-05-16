@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import {
     updateHeaderField,
@@ -19,15 +19,27 @@ import type { RootState } from "@/lib/store"
 
 interface ResumeHeaderProps {
     isActive: boolean
+    hidePhoto?: boolean
 }
 
-export default function ResumeHeader({ isActive }: ResumeHeaderProps) {
+export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHeaderProps) {
     const dispatch = useDispatch()
     const header = useSelector((state: RootState) => state.resume.header)
     const [isHovered, setIsHovered] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [showPhotoUpload, setShowPhotoUpload] = useState(false)
     const settingsRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const handleOpenPhotoUpload = () => {
+            setShowPhotoUpload(true)
+        }
+
+        window.addEventListener("openPhotoUpload", handleOpenPhotoUpload)
+        return () => {
+            window.removeEventListener("openPhotoUpload", handleOpenPhotoUpload)
+        }
+    }, [])
 
     const handleFieldChange = (field: string, value: string) => {
         dispatch(updateHeaderField({ field, value }))
@@ -275,7 +287,7 @@ export default function ResumeHeader({ isActive }: ResumeHeaderProps) {
                     </div>
                 </div>
 
-                {header.visibility.photo && (
+                {header.visibility.photo && !hidePhoto && (
                     <div
                         className={cn(
                             "w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden cursor-pointer",
@@ -296,7 +308,7 @@ export default function ResumeHeader({ isActive }: ResumeHeaderProps) {
 
             {(isActive || isHovered) && (
                 <div className="absolute top-2 right-2 flex space-x-1">
-                    {header.visibility.photo && (
+                    {header.visibility.photo && !hidePhoto && (
                         <Button
                             variant="ghost"
                             size="icon"

@@ -21,11 +21,12 @@ import type { Language, Section } from "@/lib/types"
 interface LanguageSectionProps {
     section: Section
     isActive: boolean
+    darkMode?: boolean
 }
 
 const proficiencyLabels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Proficient", "Native"]
 
-export default function LanguageSection({ section, isActive }: LanguageSectionProps) {
+export default function LanguageSection({ section, isActive, darkMode = false }: LanguageSectionProps) {
     const dispatch = useDispatch()
     const [showSettings, setShowSettings] = useState(false)
     const [activeLanguageId, setActiveLanguageId] = useState<string | null>(null)
@@ -61,6 +62,7 @@ export default function LanguageSection({ section, isActive }: LanguageSectionPr
             }),
         )
 
+        // Update proficiency level text based on rating
         if (field === "proficiency") {
             const proficiencyIndex = Math.min(Math.max(1, Number(value)), 5) - 1
             dispatch(

@@ -1,19 +1,17 @@
 "use client"
 
 import { useState } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { addSection } from "@/lib/features/resume/resumeSlice"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from "@/components/ui/dialog"
+import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Section } from "@/lib/types"
+import type { RootState } from "@/lib/store"
 
-interface AddSectionModalProps {
-    isOpen: boolean
-    onClose: () => void
-    column: "left" | "right"
-}
+type AddSectionModalProps = {}
 
 const sectionTypes = [
     {
@@ -162,8 +160,9 @@ const sectionTypes = [
     },
 ]
 
-export default function AddSectionModal({ isOpen, onClose, column }: AddSectionModalProps) {
+export default function AddSectionModal({ }: AddSectionModalProps) {
     const dispatch = useDispatch()
+    const { showAddSectionModal, addSectionColumn } = useSelector((state: RootState) => state.settings)
     const [selectedType, setSelectedType] = useState("")
 
     const handleAddSection = (sectionType: string) => {
@@ -176,7 +175,7 @@ export default function AddSectionModal({ isOpen, onClose, column }: AddSectionM
                     const skillsSection: Section = {
                         id: `section-${Date.now()}`,
                         type: "skills",
-                        column: column,
+                        column: addSectionColumn,
                         content: {
                             title: section.title.toUpperCase(),
                             skillGroups: [
@@ -188,14 +187,14 @@ export default function AddSectionModal({ isOpen, onClose, column }: AddSectionM
                             ],
                         },
                     }
-                    dispatch(addSection({ section: skillsSection, column }))
+                    dispatch(addSection({ section: skillsSection, column: addSectionColumn }))
                     break
 
                 case "languages":
                     const languagesSection: Section = {
                         id: `section-${Date.now()}`,
                         type: "languages",
-                        column: column,
+                        column: addSectionColumn,
                         content: {
                             title: section.title.toUpperCase(),
                             languages: [
@@ -213,7 +212,7 @@ export default function AddSectionModal({ isOpen, onClose, column }: AddSectionM
                             ],
                         },
                     }
-                    dispatch(addSection({ section: languagesSection, column }))
+                    dispatch(addSection({ section: languagesSection, column: addSectionColumn }))
                     break
 
                 case "training":
@@ -221,7 +220,7 @@ export default function AddSectionModal({ isOpen, onClose, column }: AddSectionM
                     const entriesSection: Section = {
                         id: `section-${Date.now()}`,
                         type: "entries",
-                        column: column,
+                        column: addSectionColumn,
                         content: {
                             title: section.title.toUpperCase(),
                             entries: [
@@ -247,14 +246,14 @@ export default function AddSectionModal({ isOpen, onClose, column }: AddSectionM
                             ],
                         },
                     }
-                    dispatch(addSection({ section: entriesSection, column }))
+                    dispatch(addSection({ section: entriesSection, column: addSectionColumn }))
                     break
 
                 case "achievements":
                     const achievementsSection: Section = {
                         id: `section-${Date.now()}`,
                         type: "achievements",
-                        column: column,
+                        column: addSectionColumn,
                         content: {
                             title: section.title.toUpperCase(),
                             achievements: [
@@ -267,14 +266,14 @@ export default function AddSectionModal({ isOpen, onClose, column }: AddSectionM
                             ],
                         },
                     }
-                    dispatch(addSection({ section: achievementsSection, column }))
+                    dispatch(addSection({ section: achievementsSection, column: addSectionColumn }))
                     break
 
                 case "custom":
                     const customSection: Section = {
                         id: `section-${Date.now()}`,
                         type: "custom",
-                        column: column,
+                        column: addSectionColumn,
                         content: {
                             title: section.title.toUpperCase(),
                             items: [
@@ -289,26 +288,29 @@ export default function AddSectionModal({ isOpen, onClose, column }: AddSectionM
                             ],
                         },
                     }
-                    dispatch(addSection({ section: customSection, column }))
+                    dispatch(addSection({ section: customSection, column: addSectionColumn }))
                     break
             }
 
-            onClose()
+            dispatch(setAddSectionModal({ isOpen: false }))
             setSelectedType("")
         }
     }
 
     return (
-        <Dialog open={isOpen} onOpenChange={onClose}>
+        <Dialog open={showAddSectionModal} onOpenChange={(open) => dispatch(setAddSectionModal({ isOpen: open }))}>
             <DialogContent className="max-w-4xl p-0 overflow-hidden">
                 <DialogHeader className="p-6 pb-2">
                     <div className="flex justify-between items-center">
                         <DialogTitle className="text-2xl font-bold">Add a new section</DialogTitle>
-                        <DialogClose asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                                <X size={18} />
-                            </Button>
-                        </DialogClose>
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 rounded-full"
+                            onClick={() => dispatch(setAddSectionModal({ isOpen: false }))}
+                        >
+                            <X size={18} />
+                        </Button>
                     </div>
                     <p className="text-gray-600">Click on a section to add it to your resume</p>
                 </DialogHeader>

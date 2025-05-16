@@ -5,27 +5,30 @@ import type React from "react"
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { setActiveSection, reorderSections } from "@/lib/features/resume/resumeSlice"
+import ResumeHeader from "@/components/resume-header"
 import ResumeSection from "@/components/resume-section"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
 import type { RootState } from "@/lib/store"
 import type { Section } from "@/lib/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
-import ResumeHeader from "@/components/resume-header"
 import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
+import { Button } from "@/components/ui/button"
+import { Plus } from "lucide-react"
 
-interface ResumeTemplateElegantProps {
+interface ResumeTemplateDoubleColumnProps {
     resumeRef: React.RefObject<HTMLDivElement>
 }
 
-export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElegantProps) {
+export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplateDoubleColumnProps) {
     const dispatch = useDispatch()
     const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
-    const { header } = useSelector((state: RootState) => state.resume)
     const [draggedSection, setDraggedSection] = useState<string | null>(null)
 
     const handleHeaderClick = () => {
         dispatch(setActiveSection({ sectionId: null }))
+    }
+
+    const handleAddSectionClick = (column: "left" | "right") => {
+        dispatch(setAddSectionModal({ isOpen: true, column }))
     }
 
     // Filter sections by column
@@ -104,29 +107,18 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
         }
     }
 
-    const handleAddSectionClick = (column: "left" | "right") => {
-        dispatch(setAddSectionModal({ isOpen: true, column }))
-    }
-
-    const handlePhotoClick = () => {
-        if (activeSectionId === null) {
-            const event = new CustomEvent("openPhotoUpload", {})
-            window.dispatchEvent(event)
-        }
-    }
-
     return (
-        <div className="max-w-4xl mx-auto bg-white min-h-[842px] flex" ref={resumeRef}>
-            <div className="w-[65%] p-8">
-                {/* Header - Name and title only */}
-                <div onClick={handleHeaderClick}>
-                    <ResumeHeader isActive={activeSectionId === null} hidePhoto={true} />
-                </div>
+        <div className="max-w-4xl mx-auto bg-white p-8 min-h-[842px]" ref={resumeRef}>
+            <div onClick={handleHeaderClick}>
+                <ResumeHeader isActive={activeSectionId === null} />
+            </div>
 
-                <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+            <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                <div className="flex gap-6 mt-6">
+                    {/* Left Column */}
                     <Droppable droppableId="left-column">
                         {(provided) => (
-                            <div className="mt-6" ref={provided.innerRef} {...provided.droppableProps}>
+                            <div className="flex-1" ref={provided.innerRef} {...provided.droppableProps}>
                                 {leftSections.map((section: Section, index) => (
                                     <Draggable
                                         key={section.id}
@@ -147,7 +139,6 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
                                     </Draggable>
                                 ))}
                                 {provided.placeholder}
-
                                 {activeSectionId && (
                                     <div className="mt-4">
                                         <Button
@@ -163,50 +154,11 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
                             </div>
                         )}
                     </Droppable>
-                </DragDropContext>
-            </div>
 
-            <div className="w-[35%] bg-slate-800 text-white p-8">
-                {/* Profile photo in sidebar */}
-                {header.visibility.photo && (
-                    <div className="flex justify-center mb-8" onClick={handleHeaderClick}>
-                        <div
-                            className={`w-32 h-32 ${header.roundPhoto ? "rounded-full" : "rounded-md"
-                                } overflow-hidden bg-gray-200 cursor-pointer`}
-                            onClick={handlePhotoClick}
-                        >
-                            {header.photoUrl ? (
-                                <img src={header.photoUrl || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <circle
-                                            cx="12"
-                                            cy="7"
-                                            r="4"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                    {/* Right Column */}
                     <Droppable droppableId="right-column">
                         {(provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-6">
+                            <div className="flex-1" ref={provided.innerRef} {...provided.droppableProps}>
                                 {rightSections.map((section: Section, index) => (
                                     <Draggable key={section.id} draggableId={section.id} index={index}>
                                         {(provided, snapshot) => (
@@ -216,28 +168,18 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
                                                 {...provided.dragHandleProps}
                                                 className={`${snapshot.isDragging ? "opacity-50" : ""}`}
                                             >
-                                                <div className="mb-6">
-                                                    <h2 className="text-xl font-bold uppercase mb-4 border-b border-slate-600 pb-2">
-                                                        {section.content.title}
-                                                    </h2>
-                                                    <ResumeSection
-                                                        section={{ ...section, content: { ...section.content, title: "" } }}
-                                                        isActive={section.id === activeSectionId}
-                                                        darkMode={true}
-                                                    />
-                                                </div>
+                                                <ResumeSection section={section} isActive={section.id === activeSectionId} />
                                             </div>
                                         )}
                                     </Draggable>
                                 ))}
                                 {provided.placeholder}
-
                                 {activeSectionId && (
                                     <div className="mt-4">
                                         <Button
                                             variant="outline"
                                             size="sm"
-                                            className="w-full border-dashed border-slate-600 text-white hover:bg-slate-700"
+                                            className="w-full border-dashed border-gray-300"
                                             onClick={() => handleAddSectionClick("right")}
                                         >
                                             <Plus size={16} className="mr-2" /> Add Section
@@ -247,8 +189,8 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
                             </div>
                         )}
                     </Droppable>
-                </DragDropContext>
-            </div>
+                </div>
+            </DragDropContext>
         </div>
     )
 }

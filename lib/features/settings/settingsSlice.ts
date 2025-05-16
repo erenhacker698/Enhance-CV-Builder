@@ -6,7 +6,10 @@ const initialState: SettingsState = {
     theme: "light",
     fontSize: 1,
     fontFamily: "Inter",
-    template: "standard",
+    template: "double-column",
+    showTemplatesModal: false,
+    showAddSectionModal: false,
+    addSectionColumn: "left",
 }
 
 export const settingsSlice = createSlice({
@@ -32,9 +35,28 @@ export const settingsSlice = createSlice({
         setTemplate: (state, action: PayloadAction<{ template: string }>) => {
             state.template = action.payload.template
         },
+
+        setTemplatesModal: (state, action: PayloadAction<boolean>) => {
+            state.showTemplatesModal = action.payload
+        },
+
+        setAddSectionModal: (state, action: PayloadAction<{ isOpen: boolean; column?: "left" | "right" }>) => {
+            state.showAddSectionModal = action.payload.isOpen
+            if (action.payload.column) {
+                state.addSectionColumn = action.payload.column
+            }
+        },
     },
 })
 
-export const { toggleBranding, setTheme, setFontSize, setFontFamily, setTemplate } = settingsSlice.actions
+export const {
+    toggleBranding,
+    setTheme,
+    setFontSize,
+    setFontFamily,
+    setTemplate,
+    setTemplatesModal,
+    setAddSectionModal,
+} = settingsSlice.actions
 
 export default settingsSlice.reducer

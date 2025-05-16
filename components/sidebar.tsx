@@ -17,19 +17,15 @@ import {
   Share,
   Clock,
 } from "lucide-react"
-import { toggleBranding } from "@/lib/features/settings/settingsSlice"
+import { toggleBranding, setTemplatesModal, setAddSectionModal } from "@/lib/features/settings/settingsSlice"
 import { undo, redo } from "@/lib/features/resume/resumeSlice"
 import RearrangeSectionsModal from "@/components/rearrange-sections-modal"
 import type { RootState } from "@/lib/store"
-import AddSectionModal from "./add-section-modal"
 
-interface SidebarProps {
-  onTemplatesClick?: () => void
-}
+type SidebarProps = {}
 
-export default function Sidebar({ onTemplatesClick }: SidebarProps) {
+export default function Sidebar({ }: SidebarProps) {
   const dispatch = useDispatch()
-  const [showAddSectionModal, setShowAddSectionModal] = useState(false)
   const [showRearrangeModal, setShowRearrangeModal] = useState(false)
   const { history } = useSelector((state: RootState) => state.resume)
 
@@ -57,7 +53,11 @@ export default function Sidebar({ onTemplatesClick }: SidebarProps) {
         </div>
 
         <div className="space-y-1">
-          <Button variant="ghost" className="w-full justify-start text-sm font-normal" onClick={() => setShowAddSectionModal(true)}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-sm font-normal"
+            onClick={() => dispatch(setAddSectionModal({ isOpen: true, column: "left" }))}
+          >
             <FilePlus size={16} className="mr-2" />
             Add section
           </Button>
@@ -69,28 +69,13 @@ export default function Sidebar({ onTemplatesClick }: SidebarProps) {
             <MoveVertical size={16} className="mr-2" />
             Rearrange
           </Button>
-          <Button variant="ghost" className="w-full justify-start text-sm font-normal" onClick={onTemplatesClick}>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-sm font-normal"
+            onClick={() => dispatch(setTemplatesModal(true))}
+          >
             <Layout size={16} className="mr-2" />
             Templates
-          </Button>
-          <Button variant="ghost" className="w-full justify-start text-sm font-normal">
-            <Palette size={16} className="mr-2" />
-            Design & Font
-          </Button>
-        </div>
-
-        <div className="border-t pt-2 space-y-1">
-          <Button variant="ghost" className="w-full justify-start text-sm font-normal">
-            <Edit size={16} className="mr-2" />
-            Improve text
-          </Button>
-          <Button variant="ghost" className="w-full justify-start text-sm font-normal">
-            <Check size={16} className="mr-2" />
-            Check
-          </Button>
-          <Button variant="ghost" className="w-full justify-start text-sm font-normal">
-            <Bot size={16} className="mr-2" />
-            AI Assistant
           </Button>
         </div>
 
@@ -121,7 +106,6 @@ export default function Sidebar({ onTemplatesClick }: SidebarProps) {
       </div>
 
       <RearrangeSectionsModal isOpen={showRearrangeModal} onClose={() => setShowRearrangeModal(false)} />
-      <AddSectionModal column="left" isOpen={showAddSectionModal} onClose={() => setShowAddSectionModal(false)} />
     </>
   )
 }

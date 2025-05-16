@@ -38,6 +38,7 @@ export default function FieldVisibilityMenu({ position, onClose, visibility, onT
         { key: "logo" as const, label: "Show Company Logo" },
     ]
 
+    // Adjust position to ensure menu stays within viewport
     const adjustedPosition = {
         x: Math.min(position.x, window.innerWidth - 250),
         y: Math.min(position.y, window.innerHeight - 300),
