@@ -15,11 +15,11 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
 import { cn } from "@/lib/utils"
 
-interface ResumeTemplateTimelineProps {
-    resumeRef: React.RefObject<HTMLDivElement>
+interface ResumeTemplateProps {
+    resumeRef: React.RefObject<HTMLDivElement | null>
 }
 
-export default function ResumeTemplateTimeline({ resumeRef }: ResumeTemplateTimelineProps) {
+export default function ResumeTemplateTimeline({ resumeRef }: ResumeTemplateProps) {
     const dispatch = useDispatch()
     const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
     const [draggedSection, setDraggedSection] = useState<string | null>(null)
@@ -135,7 +135,7 @@ export default function ResumeTemplateTimeline({ resumeRef }: ResumeTemplateTime
     }
 
     return (
-        <div className={cn("w-full mx-auto bg-white p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
+        <div id="resume-container" className={cn("w-full mx-auto bg-white p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
             <div onClick={handleHeaderClick}>
                 <ResumeHeader isActive={activeSectionId === null} />
             </div>

@@ -38,7 +38,6 @@ export default function ResumeBuilder() {
     dispatch(redo())
   }
 
-  // Listen for addSection events from templates
   useEffect(() => {
     const handleAddSectionEvent = (event: Event) => {
       const customEvent = event as CustomEvent
@@ -54,7 +53,6 @@ export default function ResumeBuilder() {
     }
   }, [])
 
-  // Render the appropriate template based on settings
   const renderTemplate = () => {
     switch (template) {
       case "elegant":
@@ -69,7 +67,7 @@ export default function ResumeBuilder() {
 
   return (
     <div className="flex gap-4">
-      <Sidebar />
+      <Sidebar resumeRef={resumeRef} />
 
       <div className={cn("flex-1 bg-white shadow-md overflow-hidden relative")}>
         {renderTemplate()}

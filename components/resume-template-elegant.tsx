@@ -15,11 +15,11 @@ import ResumeHeader from "@/components/resume-header"
 import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
 import { cn } from "@/lib/utils"
 
-interface ResumeTemplateElegantProps {
-    resumeRef: React.RefObject<HTMLDivElement>
+interface ResumeTemplateProps {
+    resumeRef: React.RefObject<HTMLDivElement | null>
 }
 
-export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElegantProps) {
+export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps) {
     const dispatch = useDispatch()
     const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
     const { header } = useSelector((state: RootState) => state.resume)
@@ -29,7 +29,6 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
         dispatch(setActiveSection({ sectionId: null }))
     }
 
-    // Filter sections by column
     const leftSections = sections.filter((section) => section.column === "left")
     const rightSections = sections.filter((section) => section.column === "right")
 
@@ -45,7 +44,6 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
         const sourceDroppableId = result.source.droppableId
         const destinationDroppableId = result.destination.droppableId
 
-        // If moving within the same column
         if (sourceDroppableId === destinationDroppableId) {
             const isLeftColumn = sourceDroppableId === "left-column"
             const columnSections = isLeftColumn ? [...leftSections] : [...rightSections]
@@ -53,38 +51,31 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
             const [movedSection] = columnSections.splice(result.source.index, 1)
             columnSections.splice(result.destination.index, 0, movedSection)
 
-            // Create a new array with all sections, replacing the reordered column
             const newSections = sections.filter((s) => s.column !== (isLeftColumn ? "left" : "right")).concat(columnSections)
 
             dispatch(reorderSections({ sections: newSections }))
         }
-        // If moving between columns
+
         else {
-            // Create copies to avoid modifying the original arrays
             const sourceList = sourceDroppableId === "left-column" ? [...leftSections] : [...rightSections]
             const destList = destinationDroppableId === "left-column" ? [...leftSections] : [...rightSections]
 
-            // Find the moved section
             const movedSectionIndex = result.source.index
             const movedSection = sourceList[movedSectionIndex]
 
             if (!movedSection) return
 
-            // Create a new section with updated column
             const newColumn = destinationDroppableId === "left-column" ? "left" : "right"
             const updatedSection: Section = {
                 ...movedSection,
                 column: newColumn,
             }
 
-            // Remove from source list
             sourceList.splice(movedSectionIndex, 1)
 
-            // Add to destination list at the specified index
             const destListCopy = [...destList]
             destListCopy.splice(result.destination.index, 0, updatedSection)
 
-            // Create the final sections array
             let newSections: Section[] = []
 
             if (sourceDroppableId === "left-column" && destinationDroppableId === "right-column") {
@@ -117,7 +108,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
     }
 
     return (
-        <div className={cn("w-full mx-auto bg-white p-0 min-h-[842px] flex", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
+        <div id="resume-container" className={cn("w-full mx-auto bg-white p-0 min-h-[842px] flex", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
             <div className="w-[65%] p-8">
                 {/* Header - Name and title only */}
                 <div onClick={handleHeaderClick}>

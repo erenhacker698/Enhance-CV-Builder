@@ -23,10 +23,11 @@ import RearrangeSectionsModal from "@/components/rearrange-sections-modal"
 import type { RootState } from "@/lib/store"
 import PDFExportButton from "./pdf-export-button"
 
-type SidebarProps = {}
+interface SidebarProps {
+  resumeRef: React.RefObject<HTMLDivElement>
+}
 
-export default function Sidebar({ }: SidebarProps) {
-  const resumeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
+export default function Sidebar({ resumeRef }: SidebarProps) {
   const dispatch = useDispatch()
   const [showRearrangeModal, setShowRearrangeModal] = useState(false)
   const { history } = useSelector((state: RootState) => state.resume)
@@ -79,9 +80,6 @@ export default function Sidebar({ }: SidebarProps) {
             <Layout size={16} className="mr-2" />
             Templates
           </Button>
-        </div>
-
-        <div className="border-t pt-2 space-y-1">
           <PDFExportButton resumeRef={resumeRef} />
         </div>
       </div>
