@@ -117,7 +117,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
     }
 
     return (
-        <div className={cn("w-full mx-auto bg-white p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
+        <div className={cn("w-full mx-auto bg-white p-0 min-h-[842px] flex", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
             <div className="w-[65%] p-8">
                 {/* Header - Name and title only */}
                 <div onClick={handleHeaderClick}>
@@ -167,7 +167,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateElega
                 </DragDropContext>
             </div>
 
-            <div className="w-[35%] bg-slate-800 text-white p-8">
+            <div className="w-[35%] bg-slate-800 text-white p-8 pt-14">
                 {/* Profile photo in sidebar */}
                 {header.visibility.photo && (
                     <div className="flex justify-center mb-8" onClick={handleHeaderClick}>

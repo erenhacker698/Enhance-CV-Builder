@@ -335,7 +335,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     return (
         <div
             ref={sectionRef}
-            className={cn("mb-6 relative group", isActive && "ring-1 ring-gray-300 rounded-md p-4 resume-section-active")}
+            className={cn("mb-6 relative group", isActive && "ring-1 ring-gray-300 rounded-md p-4 resume-section-active", darkMode && "resume-section-active--darkmode")}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => {
                 setIsHovered(false)

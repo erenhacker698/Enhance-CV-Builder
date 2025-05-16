@@ -122,6 +122,11 @@
   }
 }
 
+body {
+  --reach-dialog: 1;
+  /* important for modals from Radix or Reach UI */
+}
+
 .max-w-4xl {
   max-width: 56rem;
 }
@@ -153,7 +158,11 @@
 
 .resume-header-active,
 .resume-section-active {
-  background: #fff;
+  background: transparent;
+}
+
+.resume-section-active--darkmode {
+  background: transparent;
 }
 
 @media (min-width: 1024px) {

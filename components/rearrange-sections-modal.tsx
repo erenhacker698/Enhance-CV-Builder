@@ -5,10 +5,11 @@ import { useSelector, useDispatch } from "react-redux"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { reorderSections } from "@/lib/features/resume/resumeSlice"
-import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
-import { X, GripVertical, Lock, ArrowRight, ArrowLeft } from "lucide-react"
+import { Lock, GripVertical } from "lucide-react"
 import type { RootState } from "@/lib/store"
 import type { Section } from "@/lib/types"
+import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
+import { cn } from "@/lib/utils"
 
 interface RearrangeSectionsModalProps {
     isOpen: boolean
@@ -18,198 +19,140 @@ interface RearrangeSectionsModalProps {
 export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSectionsModalProps) {
     const dispatch = useDispatch()
     const { sections } = useSelector((state: RootState) => state.resume)
-    const [leftSections, setLeftSections] = useState<Section[]>([])
-    const [rightSections, setRightSections] = useState<Section[]>([])
-    const [selectedSection, setSelectedSection] = useState<string | null>(null)
+    const { template } = useSelector((state: RootState) => state.settings)
+    const [allSections, setAllSections] = useState<Section[]>([])
+    const [isDragging, setIsDragging] = useState(false)
 
+    // Sync sections whenever the modal opens or sections change
     useEffect(() => {
         if (isOpen) {
-            // Filter sections by column
-            setLeftSections(sections.filter((section) => section.column === "left"))
-            setRightSections(sections.filter((section) => section.column === "right"))
+            // Create a deep copy to avoid reference issues
+            setAllSections(JSON.parse(JSON.stringify(sections)))
         }
     }, [isOpen, sections])
 
+    const handleSave = () => {
+        dispatch(reorderSections({ sections: allSections }))
+        onClose()
+    }
+
+    const handleDragStart = () => {
+        setIsDragging(true)
+    }
+
     const handleDragEnd = (result: any) => {
+        setIsDragging(false)
+
         if (!result.destination) return
 
         const sourceDroppableId = result.source.droppableId
         const destinationDroppableId = result.destination.droppableId
 
-        // If moving within the same column
-        if (sourceDroppableId === destinationDroppableId) {
-            const isLeftColumn = sourceDroppableId === "left-sections"
-            const currentSections = isLeftColumn ? [...leftSections] : [...rightSections]
-            const [movedSection] = currentSections.splice(result.source.index, 1)
-            currentSections.splice(result.destination.index, 0, movedSection)
+        // Create a copy of all sections
+        const sectionsCopy = [...allSections]
 
-            if (isLeftColumn) {
-                setLeftSections(currentSections)
-            } else {
-                setRightSections(currentSections)
-            }
-        }
-        // If moving between columns
-        else {
-            const sourceList = sourceDroppableId === "left-sections" ? [...leftSections] : [...rightSections]
-            const destList = destinationDroppableId === "left-sections" ? [...leftSections] : [...rightSections]
-
-            const [movedSection] = sourceList.splice(result.source.index, 1)
-            // Update the column property of the moved section
-            movedSection.column = destinationDroppableId === "left-sections" ? "left" : "right"
-
-            destList.splice(result.destination.index, 0, movedSection)
-
-            if (sourceDroppableId === "left-sections") {
-                setLeftSections(sourceList)
-                setRightSections(destList)
-            } else {
-                setLeftSections(destList)
-                setRightSections(sourceList)
-            }
-        }
-    }
-
-    const handleSave = () => {
-        // Combine both columns and update the Redux store
-        const updatedSections = [...leftSections, ...rightSections]
-        dispatch(reorderSections({ sections: updatedSections }))
-        onClose()
-    }
-
-    const handleMoveToColumn = (sectionId: string, targetColumn: "left" | "right") => {
-        const sourceList = targetColumn === "right" ? leftSections : rightSections
-        const destList = targetColumn === "right" ? rightSections : leftSections
-
-        const sectionIndex = sourceList.findIndex((s) => s.id === sectionId)
+        // Find the section being moved
+        const sectionIndex = sectionsCopy.findIndex((s) => s.id === result.draggableId)
         if (sectionIndex === -1) return
 
-        const [movedSection] = sourceList.splice(sectionIndex, 1)
-        movedSection.column = targetColumn
-        destList.push(movedSection)
+        const movedSection = { ...sectionsCopy[sectionIndex] }
 
-        setLeftSections(targetColumn === "right" ? [...sourceList] : [...destList])
-        setRightSections(targetColumn === "right" ? [...destList] : [...sourceList])
+        // Remove from original position
+        sectionsCopy.splice(sectionIndex, 1)
+
+        // If moving to a different column, update the column property
+        if (sourceDroppableId !== destinationDroppableId) {
+            movedSection.column = destinationDroppableId === "left-column" ? "left" : "right"
+        }
+
+        // Find the destination index
+        // We need to count only sections in the target column to determine the correct index
+        const sectionsInTargetColumn = sectionsCopy.filter(
+            (s) => s.column === (destinationDroppableId === "left-column" ? "left" : "right"),
+        )
+
+        // Find where to insert in the full array
+        let insertIndex
+
+        if (sectionsInTargetColumn.length === 0 || result.destination.index === 0) {
+            // If there are no sections in the target column or inserting at the beginning
+            // Find the first section of the target column or the end of the array
+            insertIndex = sectionsCopy.findIndex(
+                (s) => s.column === (destinationDroppableId === "left-column" ? "left" : "right"),
+            )
+            if (insertIndex === -1) insertIndex = sectionsCopy.length
+        } else if (result.destination.index >= sectionsInTargetColumn.length) {
+            // If inserting at the end of the target column
+            const lastSectionInColumn = sectionsInTargetColumn[sectionsInTargetColumn.length - 1]
+            insertIndex = sectionsCopy.findIndex((s) => s.id === lastSectionInColumn.id) + 1
+        } else {
+            // Inserting in the middle of the target column
+            const targetSection = sectionsInTargetColumn[result.destination.index]
+            insertIndex = sectionsCopy.findIndex((s) => s.id === targetSection.id)
+        }
+
+        // Insert the moved section at the destination
+        sectionsCopy.splice(insertIndex, 0, movedSection)
+
+        setAllSections(sectionsCopy)
     }
 
     const getSectionTitle = (section: Section) => {
-        if (section.type === "text" && section.content.title === "OM SHARMA") {
+        if (section.type === "text" && section.content.title.includes("SHARMA")) {
             return "Header"
         }
         return section.content.title
     }
 
+    const isHeader = (section: Section) => {
+        return section.type === "text" && section.content.title.includes("SHARMA")
+    }
+
+    const leftSections = allSections.filter((section) => section.column === "left" && !isHeader(section))
+    const rightSections = allSections.filter((section) => section.column === "right" && !isHeader(section))
+
+    const isOneColumnTemplate = template === "timeline"
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="sm:max-w-4xl">
+            <DialogContent className="sm:max-w-xl translate-none left-0 right-0 mx-auto" style={{ transform: "none", top:"10%" }}>
                 <DialogHeader className="text-center">
                     <DialogTitle className="text-xl">Hold & Drag the boxes to rearrange the sections</DialogTitle>
                     <div className="text-sm text-gray-500 mt-1">Page 1 of 1</div>
                 </DialogHeader>
 
-                <div className="flex gap-4">
-                    <DragDropContext onDragEnd={handleDragEnd}>
-                        {/* Left Column */}
-                        <div className="flex-1 border rounded-md p-4 bg-white">
-                            <h3 className="font-medium mb-2 text-center border-b pb-2">Left Column</h3>
-                            <Droppable droppableId="left-sections">
-                                {(provided) => (
-                                    <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2 min-h-[300px]">
-                                        {leftSections.map((section, index) => {
-                                            const isHeader = getSectionTitle(section) === "Header"
-                                            return (
-                                                <Draggable key={section.id} draggableId={section.id} index={index} isDragDisabled={isHeader}>
-                                                    {(provided, snapshot) => (
-                                                        <div
-                                                            ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            className={`
-                                p-3 rounded-md flex items-center justify-between
-                                ${isHeader ? "bg-blue-100" : "bg-blue-50"}
-                                ${selectedSection === section.id ? "bg-teal-500 text-white" : ""}
-                                ${snapshot.isDragging ? "shadow-lg" : ""}
-                              `}
-                                                            onClick={() => setSelectedSection(section.id)}
-                                                        >
-                                                            <div className="flex items-center flex-1">
-                                                                {isHeader ? (
-                                                                    <Lock size={16} className="mr-2" />
-                                                                ) : (
-                                                                    <div {...provided.dragHandleProps}>
-                                                                        <GripVertical size={16} className="mr-2" />
-                                                                    </div>
-                                                                )}
-                                                                <span className="truncate">{getSectionTitle(section)}</span>
-                                                            </div>
-
-                                                            {!isHeader && (
-                                                                <Button
-                                                                    variant="ghost"
-                                                                    size="icon"
-                                                                    className="h-6 w-6 ml-2 hover:bg-teal-600/20"
-                                                                    onClick={(e) => {
-                                                                        e.stopPropagation()
-                                                                        handleMoveToColumn(section.id, "right")
-                                                                    }}
-                                                                >
-                                                                    <ArrowRight size={14} />
-                                                                </Button>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </Draggable>
-                                            )
-                                        })}
-                                        {provided.placeholder}
-                                    </div>
-                                )}
-                            </Droppable>
+                <div className="border rounded-md p-4 bg-white">
+                    <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                        {/* Header Section */}
+                        <div className="w-full mb-4 bg-blue-100 rounded-md p-3 flex items-center justify-center">
+                            <Lock size={16} className="mr-2" />
+                            <span className="font-medium">Header</span>
                         </div>
 
-                        {/* Right Column */}
-                        <div className="flex-1 border rounded-md p-4 bg-white">
-                            <h3 className="font-medium mb-2 text-center border-b pb-2">Right Column</h3>
-                            <Droppable droppableId="right-sections">
+                        <div className={cn("flex", isOneColumnTemplate ? "flex-col" : "gap-4")}>
+                            {/* Left Column */}
+                            <Droppable droppableId="left-column">
                                 {(provided) => (
-                                    <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2 min-h-[300px]">
-                                        {rightSections.map((section, index) => (
+                                    <div
+                                        ref={provided.innerRef}
+                                        {...provided.droppableProps}
+                                        className={cn("bg-gray-50 rounded-md p-2 min-h-[200px]", isOneColumnTemplate ? "w-full" : "w-1/2")}
+                                    >
+                                        {leftSections.map((section, index) => (
                                             <Draggable key={section.id} draggableId={section.id} index={index}>
                                                 {(provided, snapshot) => (
                                                     <div
                                                         ref={provided.innerRef}
                                                         {...provided.draggableProps}
-                                                        className={`
-                              p-3 rounded-md flex items-center justify-between
-                              bg-blue-50
-                              ${selectedSection === section.id ? "bg-teal-500 text-white" : ""}
-                              ${snapshot.isDragging ? "shadow-lg" : ""}
-                            `}
-                                                        onClick={() => setSelectedSection(section.id)}
-                                                    >
-                                                        <div className="flex items-center flex-1">
-                                                            <Button
-                                                                variant="ghost"
-                                                                size="icon"
-                                                                className="h-6 w-6 mr-2 hover:bg-teal-600/20"
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation()
-                                                                    handleMoveToColumn(section.id, "left")
-                                                                }}
-                                                            >
-                                                                <ArrowLeft size={14} />
-                                                            </Button>
-
-                                                            <div {...provided.dragHandleProps}>
-                                                                <GripVertical size={16} className="mr-2" />
-                                                            </div>
-                                                            <span className="truncate">{getSectionTitle(section)}</span>
-                                                        </div>
-
-                                                        {selectedSection === section.id && (
-                                                            <Button variant="ghost" size="icon" className="h-6 w-6 text-white hover:bg-teal-600">
-                                                                <X size={14} />
-                                                            </Button>
+                                                        className={cn(
+                                                            "bg-blue-50 rounded-md p-2 mb-2 flex items-center",
+                                                            snapshot.isDragging && "opacity-50",
                                                         )}
+                                                    >
+                                                        <div {...provided.dragHandleProps} className="mr-2 cursor-grab">
+                                                            <GripVertical size={16} className="text-gray-400" />
+                                                        </div>
+                                                        <span className="truncate">{getSectionTitle(section)}</span>
                                                     </div>
                                                 )}
                                             </Draggable>
@@ -218,6 +161,40 @@ export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSec
                                     </div>
                                 )}
                             </Droppable>
+
+                            {/* Right Column - Only show for two-column templates */}
+                            {!isOneColumnTemplate && (
+                                <Droppable droppableId="right-column">
+                                    {(provided) => (
+                                        <div
+                                            ref={provided.innerRef}
+                                            {...provided.droppableProps}
+                                            className="w-1/2 bg-gray-50 rounded-md p-2 min-h-[200px]"
+                                        >
+                                            {rightSections.map((section, index) => (
+                                                <Draggable key={section.id} draggableId={section.id} index={index}>
+                                                    {(provided, snapshot) => (
+                                                        <div
+                                                            ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            className={cn(
+                                                                "bg-blue-50 rounded-md p-2 mb-2 flex items-center",
+                                                                snapshot.isDragging && "opacity-50",
+                                                            )}
+                                                        >
+                                                            <div {...provided.dragHandleProps} className="mr-2 cursor-grab">
+                                                                <GripVertical size={16} className="text-gray-400" />
+                                                            </div>
+                                                            <span className="truncate">{getSectionTitle(section)}</span>
+                                                        </div>
+                                                    )}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                            )}
                         </div>
                     </DragDropContext>
                 </div>

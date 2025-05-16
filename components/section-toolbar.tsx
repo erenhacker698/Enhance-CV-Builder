@@ -181,23 +181,7 @@ export default function SectionToolbar({
                 }}
             >
                 <ChevronDown size={16} className={darkMode ? "text-white" : ""} />
-            </Button>
-
-            <Button
-                variant={darkMode ? "default" : "ghost"}
-                size="sm"
-                className={cn("h-8 w-8", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
-            >
-                <Type size={16} className={darkMode ? "text-white" : ""} />
-            </Button>
-
-            <Button
-                variant={darkMode ? "default" : "ghost"}
-                size="sm"
-                className={cn("h-8 w-8", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
-            >
-                <Calendar size={16} className={darkMode ? "text-white" : ""} />
-            </Button>
+            </Button>            
 
             <Button
                 variant={darkMode ? "default" : "ghost"}
