@@ -27,7 +27,7 @@ export default function ResumeTemplateStandard({ resumeRef }: ResumeTemplateStan
     const rightSections = sections.filter((section) => section.column === "right")
 
     return (
-        <div className={cn("w-full mx-auto bg-white p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
+        <div className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
             <div onClick={handleHeaderClick}>
                 <ResumeHeader isActive={activeSectionId === null} />
             </div>

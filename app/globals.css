@@ -165,6 +165,18 @@ body {
   background: transparent;
 }
 
+@media screen and (max-width:767px) {
+  .mobile_stickey_menu {
+    position: fixed;
+    left: 0%;
+    right: 0%;
+    bottom: 0%;
+    z-index: 20;
+    transition: visibility .15s ease-in, opacity .15s ease-in, transform .15s ease-in;
+    box-shadow: 0 -3px 6px #0000001a;
+  }
+}
+
 @media (min-width: 1024px) {
   .section-blocks-layout-wrapper {
     display: grid;

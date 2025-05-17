@@ -113,16 +113,20 @@ export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
     }
 
     return (
-        <Button onClick={handleExport} disabled={isExporting} className="w-full justify-start text-sm font-normal cursor-pointer" variant="ghost">
+        <Button onClick={handleExport} disabled={isExporting} className="w-full flex items-center justify-center md:justify-start text-sm font-normal cursor-pointer" variant="ghost">
             {isExporting ? (
                 <>
                     <Loader2 size={16} className="mr-2 animate-spin" />
-                    Generating PDF...
+                    <div className="hidden md:block">
+                        Generating PDF...
+                    </div>
                 </>
             ) : (
                 <>
                     <Download size={16} className="mr-2" />
-                    Export as PDF
+                    <div className="hidden md:block">
+                        Export as PDF
+                    </div>
                 </>
             )}
         </Button>

@@ -314,7 +314,7 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                     <p className="text-gray-600">Click on a section to add it to your resume</p>
                 </DialogHeader>
 
-                <div className="grid grid-cols-3 gap-6 p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
                     {sectionTypes.map((section) => (
                         <div
                             key={section.id}

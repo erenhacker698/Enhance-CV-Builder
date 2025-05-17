@@ -135,13 +135,13 @@ export default function ResumeTemplateTimeline({ resumeRef }: ResumeTemplateProp
     }
 
     return (
-        <div id="resume-container" className={cn("w-full mx-auto bg-white p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
+        <div id="resume-container" className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
             <div onClick={handleHeaderClick}>
                 <ResumeHeader isActive={activeSectionId === null} />
             </div>
 
             <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                <div className="mt-6 flex gap-6">
+                <div className="mt-6 flex flex-col md:flex-row gap-6">
                     {/* Left column */}
                     <div className="w-2/3">
                         {/* Timeline sections */}

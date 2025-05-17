@@ -66,7 +66,7 @@ export default function ResumeBuilder() {
   }
 
   return (
-    <div className="flex gap-4">
+    <div className="flex flex-col md:flex-row gap-4">
       <Sidebar resumeRef={resumeRef} />
 
       <div className={cn("flex-1 bg-white shadow-md overflow-hidden relative")}>
