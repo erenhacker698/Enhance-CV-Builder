@@ -93,7 +93,7 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
                     )}
 
                     <div className="flex flex-wrap gap-4 mt-3">
-                        {header.visibility.phone && (
+                        {header.visibility.phone && header.phone !== "" && (
                             <div className="flex items-center text-gray-600">
                                 <svg
                                     width="16"

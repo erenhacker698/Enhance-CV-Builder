@@ -15,7 +15,7 @@ import {
 } from "@/lib/features/resume/resumeSlice"
 import type { Section, Entry, FieldVisibility } from "@/lib/types"
 import { Button } from "@/components/ui/button"
-import { PlusCircle, Trash2, Calendar, MapPin } from "lucide-react"
+import { PlusCircle, Trash2, Calendar, MapPin, Link } from "lucide-react"
 import { cn } from "@/lib/utils"
 import EditableText from "@/components/editable-text"
 import FieldVisibilityMenu from "@/components/field-visibility-menu"
@@ -62,6 +62,8 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 entry: {
                     id: `entry-${Date.now()}`,
                     title: "New Title",
+                    imageUrl: "/templates/Double Column.png",
+                    linkUrl: "",
                     subtitle: "Company Name",
                     dateRange: "Date period",
                     location: "Location",
@@ -208,11 +210,23 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                                 )}
 
                                 {entry.visibility?.subtitle !== false && (
+
                                     <EditableText
                                         value={entry.subtitle}
                                         onChange={(value) => handleEntryChange(entry.id, "subtitle", value)}
                                         className={cn(darkMode ? "text-teal-300" : "text-teal-500")}
                                     />
+                                )}
+
+                                {entry.visibility?.linkUrl !== false && (
+                                    <div className="flex items-center">
+                                        <Link size={12} className="mr-1" />
+                                        <EditableText
+                                            value={entry.linkUrl}
+                                            onChange={(value) => handleEntryChange(entry.id, "linkUrl", value)}
+                                            className={cn("font-normal", darkMode && "text-white")}
+                                        />
+                                    </div>
                                 )}
 
                                 <div
@@ -354,6 +368,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
             )}
 
             <div className={cn("border-b mb-2", darkMode ? "border-slate-600" : "border-gray-800")}>
+                <p>section type: {section.type}</p>
                 <EditableText
                     value={section.content.title}
                     onChange={handleTitleChange}

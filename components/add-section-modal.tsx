@@ -115,6 +115,9 @@ const sectionTypes = [
                     <div className="flex items-center text-xs text-gray-500 mb-1">
                         <span className="mr-4">11/2015 - 04/2016</span>
                     </div>
+                    <div className="flex items-center text-xs text-gray-500 mb-1">
+                        <span className="mr-4">project.vercel.app</span>
+                    </div>
                     <ul className="list-disc pl-5 text-xs text-gray-600">
                         <li>Project description point 1</li>
                         <li>Project description point 2</li>
@@ -226,6 +229,8 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                                 {
                                     id: `entry-${Date.now()}`,
                                     title: section.id === "training" ? "Course Name" : "Project Name",
+                                    imageUrl: "/templates/Double Column.png",
+                                    linkUrl: "",
                                     subtitle: section.id === "training" ? "Institution" : "",
                                     dateRange: "Date period",
                                     location: "",

@@ -2,11 +2,10 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
+import { useRef, useEffect } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import type { RootState } from "@/lib/store"
 import Sidebar from "@/components/sidebar"
-import PDFExportButton from "@/components/pdf-export-button"
 import ResumeTemplateDoubleColumn from "@/components/resume-template-double-column"
 import ResumeTemplateElegant from "@/components/resume-template-elegant"
 import ResumeTemplateTimeline from "@/components/resume-template-timeline"
@@ -18,24 +17,12 @@ export default function ResumeBuilder() {
   const { template } = useSelector((state: RootState) => state.settings)
   const { history } = useSelector((state: RootState) => state.resume)
   const resumeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
-  const { activeSectionId } = useSelector((state: RootState) => state.resume)
 
   const handleAddSectionClick = (column: "left" | "right") => {
     dispatch({
       type: "resume/setAddSectionModal",
       payload: { isOpen: true, column },
     })
-  }
-
-  const canUndo = history.past.length > 0
-  const canRedo = history.future.length > 0
-
-  const handleUndo = () => {
-    dispatch(undo())
-  }
-
-  const handleRedo = () => {
-    dispatch(redo())
   }
 
   useEffect(() => {
