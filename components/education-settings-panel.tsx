@@ -3,19 +3,19 @@
 import { useRef, useEffect } from "react"
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
-import type { LanguageSectionItem } from "@/lib/types"
+import type { EducationContentVisibility, EducationSectionItem } from "@/lib/types"
 
-interface LanguageSettingsPanelProps {
-    language: LanguageSectionItem | null
-    onToggleVisibility: (field: string, value: boolean) => void
+interface SettingsPanelProps {
+    education: EducationSectionItem | null
+    onToggleVisibility: (field: keyof EducationContentVisibility, value: boolean) => void
     onClose: () => void
 }
 
-export default function LanguageSettingsPanel({
-    language,
+export default function EducationSettingsPanel({
+    education,
     onToggleVisibility,
     onClose,
-}: LanguageSettingsPanelProps) {
+}: SettingsPanelProps) {
     const panelRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
@@ -31,30 +31,42 @@ export default function LanguageSettingsPanel({
         }
     }, [onClose])
 
-    if (!language) return null
+    if (!education) return null
 
     return (
         <div ref={panelRef} className="bg-white rounded-md shadow-lg border border-gray-200 w-64 p-4 space-y-3">
             <div className="flex items-center justify-between">
                 <Label htmlFor="show-proficiency" className="text-sm">
-                    Show Proficiency
+                    Show GPA
                 </Label>
                 <Switch
                     id="show-proficiency"
-                    checked={language.visibility?.proficiency !== false}
-                    onCheckedChange={(checked) => onToggleVisibility("proficiency", checked)}
+                    checked={education.visibility?.gpa !== false}
+                    onCheckedChange={(checked) => onToggleVisibility("gpa", checked)}
                     className="data-[state=checked]:bg-teal-500"
                 />
             </div>
 
             <div className="flex items-center justify-between">
-                <Label htmlFor="show-slider" className="text-sm">
-                    Show Slider
+                <Label htmlFor="show-location" className="text-sm">
+                    Show Location
                 </Label>
                 <Switch
-                    id="show-slider"
-                    checked={language.visibility?.slider !== false}
-                    onCheckedChange={(checked) => onToggleVisibility("slider", checked)}
+                    id="show-location"
+                    checked={education.visibility?.location !== false}
+                    onCheckedChange={(checked) => onToggleVisibility("location", checked)}
+                    className="data-[state=checked]:bg-teal-500"
+                />
+            </div>
+
+            <div className="flex items-center justify-between">
+                <Label htmlFor="show-period" className="text-sm">
+                    Show Period
+                </Label>
+                <Switch
+                    id="show-period"
+                    checked={education.visibility?.period !== false}
+                    onCheckedChange={(checked) => onToggleVisibility("period", checked)}
                     className="data-[state=checked]:bg-teal-500"
                 />
             </div>

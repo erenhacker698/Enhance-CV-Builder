@@ -14,10 +14,18 @@ import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
+import EducationSection from "./education-section"
 
 interface ResumeTemplateProps {
     resumeRef: React.RefObject<HTMLDivElement | null>
 }
+
+const sectionComponentMap = {
+  education: EducationSection,
+  projects: Project,
+  skills: SkillSection,
+  languages: LanguageSection,
+};
 
 export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplateProps) {
     const dispatch = useDispatch()
@@ -31,7 +39,6 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
     const handleAddSectionClick = (column: "left" | "right") => {
         dispatch(setAddSectionModal({ isOpen: true, column }))
     }
-
 
     const leftSections = sections.filter((section) => section.column === "left")
     const rightSections = sections.filter((section) => section.column === "right")
@@ -118,7 +125,6 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
                                         key={section.id}
                                         draggableId={section.id}
                                         index={index}
-                                        isDragDisabled={section.type === "text" && section.content.title.includes("SHARMA")}
                                     >
                                         {(provided, snapshot) => (
                                             <div

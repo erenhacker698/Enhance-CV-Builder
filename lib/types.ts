@@ -1,26 +1,3 @@
-export interface FieldVisibility {
-  title?: boolean
-  subtitle?: boolean
-  dateRange?: boolean
-  location?: boolean
-  description?: boolean
-  bullets?: boolean
-  link?: boolean
-  linkUrl?: boolean
-  logo?: boolean
-}
-
-export interface HeaderVisibility {
-  title: boolean
-  phone: boolean
-  email: boolean
-  link: boolean
-  extraLink: boolean
-  location: boolean
-  photo: boolean
-  extraField: boolean
-}
-
 export interface Header {
   name: string
   title: string
@@ -36,44 +13,49 @@ export interface Header {
   roundPhoto: boolean
 }
 
-export interface Entry {
+export interface HeaderVisibility {
+  title: boolean
+  phone: boolean
+  email: boolean
+  link: boolean
+  extraLink: boolean
+  location: boolean
+  photo: boolean
+  extraField: boolean
+}
+
+export interface EducationSectionItem {
   id: string
-  title: string
-  imageUrl?: string
-  linkUrl?: string
-  subtitle: string
-  dateRange: string
+  degree: string
+  school: string
+  gpa: string
   location: string
-  description: string
+  period: string
   bullets: string[]
-  visibility: FieldVisibility
+  logo: string
+  visibility: EducationContentVisibility
 }
 
-export interface Language {
+export interface EducationContentVisibility {
+  gpa: boolean
+  location: boolean
+  period: boolean
+  bullets: boolean
+  logo: boolean
+}
+
+export interface ProjectSectionItem {
   id: string
-  name: string
-  level: string
-  proficiency: number // 1-5
-  visibility: LanguageVisibility
-}
-
-export interface LanguageVisibility {
-  proficiency: boolean
-  slider: boolean
-}
-
-export interface Project {
-  id: string
-  name: string
+  projectName: string
   description: string
   bullets: string[]
   location: string
   period: string
   link: string
-  visibility: ProjectVisibility
+  visibility: ProjectContentVisibility
 }
 
-export interface ProjectVisibility {
+export interface ProjectContentVisibility {
   description: boolean
   bullets: boolean
   location: boolean
@@ -81,141 +63,56 @@ export interface ProjectVisibility {
   link: boolean
 }
 
-export interface SkillGroup {
+export interface LanguageSectionItem {
   id: string
   name: string
+  level: string
+  proficiency: number // 1-5
+  visibility: LanguageContentVisibility
+}
+
+export interface LanguageContentVisibility {
+  proficiency: boolean
+  slider: boolean
+}
+
+export interface SkillSectionItem {
+  id: string
+  groupName?: string
   skills: string[]
+  compactMode: boolean // If this on then no border style will apply
+  borderStyle: "all" | "bottom"
   visibility: SkillVisibility
 }
 
 export interface SkillVisibility {
   groupName: boolean
   compactMode: boolean
-  borderStyle: "all" | "bottom"
-}
-
-export interface Education {
-  id: string
-  name: string
-  gpa:string
-  period: string
-  location: string
-  bullets: string[]
-  logo: string
-  visibility: EducationVisibility
-}
-
-export interface EducationVisibility {
-  description: boolean
-  bullets: boolean
-  location: boolean
-  period: boolean
-  link: boolean
-}
-
-export interface Achievement {
-  id: string
-  title: string
-  description: string
-  icon: string
-}
-
-export interface CustomItem {
-  id: string
-  title: string
-  dateRange: string
-  description: string
-  icon: string
-  featured: boolean
 }
 
 export enum SectionTypeEnum {
-  TEXT = "text",
-  ENTRIES = "entries",
   EDUCATION = "education",
-  EXPERIENCE = "experience",
+  PROJECTS = "projects",
   SKILLS = "skills",
   LANGUAGES = "languages",
-  PROJECTS = "projects",
-  ACHIEVEMENTS = "achievements",
-  CUSTOM = "custom",
 }
 
-export type SectionType =
-  | "text"
-  | "entries"
-  | "education"
-  | "experience"
-  | "skills"
-  | "languages"
-  | "projects"
-  | "achievements"
-  | "custom";
+export const proficiencyLabels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Proficient", "Native"]
 
-export interface BaseSection {
+export type SectionType = SectionTypeEnum.EDUCATION | SectionTypeEnum.PROJECTS | SectionTypeEnum.LANGUAGES | SectionTypeEnum.SKILLS
+
+export type SectionContent = EducationSectionItem | ProjectSectionItem | LanguageSectionItem | SkillSectionItem
+
+export interface Section {
   id: string;
   type: SectionType
   column: "left" | "right"
-  content: SectionContent
-}
-
-export type SectionContent =
-  | TextContent
-  | EntriesContent
-  | SkillsContent
-  | LanguagesContent
-  | AchievementsContent
-  | CustomContent
-
-export interface TextContent {
-  type: SectionTypeEnum.TEXT;
-  title: string;
-  text: string;
-}
-
-export interface SkillsContent {
-  type: SectionTypeEnum.SKILLS;
-  title: string;
-  skills: string[]
-}
-
-export interface LanguagesContent {
-  type: SectionTypeEnum.LANGUAGES;
-  title: string;
-  languages: string[];
-}
-
-export interface AchievementsContent {
-  type: SectionTypeEnum.ACHIEVEMENTS;
-  title: string;
-  achievements: string[];
-}
-
-export interface CustomContent {
-  type: "custom";
-  title: string;
-  customData: unknown;
-}
-
-export interface EntriesContent {
-  type: SectionTypeEnum.EXPERIENCE | SectionTypeEnum.EDUCATION | SectionTypeEnum.SKILLS | SectionTypeEnum.PROJECTS | SectionTypeEnum.LANGUAGES;
-  title: string;
-  entries: Entry[]
-}
-
-export interface Section {
-  id: string
-  type: SectionType
-  column: "left" | "right"
+  title: string
   content: {
-    title: string
-    text?: string
-    entries?: Entry[]
-    skillGroups?: SkillGroup[]
-    projects?: Project[]
-    languages?: Language[]
-    achievements?: Achievement[]
-    items?: CustomItem[]
+    educations?: EducationSectionItem[];
+    projects?: ProjectSectionItem[];
+    languages?: LanguageSectionItem[];
+    skills?: SkillSectionItem[];
   }
 }
 

@@ -8,17 +8,16 @@ import {
     addLanguage,
     updateLanguage,
     removeLanguage,
-    toggleLanguageVisibility,
-    toggleSliderStyle,
+    toggleLanguageVisibility
 } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Settings, MoveVertical } from "lucide-react"
 import EditableText from "@/components/editable-text"
 import { cn } from "@/lib/utils"
 import LanguageSettingsPanel from "@/components/language-settings-panel"
-import type { Language, Section } from "@/lib/types"
+import type { LanguageSectionItem, Section } from "@/lib/types"
 
-interface LanguageSectionProps {
+interface SectionProps {
     section: Section
     isActive: boolean
     darkMode?: boolean
@@ -26,7 +25,7 @@ interface LanguageSectionProps {
 
 const proficiencyLabels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Proficient", "Native"]
 
-export default function LanguageSection({ section, isActive, darkMode = false }: LanguageSectionProps) {
+export default function LanguageSection({ section, isActive, darkMode = false }: SectionProps) {
     const dispatch = useDispatch()
     const [showSettings, setShowSettings] = useState(false)
     const [activeLanguageId, setActiveLanguageId] = useState<string | null>(null)
@@ -46,7 +45,6 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
                         proficiency: true,
                         slider: true,
                     },
-                    sliderStyle: 0,
                 },
             }),
         )
@@ -105,21 +103,9 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
         }
     }
 
-    const handleToggleSliderStyle = (value: number) => {
-        if (activeLanguageId) {
-            dispatch(
-                toggleSliderStyle({
-                    sectionId: section.id,
-                    langId: activeLanguageId,
-                    value,
-                }),
-            )
-        }
-    }
-
     return (
         <div className="space-y-4">
-            {section.content.languages?.map((language: Language) => (
+            {section.content.languages?.map((language: LanguageSectionItem) => (
                 <div
                     key={language.id}
                     className={cn(
@@ -208,7 +194,6 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
                     <LanguageSettingsPanel
                         language={section.content.languages?.find((lang) => lang.id === activeLanguageId) || null}
                         onToggleVisibility={handleToggleVisibility}
-                        onToggleSliderStyle={handleToggleSliderStyle}
                         onClose={() => setShowSettings(false)}
                     />
                 </div>

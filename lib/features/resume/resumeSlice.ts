@@ -1,19 +1,20 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
-import type {
-  ResumeState,
-  Section,
-  Entry,
-  FieldVisibility,
-  SkillGroup,
-  Language,
-  Achievement,
-  CustomItem,
+import {
+  EducationContentVisibility,
+  EducationSectionItem,
+  LanguageSectionItem,
+  ProjectContentVisibility,
+  ProjectSectionItem,
+  SectionTypeEnum,
+  SkillSectionItem,
+  type ResumeState,
+  type Section,
 } from "@/lib/types"
 
 const initialState: ResumeState = {
   header: {
     name: "OM SHARMA",
-    title: "Software Clerk",
+    title: "Software Developer",
     phone: "123-456-7890",
     email: "om.sharma@example.com",
     link: "linkedin.com/in/omsharma",
@@ -37,28 +38,26 @@ const initialState: ResumeState = {
   sections: [
     {
       id: "section-education",
-      type: "entries",
+      type: SectionTypeEnum.EDUCATION,
       column: "left",
+      title: "",
       content: {
-        title: "EDUCATION",
-        entries: [
+        educations: [
           {
             id: "entry-1",
-            degreeField: "Degree and Field of Study",
-            schoolName: "School or University",
-            logo: "/placeholder.svg",
-            dateRange: "Date period",
-            location: "Location",
+            degree: "Degree and Field of Study",
+            school: "School or University",
             gpa: "",
+            location: "",
+            period: "",
             bullets: [],
+            logo: "/placeholder.svg",
             visibility: {
-              degreeField: true,
-              schoolName: true,
-              logo: false,
-              dateRange: true,
-              location: false,
-              gpa: false,
-              bullets: false,
+              gpa: true,
+              location: true,
+              period: true,
+              bullets: true,
+              logo: true,
             },
           },
         ],
@@ -66,22 +65,20 @@ const initialState: ResumeState = {
     },
     {
       id: "section-skills",
-      type: "skills",
+      type: SectionTypeEnum.SKILLS,
       column: "right",
+      title: "SKILLS",
       content: {
-        title: "SKILLS",
-        skillGroups: [
+        skills: [
           {
             id: "group-1",
-            name: "Technical Skills",
-            groupName:"",
+            groupName: "Technical Skills",
             skills: ["HTML", "CSS", "JavaScript", "React"],
-            borderStyle:  "All" | "Bottom",
+            compactMode: false,
+            borderStyle: "all",
             visibility: {
-              name: true,
               groupName: true,
               compactMode: false,
-              borderStyle: "All",
             },
           },
         ],
@@ -105,7 +102,7 @@ const saveToHistory = (state: ResumeState) => {
   state.history.past.push(currentState)
 
   // Limit history size to prevent memory issues
-  if (state.history.past.length > 30) {
+  if (state.history.past.length > 50) {
     state.history.past.shift()
   }
 
@@ -267,69 +264,138 @@ export const resumeSlice = createSlice({
       }
     },
 
-    // Entry actions
-    addEntry: (
+    // Education actions
+    addEducation: (
       state,
       action: PayloadAction<{
         sectionId: string
-        entry: Entry
+        education: EducationSectionItem
       }>,
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.entries) {
-        section.content.entries.push(action.payload.entry)
+      if (section && section.content.educations) {
+        section.content.educations.push(action.payload.education)
       } else if (section) {
-        section.content.entries = [action.payload.entry]
+        section.content.educations = [action.payload.education]
       }
     },
 
-    removeEntry: (
+    removeEducation: (
       state,
       action: PayloadAction<{
         sectionId: string
-        entryId: string
+        educationId: string
       }>,
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.entries) {
-        section.content.entries = section.content.entries.filter((entry) => entry.id !== action.payload.entryId)
+      if (section && section.content.educations) {
+        section.content.educations = section.content.educations.filter((e) => e.id !== action.payload.educationId)
       }
     },
 
-    updateEntry: (
+    updateEducation: (
       state,
       action: PayloadAction<{
         sectionId: string
-        entryId: string
+        educationId: string
         field: string
         value: string | string[]
       }>,
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.entries) {
-        const entry = section.content.entries.find((e) => e.id === action.payload.entryId)
+      if (section && section.content.educations) {
+        const entry = section.content.educations.find((e) => e.id === action.payload.educationId)
         if (entry) {
-          ; (entry as any)[action.payload.field] = action.payload.value
+          (entry as any)[action.payload.field] = action.payload.value
         }
       }
     },
 
-    toggleFieldVisibility: (
+    toggleEducationContentVisibility: (
       state,
       action: PayloadAction<{
         sectionId: string
         entryId: string
-        field: keyof FieldVisibility
+        field: keyof EducationContentVisibility
         value: boolean
       }>,
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.entries) {
-        const entry = section.content.entries.find((e) => e.id === action.payload.entryId)
+      if (section && section.content.educations) {
+        const entry = section.content.educations.find((e) => e.id === action.payload.entryId)
+        if (entry && entry.visibility) {
+          entry.visibility[action.payload.field] = action.payload.value
+        }
+      }
+    },
+
+    // Project actions
+    addProject: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        project: ProjectSectionItem
+      }>,
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.projects) {
+        section.content.projects.push(action.payload.project)
+      } else if (section) {
+        section.content.projects = [action.payload.project]
+      }
+    },
+
+    removeProject: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        projectId: string
+      }>,
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.projects) {
+        section.content.projects = section.content.projects.filter((e) => e.id !== action.payload.projectId)
+      }
+    },
+
+    updateProject: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        projectId: string
+        field: string
+        value: string | string[]
+      }>,
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.projects) {
+        const entry = section.content.projects.find((e) => e.id === action.payload.projectId)
+        if (entry) {
+          (entry as any)[action.payload.field] = action.payload.value
+        }
+      }
+    },
+
+    toggleProjectContentVisibility: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        entryId: string
+        field: keyof ProjectContentVisibility
+        value: boolean
+      }>,
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.projects) {
+        const entry = section.content.projects.find((e) => e.id === action.payload.entryId)
         if (entry && entry.visibility) {
           entry.visibility[action.payload.field] = action.payload.value
         }
@@ -341,15 +407,15 @@ export const resumeSlice = createSlice({
       state,
       action: PayloadAction<{
         sectionId: string
-        skillGroup: SkillGroup
+        skillItem: SkillSectionItem
       }>,
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skillGroups) {
-        section.content.skillGroups.push(action.payload.skillGroup)
+      if (section && section.content.skills) {
+        section.content.skills.push(action.payload.skillItem)
       } else if (section) {
-        section.content.skillGroups = [action.payload.skillGroup]
+        section.content.skills = [action.payload.skillItem]
       }
     },
 
@@ -358,15 +424,15 @@ export const resumeSlice = createSlice({
       action: PayloadAction<{
         sectionId: string
         groupId: string
-        name: string
+        groupName: string
       }>,
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skillGroups) {
-        const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
+      if (section && section.content.skills) {
+        const group = section.content.skills.find((g) => g.id === action.payload.groupId)
         if (group) {
-          group.name = action.payload.name
+          group.groupName = action.payload.groupName
         }
       }
     },
@@ -380,8 +446,8 @@ export const resumeSlice = createSlice({
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skillGroups) {
-        section.content.skillGroups = section.content.skillGroups.filter((group) => group.id !== action.payload.groupId)
+      if (section && section.content.skills) {
+        section.content.skills = section.content.skills.filter((group) => group.id !== action.payload.groupId)
       }
     },
 
@@ -395,8 +461,8 @@ export const resumeSlice = createSlice({
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skillGroups) {
-        const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
+      if (section && section.content.skills) {
+        const group = section.content.skills.find((g) => g.id === action.payload.groupId)
         if (group) {
           group.skills.push(action.payload.skill)
         }
@@ -413,8 +479,8 @@ export const resumeSlice = createSlice({
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.skillGroups) {
-        const group = section.content.skillGroups.find((g) => g.id === action.payload.groupId)
+      if (section && section.content.skills) {
+        const group = section.content.skills.find((g) => g.id === action.payload.groupId)
         if (group) {
           group.skills.splice(action.payload.skillIndex, 1)
         }
@@ -426,7 +492,7 @@ export const resumeSlice = createSlice({
       state,
       action: PayloadAction<{
         sectionId: string
-        language: Language
+        language: LanguageSectionItem
       }>,
     ) => {
       saveToHistory(state)
@@ -485,144 +551,7 @@ export const resumeSlice = createSlice({
       if (section && section.content.languages) {
         const language = section.content.languages.find((l) => l.id === action.payload.langId)
         if (language && language.visibility) {
-          ; (language.visibility as any)[action.payload.field] = action.payload.value
-        }
-      }
-    },
-
-    toggleSliderStyle: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        langId: string
-        value: number
-      }>,
-    ) => {
-      saveToHistory(state)
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.languages) {
-        const language = section.content.languages.find((l) => l.id === action.payload.langId)
-        if (language) {
-          language.sliderStyle = action.payload.value
-        }
-      }
-    },
-
-    // Achievements actions
-    addAchievement: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        achievement: Achievement
-      }>,
-    ) => {
-      saveToHistory(state)
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.achievements) {
-        section.content.achievements.push(action.payload.achievement)
-      } else if (section) {
-        section.content.achievements = [action.payload.achievement]
-      }
-    },
-
-    updateAchievement: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        achievementId: string
-        field: string
-        value: string
-      }>,
-    ) => {
-      saveToHistory(state)
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.achievements) {
-        const achievement = section.content.achievements.find((a) => a.id === action.payload.achievementId)
-        if (achievement) {
-          ; (achievement as any)[action.payload.field] = action.payload.value
-        }
-      }
-    },
-
-    removeAchievement: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        achievementId: string
-      }>,
-    ) => {
-      saveToHistory(state)
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.achievements) {
-        section.content.achievements = section.content.achievements.filter(
-          (achievement) => achievement.id !== action.payload.achievementId,
-        )
-      }
-    },
-
-    // Custom items actions
-    addCustomItem: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        item: CustomItem
-      }>,
-    ) => {
-      saveToHistory(state)
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.items) {
-        section.content.items.push(action.payload.item)
-      } else if (section) {
-        section.content.items = [action.payload.item]
-      }
-    },
-
-    updateCustomItem: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        itemId: string
-        field: string
-        value: string
-      }>,
-    ) => {
-      saveToHistory(state)
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.items) {
-        const item = section.content.items.find((i) => i.id === action.payload.itemId)
-        if (item) {
-          ; (item as any)[action.payload.field] = action.payload.value
-        }
-      }
-    },
-
-    removeCustomItem: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        itemId: string
-      }>,
-    ) => {
-      saveToHistory(state)
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.items) {
-        section.content.items = section.content.items.filter((item) => item.id !== action.payload.itemId)
-      }
-    },
-
-    toggleCustomItemFeatured: (
-      state,
-      action: PayloadAction<{
-        sectionId: string
-        itemId: string
-      }>,
-    ) => {
-      saveToHistory(state)
-      const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      if (section && section.content.items) {
-        const item = section.content.items.find((i) => i.id === action.payload.itemId)
-        if (item) {
-          item.featured = !item.featured
+          (language.visibility as any)[action.payload.field] = action.payload.value
         }
       }
     },
@@ -641,10 +570,14 @@ export const {
   updateSectionContent,
   reorderSections,
   updateSectionColumn,
-  addEntry,
-  removeEntry,
-  updateEntry,
-  toggleFieldVisibility,
+  addEducation,
+  updateEducation,
+  removeEducation,
+  toggleEducationContentVisibility,
+  addProject,
+  updateProject,
+  removeProject,
+  toggleProjectContentVisibility,
   addSkillGroup,
   updateSkillGroup,
   removeSkillGroup,
@@ -654,14 +587,6 @@ export const {
   updateLanguage,
   removeLanguage,
   toggleLanguageVisibility,
-  toggleSliderStyle,
-  addAchievement,
-  updateAchievement,
-  removeAchievement,
-  addCustomItem,
-  updateCustomItem,
-  removeCustomItem,
-  toggleCustomItemFeatured,
   undo,
   redo,
 } = resumeSlice.actions
