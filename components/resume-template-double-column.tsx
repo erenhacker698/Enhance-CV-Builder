@@ -15,6 +15,9 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import EducationSection from "./education-section"
+import ProjectSection from "./projects-section"
+import SkillsSection from "./skills-section"
+import LanguageSection from "./language-section"
 
 interface ResumeTemplateProps {
     resumeRef: React.RefObject<HTMLDivElement | null>
@@ -22,8 +25,8 @@ interface ResumeTemplateProps {
 
 const sectionComponentMap = {
   education: EducationSection,
-  projects: Project,
-  skills: SkillSection,
+  projects: ProjectSection,
+  skills: SkillsSection,
   languages: LanguageSection,
 };
 

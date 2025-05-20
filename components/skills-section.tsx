@@ -4,17 +4,11 @@ import type React from "react"
 
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import {
-    addSkill,
-    removeSkill,
-    addSkillGroup,
-    removeSkillGroup,
-    updateSkillGroup,
-} from "@/lib/features/resume/resumeSlice"
+import { addSkillGroup, updateSkillGroup, removeSkillGroup, addSkill, removeSkill, } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { Plus, X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Section, SkillGroup } from "@/lib/types"
+import type { Section, SkillSectionItem } from "@/lib/types"
 
 interface SkillsSectionProps {
     section: Section
@@ -25,7 +19,7 @@ interface SkillsSectionProps {
 export default function SkillsSection({ section, isActive, darkMode = false }: SkillsSectionProps) {
     const dispatch = useDispatch()
     const [newSkill, setNewSkill] = useState("")
-    const skillGroups = section.content.skillGroups || []
+    const skills = section.content.skills || []
 
     const handleAddSkill = (groupId: string) => {
         if (newSkill.trim()) {
@@ -56,20 +50,24 @@ export default function SkillsSection({ section, isActive, darkMode = false }: S
             }),
         )
     }
-
     const handleAddGroup = () => {
         dispatch(
             addSkillGroup({
                 sectionId: section.id,
-                skillGroup: {
+                skillItem: {
                     id: `group-${Date.now()}`,
-                    name: "New Group",
+                    groupName: "New Group",
                     skills: [],
+                    compactMode: false,
+                    borderStyle: "bottom",
+                    visibility: {
+                        groupName: true,
+                        compactMode: false
+                    }
                 },
             }),
         )
     }
-
     const handleRemoveGroup = (groupId: string) => {
         dispatch(
             removeSkillGroup({
@@ -84,13 +82,13 @@ export default function SkillsSection({ section, isActive, darkMode = false }: S
             updateSkillGroup({
                 sectionId: section.id,
                 groupId,
-                name,
+                groupName:name
             }),
         )
     }
 
     // If no skill groups exist, create a default one
-    if (skillGroups.length === 0 && isActive) {
+    if (skills.length === 0 && isActive) {
         return (
             <Button
                 variant="outline"
@@ -106,7 +104,7 @@ export default function SkillsSection({ section, isActive, darkMode = false }: S
 
     return (
         <div className="space-y-4">
-            {skillGroups.map((group: SkillGroup) => (
+            {skills.map((group: SkillSectionItem) => (
                 <div key={group.id} className="relative">
                     {isActive && (
                         <Button
