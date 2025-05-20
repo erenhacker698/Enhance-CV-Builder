@@ -19,7 +19,7 @@ interface SkillsSectionProps {
 export default function SkillsSection({ section, isActive, darkMode = false }: SkillsSectionProps) {
     const dispatch = useDispatch()
     const [newSkill, setNewSkill] = useState("")
-    const skills = section.content.skills || []
+    const skills = section.content?.skills || []
 
     const handleAddSkill = (groupId: string) => {
         if (newSkill.trim()) {

@@ -33,7 +33,7 @@ export interface EducationSectionItem {
   period: string
   bullets: string[]
   logo: string
-  visibility: EducationContentVisibility
+  visibility?: EducationContentVisibility
 }
 
 export interface EducationContentVisibility {
@@ -52,7 +52,7 @@ export interface ProjectSectionItem {
   location: string
   period: string
   link: string
-  visibility: ProjectContentVisibility
+  visibility?: ProjectContentVisibility
 }
 
 export interface ProjectContentVisibility {
@@ -68,7 +68,7 @@ export interface LanguageSectionItem {
   name: string
   level: string
   proficiency: number // 1-5
-  visibility: LanguageContentVisibility
+  visibility?: LanguageContentVisibility
 }
 
 export interface LanguageContentVisibility {
@@ -82,7 +82,7 @@ export interface SkillSectionItem {
   skills: string[]
   compactMode: boolean // If this on then no border style will apply
   borderStyle: "all" | "bottom"
-  visibility: SkillVisibility
+  visibility?: SkillVisibility
 }
 
 export interface SkillVisibility {

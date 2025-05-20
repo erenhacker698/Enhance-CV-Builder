@@ -231,6 +231,20 @@ export const resumeSlice = createSlice({
       }
     },
 
+    updateSectionTitle: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        title: Section["title"]
+      }>,
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section) {
+        section.title = action.payload.title
+      }
+    },
+
     updateSectionContent: (
       state,
       action: PayloadAction<{
@@ -567,6 +581,7 @@ export const {
   setActiveSection,
   addSection,
   removeSection,
+  updateSectionTitle,
   updateSectionContent,
   reorderSections,
   updateSectionColumn,

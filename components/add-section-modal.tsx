@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
-import type { Section } from "@/lib/types"
+import { SectionTypeEnum, type Section } from "@/lib/types"
 import type { RootState } from "@/lib/store"
 
 type AddSectionModalProps = {}
@@ -17,7 +17,7 @@ const sectionTypes = [
     {
         id: "skills",
         title: "Skills",
-        type: "skills",
+        type: SectionTypeEnum.SKILLS,
         preview: (
             <div>
                 <div className="uppercase font-bold border-b border-gray-800 mb-2">SKILLS</div>
@@ -31,39 +31,19 @@ const sectionTypes = [
         ),
     },
     {
-        id: "custom",
-        title: "Custom",
-        type: "custom",
+        id: "education",
+        title: "Education",
+        type: SectionTypeEnum.EDUCATION,
         preview: (
             <div>
-                <div className="uppercase font-bold border-b border-gray-800 mb-2">CUSTOM TITLE</div>
-                <div className="flex items-start mb-3">
-                    <div className="bg-teal-100 rounded-full p-1 mr-2 text-teal-500">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                            <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path
-                                d="M12 8H12.01"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
+                <div className="uppercase font-bold border-b border-gray-800 mb-2">Education</div>
+                <div className="flex flex-col items-start mb-3">
+                    <div className="flex flex-col justify-start ">
+                        <div className="font-medium">Degree and Field of Study</div>
+                        <div className="font-medium text-teal-500">School or University</div>
+                        <div className="text-xs text-gray-500">10/2014 - 06/2015</div>
                     </div>
-                    <div className="flex-1">
-                        <div className="flex justify-between">
-                            <div className="font-medium">Custom Item</div>
-                            <div className="text-xs text-gray-500">10/2014 - 06/2015</div>
-                        </div>
-                        <div className="text-xs text-gray-600">Description text goes here</div>
-                    </div>
+                    <div className="text-xs text-gray-600">Description text goes here</div>
                 </div>
             </div>
         ),
@@ -71,7 +51,7 @@ const sectionTypes = [
     {
         id: "languages",
         title: "Languages",
-        type: "languages",
+        type: SectionTypeEnum.LANGUAGES,
         preview: (
             <div>
                 <div className="uppercase font-bold border-b border-gray-800 mb-2">LANGUAGES</div>
@@ -90,23 +70,9 @@ const sectionTypes = [
         ),
     },
     {
-        id: "training",
-        title: "Training / Courses",
-        type: "entries",
-        preview: (
-            <div>
-                <div className="uppercase font-bold border-b border-gray-800 mb-2">TRAINING / COURSES</div>
-                <div className="mb-3">
-                    <div className="text-teal-500 font-medium">Creative Writing</div>
-                    <div className="text-xs text-gray-600">An intensive 4 week course for developing creative writing skills</div>
-                </div>
-            </div>
-        ),
-    },
-    {
         id: "projects",
         title: "Projects",
-        type: "entries",
+        type: SectionTypeEnum.PROJECTS,
         preview: (
             <div>
                 <div className="uppercase font-bold border-b border-gray-800 mb-2">PROJECTS</div>
@@ -126,41 +92,6 @@ const sectionTypes = [
             </div>
         ),
     },
-    {
-        id: "achievements",
-        title: "Key Achievements",
-        type: "achievements",
-        preview: (
-            <div>
-                <div className="uppercase font-bold border-b border-gray-800 mb-2">KEY ACHIEVEMENTS</div>
-                <div className="flex items-start mb-3">
-                    <div className="bg-teal-100 rounded-full p-1 mr-2 text-teal-500">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                            <path d="M12 16V12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                            <path
-                                d="M12 8H12.01"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                            />
-                        </svg>
-                    </div>
-                    <div className="flex-1">
-                        <div className="font-medium">Achievement Title</div>
-                        <div className="text-xs text-gray-600">Achievement description text</div>
-                    </div>
-                </div>
-            </div>
-        ),
-    },
 ]
 
 export default function AddSectionModal({ }: AddSectionModalProps) {
@@ -170,21 +101,56 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
 
     const handleAddSection = (sectionType: string) => {
         const section = sectionTypes.find((s) => s.id === sectionType)
+        console.log("sectionType: ", sectionType)
+        console.log("section: ", section)
 
         if (section) {
-            switch (section.id) {
-                case "skills":
+            switch (section.type) {
+                case SectionTypeEnum.EDUCATION:
+                    const education: Section = {
+                        id: `section-${Date.now()}`,
+                        type: SectionTypeEnum.EDUCATION,
+                        column: addSectionColumn,
+                        title: section.title.toUpperCase(),
+                        content: {
+                            educations: [
+                                {
+                                    id: `entry-${Date.now()}`,
+                                    school: "School or University Name",
+                                    degree: "BCA",
+                                    period: "Date period",
+                                    location: "",
+                                    bullets: [],
+                                    gpa: "",
+                                    logo: "",
+                                    visibility: {
+                                        location: false,
+                                        gpa: true,
+                                        bullets: section.id === "projects",
+                                        logo: false,
+                                        period: false
+                                    },
+                                },
+                            ],
+                        },
+                    }
+                    dispatch(addSection({ section: education, column: addSectionColumn }))
+                    break
+
+                case SectionTypeEnum.SKILLS:
                     const skillsSection: Section = {
                         id: `section-${Date.now()}`,
-                        type: "skills",
+                        type: SectionTypeEnum.SKILLS,
                         column: addSectionColumn,
+                        title: section.title.toUpperCase(),
                         content: {
-                            title: section.title.toUpperCase(),
-                            skillGroups: [
+                            skills: [
                                 {
                                     id: `group-${Date.now()}`,
-                                    name: "Technical Skills",
+                                    groupName: "Technical Skills",
                                     skills: ["HTML", "CSS", "JavaScript", "React"],
+                                    borderStyle: "all",
+                                    compactMode: false
                                 },
                             ],
                         },
@@ -192,13 +158,13 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                     dispatch(addSection({ section: skillsSection, column: addSectionColumn }))
                     break
 
-                case "languages":
+                case SectionTypeEnum.LANGUAGES:
                     const languagesSection: Section = {
                         id: `section-${Date.now()}`,
-                        type: "languages",
+                        type: SectionTypeEnum.LANGUAGES,
                         column: addSectionColumn,
+                        title: section.title.toUpperCase(),
                         content: {
-                            title: section.title.toUpperCase(),
                             languages: [
                                 {
                                     id: `lang-${Date.now()}`,
@@ -209,7 +175,6 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                                         proficiency: true,
                                         slider: true,
                                     },
-                                    sliderStyle: 0,
                                 },
                             ],
                         },
@@ -217,82 +182,34 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                     dispatch(addSection({ section: languagesSection, column: addSectionColumn }))
                     break
 
-                case "training":
-                case "projects":
+                case SectionTypeEnum.PROJECTS:
                     const entriesSection: Section = {
                         id: `section-${Date.now()}`,
-                        type: "entries",
+                        type: SectionTypeEnum.PROJECTS,
                         column: addSectionColumn,
+                        title: section.title.toUpperCase(),
                         content: {
-                            title: section.title.toUpperCase(),
-                            entries: [
+                            projects: [
                                 {
                                     id: `entry-${Date.now()}`,
-                                    title: section.id === "training" ? "Course Name" : "Project Name",
-                                    imageUrl: "/templates/Double Column.png",
-                                    linkUrl: "",
-                                    subtitle: section.id === "training" ? "Institution" : "",
-                                    dateRange: "Date period",
+                                    projectName: "Project Name",
+                                    link: "",
+                                    period: "Date period",
                                     location: "",
-                                    description: section.id === "training" ? "Course description" : "Project description",
-                                    bullets: section.id === "projects" ? ["Project detail 1", "Project detail 2"] : [],
+                                    description: "Project description",
+                                    bullets: ["Project detail 1", "Project detail 2"],
                                     visibility: {
-                                        title: true,
-                                        subtitle: section.id === "training",
-                                        dateRange: true,
                                         location: false,
                                         description: true,
                                         bullets: section.id === "projects",
                                         link: false,
-                                        logo: false,
+                                        period: false
                                     },
                                 },
                             ],
                         },
                     }
                     dispatch(addSection({ section: entriesSection, column: addSectionColumn }))
-                    break
-
-                case "achievements":
-                    const achievementsSection: Section = {
-                        id: `section-${Date.now()}`,
-                        type: "achievements",
-                        column: addSectionColumn,
-                        content: {
-                            title: section.title.toUpperCase(),
-                            achievements: [
-                                {
-                                    id: `achievement-${Date.now()}`,
-                                    title: "Achievement Title",
-                                    description: "Achievement description",
-                                    icon: "info",
-                                },
-                            ],
-                        },
-                    }
-                    dispatch(addSection({ section: achievementsSection, column: addSectionColumn }))
-                    break
-
-                case "custom":
-                    const customSection: Section = {
-                        id: `section-${Date.now()}`,
-                        type: "custom",
-                        column: addSectionColumn,
-                        content: {
-                            title: section.title.toUpperCase(),
-                            items: [
-                                {
-                                    id: `custom-${Date.now()}`,
-                                    title: "Custom Item",
-                                    dateRange: "Date period",
-                                    description: "Description text",
-                                    icon: "info",
-                                    featured: false,
-                                },
-                            ],
-                        },
-                    }
-                    dispatch(addSection({ section: customSection, column: addSectionColumn }))
                     break
             }
 
@@ -307,14 +224,6 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                 <DialogHeader className="p-6 pb-2">
                     <div className="flex justify-between items-center">
                         <DialogTitle className="text-2xl font-bold">Add a new section</DialogTitle>
-                        {/* <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 rounded-full"
-                            onClick={() => dispatch(setAddSectionModal({ isOpen: false }))}
-                        >
-                            <X size={18} />
-                        </Button> */}
                     </div>
                     <p className="text-gray-600">Click on a section to add it to your resume</p>
                 </DialogHeader>

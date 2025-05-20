@@ -121,7 +121,7 @@ export default function EducationSection({ section, isActive, darkMode = false }
 
     return (
         <div className="space-y-4">
-            {section.content.educations?.map((education: EducationSectionItem) => (
+            {section.content?.educations?.map((education: EducationSectionItem) => (
                 <div
                     key={education.id}
                     className={cn(

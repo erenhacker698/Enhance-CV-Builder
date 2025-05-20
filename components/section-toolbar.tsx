@@ -8,11 +8,11 @@ import { Button } from "@/components/ui/button"
 import { Plus, Trash2, ChevronDown, Type, Calendar, Settings, MoveVertical, ArrowRight, ArrowLeft } from "lucide-react"
 import { removeSection } from "@/lib/features/resume/resumeSlice"
 import { cn } from "@/lib/utils"
-import type { Section } from "@/lib/types"
+import { SectionTypeEnum, type Section } from "@/lib/types"
 
 interface SectionToolbarProps {
     section: Section
-    onAddEntry?: () => void
+    onAddEntry: () => void
     onDragStart?: () => void
     onMoveToColumn?: (column: "left" | "right") => void
     darkMode?: boolean
@@ -53,7 +53,7 @@ export default function SectionToolbar({
                 darkMode ? "bg-slate-700" : "bg-white",
             )}
         >
-            {section.type === "entries" && onAddEntry && (
+            {section.type === SectionTypeEnum.EDUCATION && onAddEntry && (
                 <Button
                     variant="ghost"
                     size="sm"
@@ -72,7 +72,7 @@ export default function SectionToolbar({
                 </Button>
             )}
 
-            {section.type === "skills" && (
+            {section.type === SectionTypeEnum.SKILLS && (
                 <>
                     <Button
                         variant="ghost"
@@ -101,7 +101,7 @@ export default function SectionToolbar({
                 </>
             )}
 
-            {section.type === "languages" && (
+            {section.type === SectionTypeEnum.LANGUAGES && (
                 <Button
                     variant="ghost"
                     size="sm"
@@ -116,7 +116,7 @@ export default function SectionToolbar({
                 </Button>
             )}
 
-            {section.type === "achievements" && (
+            {section.type === SectionTypeEnum.PROJECTS && (
                 <Button
                     variant="ghost"
                     size="sm"
@@ -128,21 +128,6 @@ export default function SectionToolbar({
                     )}
                 >
                     <Plus size={16} className="mr-1" /> Achievement
-                </Button>
-            )}
-
-            {section.type === "custom" && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                        "h-8 px-3 text-white rounded-l-md rounded-r-none border-r",
-                        darkMode
-                            ? "bg-teal-600 hover:bg-teal-700 border-teal-700"
-                            : "bg-teal-500 hover:bg-teal-600 border-teal-600",
-                    )}
-                >
-                    <Plus size={16} className="mr-1" /> Item
                 </Button>
             )}
 

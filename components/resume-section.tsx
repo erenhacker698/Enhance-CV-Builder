@@ -7,13 +7,15 @@ import { useDispatch } from "react-redux"
 import {
     setActiveSection,
     updateSectionContent,
-    addEntry,
-    removeEntry,
-    updateEntry,
-    toggleFieldVisibility,
     updateSectionColumn,
+    updateSectionTitle,
+    addSection,
+    addEducation,
+    addProject,
+    addLanguage,
+    addSkill,
 } from "@/lib/features/resume/resumeSlice"
-import { type Section, type Entry, type FieldVisibility, SectionTypeEnum } from "@/lib/types"
+import { type Section, SectionTypeEnum } from "@/lib/types"
 import { Button } from "@/components/ui/button"
 import { PlusCircle, Trash2, Calendar, MapPin, Link } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -55,61 +57,81 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
 
     const handleTitleChange = (newTitle: string) => {
         dispatch(
-            updateSectionContent({
+            updateSectionTitle({
                 sectionId: section.id,
-                title: { ...section.content, title: newTitle },
+                title: newTitle
             }),
         )
     }
 
-    const handleAddEntry = () => {
-        dispatch(
-            addEntry({
-                sectionId: section.id,
-                entry: {
-                    id: `entry-${Date.now()}`,
-                    title: "New Title",
-                    imageUrl: "/templates/Double Column.png",
-                    linkUrl: "",
-                    subtitle: "Company Name",
-                    dateRange: "Date period",
-                    location: "Location",
-                    description: "Company Description",
-                    bullets: ["Highlight your accomplishments, using numbers if possible."],
-                    visibility: {
-                        title: true,
-                        subtitle: true,
-                        dateRange: true,
-                        location: true,
-                        description: true,
-                        bullets: true,
-                        link: false,
-                        logo: false,
-                    },
-                },
-            }),
-        )
+    const handleAddEntry = (sectionType: SectionTypeEnum, sectionId: string) => {
+        switch (sectionType) {
+            case SectionTypeEnum.EDUCATION:
+                dispatch(
+                    addEducation({
+                        sectionId: section.id,
+                        education: {
+                            id: `edu-${Date.now()}`,
+                            school: "",
+                            degree: "",
+                            location: "",
+                            gpa: "",
+                            logo: "",
+                            period: "",
+                            bullets: [],
+                        },
+                    }),
+                )
+                break
+            case SectionTypeEnum.PROJECTS:
+                dispatch(
+                    addProject({
+                        sectionId: section.id,
+                        project: {
+                            id: `project-${Date.now()}`,
+                            projectName: '',
+                            description: '',
+                            link: '',
+                            period: '',
+                            location: '',
+                            bullets: [],
+                        },
+                    }),
+                )
+                break
+            case SectionTypeEnum.LANGUAGES:
+                dispatch(
+                    addLanguage({
+                        sectionId: section.id,
+                        language: {
+                            id: `lang-${Date.now()}`,
+                            name: "Language",
+                            level: "Beginner",
+                            proficiency: 1,
+                        },
+                    }),
+                )
+                break
+            case SectionTypeEnum.SKILLS:
+                dispatch(
+                    addSkill({
+                        sectionId: section.id,
+                        groupId: "",
+                        skill: ""
+                    }),
+                )
+                break
+        }
     }
 
-    const handleEntryChange = (entryId: string, field: string, value: string | string[]) => {
-        dispatch(
-            updateEntry({
-                sectionId: section.id,
-                entryId,
-                field,
-                value,
-            }),
-        )
-    }
-
-    const handleRemoveEntry = (entryId: string) => {
-        dispatch(
-            removeEntry({
-                sectionId: section.id,
-                entryId,
-            }),
-        )
-    }
+    // const handleRemoveEntry = (entryId: string) => {
+    //     dispatch(
+    //         removeEntry({
+    //             sectionId: section.id,
+    //             entryId,
+    //         }),
+    //     )
+    // }
 
     const handleContextMenu = (e: React.MouseEvent, entryId?: string) => {
         e.preventDefault()
@@ -122,18 +144,18 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         setShowVisibilityMenu(true)
     }
 
-    const handleToggleVisibility = (field: keyof FieldVisibility, value: boolean) => {
-        if (activeEntryId) {
-            dispatch(
-                toggleFieldVisibility({
-                    sectionId: section.id,
-                    entryId: activeEntryId,
-                    field,
-                    value,
-                }),
-            )
-        }
-    }
+    // const handleToggleVisibility = (field: keyof FieldVisibility, value: boolean) => {
+    //     if (activeEntryId) {
+    //         dispatch(
+    //             toggleFieldVisibility({
+    //                 sectionId: section.id,
+    //                 entryId: activeEntryId,
+    //                 field,
+    //                 value,
+    //             }),
+    //         )
+    //     }
+    // }
 
     const handleDragStartSection = () => {
         if (onDragStart) {
@@ -194,7 +216,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
             {(isActive || isHovered) && (
                 <SectionToolbar
                     section={section}
-                    onAddEntry={handleAddEntry}
+                    onAddEntry={() => handleAddEntry(section.type, section.id)}
                     onDragStart={handleDragStartSection}
                     onMoveToColumn={handleMoveToColumn}
                     darkMode={darkMode}
@@ -212,14 +234,14 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
 
             {renderSectionContent()}
 
-            {showVisibilityMenu && activeEntryId && (
+            {/* {showVisibilityMenu && activeEntryId && (
                 <FieldVisibilityMenu
                     position={menuPosition}
                     onClose={() => setShowVisibilityMenu(false)}
                     visibility={section.content.entries?.find((e) => e.id === activeEntryId)?.visibility || {}}
                     onToggle={handleToggleVisibility}
                 />
-            )}
+            )} */}
         </div>
     )
 }
