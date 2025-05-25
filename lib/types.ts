@@ -44,13 +44,13 @@ export interface EducationContentVisibility {
   logo: boolean
 }
 
-  export const EducationFields: { key: keyof EducationContentVisibility; label: string }[] = [
-    { key: "bullets", label: "Show Bullets" },
-    { key: "location", label: "Show Location" },
-    { key: "period", label: "Show Period" },
-    { key: "logo", label: "Show Company Logo" },
-    { key: "gpa", label: "Show GPA" },
-  ];
+export const EducationFields: { key: keyof EducationContentVisibility; label: string }[] = [
+  { key: "bullets", label: "Show Bullets" },
+  { key: "location", label: "Show Location" },
+  { key: "period", label: "Show Period" },
+  { key: "logo", label: "Show Company Logo" },
+  { key: "gpa", label: "Show GPA" },
+];
 
 export interface ProjectSectionItem {
   id: string
@@ -131,11 +131,45 @@ export type SectionContentMap = {
   languages: LanguageSectionItem[];
 };
 
+export type VisibilityActionPayload = {
+  sectionId: string
+  entryId: string
+  field: any
+  value: boolean
+}
+
+export type VisibilityDispatchMap = {
+  [SectionTypeEnum.EDUCATION]: (payload: {
+    sectionId: string
+    entryId: string
+    field: keyof EducationContentVisibility
+    value: boolean
+  }) => any
+  [SectionTypeEnum.PROJECTS]: (payload: {
+    sectionId: string
+    entryId: string
+    field: keyof ProjectContentVisibility
+    value: boolean
+  }) => any
+  [SectionTypeEnum.LANGUAGES]: (payload: {
+    sectionId: string
+    entryId: string
+    field: keyof LanguageContentVisibility
+    value: boolean
+  }) => any
+  [SectionTypeEnum.SKILLS]: (payload: {
+    sectionId: string
+    entryId: string
+    field: keyof SkillVisibility
+    value: boolean
+  }) => any
+}
 
 export interface ResumeState {
   header: Header
   sections: Section[]
   activeSectionId: string | null
+  activeSectionType: string | null
   history: {
     past: Array<{
       header: Header

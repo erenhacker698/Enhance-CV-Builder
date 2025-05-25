@@ -8,6 +8,7 @@ import {
   SectionContentMap,
   SectionTypeEnum,
   SkillSectionItem,
+  SkillVisibility,
   type ResumeState,
   type Section,
 } from "@/lib/types"
@@ -87,6 +88,7 @@ const initialState: ResumeState = {
     },
   ],
   activeSectionId: null,
+  activeSectionType: null,
   history: {
     past: [],
     future: [],
@@ -204,8 +206,12 @@ export const resumeSlice = createSlice({
     },
 
     // Section actions
-    setActiveSection: (state, action: PayloadAction<{ sectionId: string | null }>) => {
+    setActiveSection: (state, action: PayloadAction<{
+      sectionId: string | null
+      sectionType: string | null
+    }>) => {
       state.activeSectionId = action.payload.sectionId
+      state.activeSectionType = action.payload.sectionType
     },
 
     addSection: (
@@ -222,6 +228,7 @@ export const resumeSlice = createSlice({
       }
       state.sections.push(newSection)
       state.activeSectionId = newSection.id
+      state.activeSectionType = newSection.type
     },
 
     removeSection: (state, action: PayloadAction<{ sectionId: string }>) => {
@@ -229,6 +236,7 @@ export const resumeSlice = createSlice({
       state.sections = state.sections.filter((section) => section.id !== action.payload.sectionId)
       if (state.activeSectionId === action.payload.sectionId) {
         state.activeSectionId = null
+        state.activeSectionType = null
       }
     },
 
@@ -547,6 +555,25 @@ export const resumeSlice = createSlice({
       }
     },
 
+    toggleSkillsContentVisibility: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        entryId: string
+        field: keyof SkillVisibility
+        value: boolean
+      }>,
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section && section.content.skills) {
+        const entry = section.content.skills.find((e) => e.id === action.payload.entryId)
+        if (entry && entry.visibility) {
+          entry.visibility[action.payload.field] = action.payload.value
+        }
+      }
+    },
+
     // Language actions
     addLanguage: (
       state,
@@ -601,7 +628,7 @@ export const resumeSlice = createSlice({
       state,
       action: PayloadAction<{
         sectionId: string
-        langId: string
+        entryId: string
         field: string
         value: boolean
       }>,
@@ -609,7 +636,7 @@ export const resumeSlice = createSlice({
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.languages) {
-        const language = section.content.languages.find((l) => l.id === action.payload.langId)
+        const language = section.content.languages.find((l) => l.id === action.payload.entryId)
         if (language && language.visibility) {
           (language.visibility as any)[action.payload.field] = action.payload.value
         }
@@ -645,6 +672,7 @@ export const {
   removeSkillGroup,
   addSkill,
   removeSkill,
+  toggleSkillsContentVisibility,
   addLanguage,
   updateLanguage,
   removeLanguage,

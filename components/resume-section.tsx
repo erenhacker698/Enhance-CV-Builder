@@ -6,41 +6,36 @@ import { useState, useRef, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import {
     setActiveSection,
-    updateSectionContent,
     updateSectionColumn,
     updateSectionTitle,
-    addSection,
     addEducation,
     addProject,
     addLanguage,
     addSkill,
     toggleEducationContentVisibility,
+    toggleProjectContentVisibility,
+    toggleLanguageVisibility,
+    toggleSkillsContentVisibility,
 } from "@/lib/features/resume/resumeSlice"
-import { EducationContentVisibility, type Section, SectionTypeEnum } from "@/lib/types"
-import { Button } from "@/components/ui/button"
-import { PlusCircle, Trash2, Calendar, MapPin, Link } from "lucide-react"
+import { EducationContentVisibility, EducationSectionItem, LanguageContentVisibility, LanguageSectionItem, ProjectContentVisibility, ProjectSectionItem, type Section, SectionTypeEnum, SkillVisibility, VisibilityDispatchMap } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import EditableText from "@/components/editable-text"
-import FieldVisibilityMenu from "@/components/field-visibility-menu"
 import SectionToolbar from "@/components/section-toolbar"
 import SkillsSection from "@/components/skills-section"
 import LanguageSection from "@/components/language-section"
 import EducationSection from "./education-section"
 import ProjectsSection from "./projects-section"
 import EducationSettingsPanel from "./education-settings-panel"
+import ProjectsSettingsPanel from "./projects-settings-panel"
+import SkillsSettingsPanel from "./skills-settings-panel"
+import LanguageSettingsPanel from "./language-settings-panel"
+import { getDefaultEntry } from "@/lib/utils/sectionDefaults"
 
 interface ResumeSectionProps {
     section: Section
     isActive: boolean
     onDragStart?: (sectionId: string) => void
     darkMode?: boolean
-}
-
-const sectionComponentMap = {
-    education: EducationSection,
-    projects: ProjectsSection,
-    skills: SkillsSection,
-    languages: LanguageSection,
 };
 
 export default function ResumeSection({ section, isActive, onDragStart, darkMode = false }: ResumeSectionProps) {
@@ -52,13 +47,9 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     const [showToolbar, setShowToolbar] = useState(false)
     const sectionRef = useRef<HTMLDivElement>(null)
 
-    // useEffect(() => {
-    //     console.log("activeEntryId= ", activeEntryId)
-    // }, [activeEntryId])
-
     const handleActivateSection = () => {
         // console.log("handleActivateSection() called")
-        dispatch(setActiveSection({ sectionId: section.id }))
+        dispatch(setActiveSection({ sectionId: section.id, sectionType: section.type }))
         setShowToolbar(true)
     }
 
@@ -72,93 +63,26 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     }
 
     const handleAddEntry = (sectionType: SectionTypeEnum, sectionId: string) => {
-        // console.log("sectionType in handleAddEntry= ", sectionType)
-        // console.log("sectionId in handleAddEntry= ", sectionId)
+        const entry = getDefaultEntry(sectionType)
+
+        if (!entry) return
+
         switch (sectionType) {
             case SectionTypeEnum.EDUCATION:
-                dispatch(
-                    addEducation({
-                        sectionId,
-                        education: {
-                            id: `edu-${Date.now()}`,
-                            school: "",
-                            degree: "",
-                            location: "",
-                            gpa: "",
-                            logo: "",
-                            period: "",
-                            bullets: [],
-                            visibility: {
-                                bullets: false,
-                                gpa: false,
-                                location: false,
-                                logo: false,
-                                period: false
-                            }
-                        },
-                    }),
-                )
+                dispatch(addEducation({ sectionId, education: entry as EducationSectionItem }))
                 break
             case SectionTypeEnum.PROJECTS:
-                dispatch(
-                    addProject({
-                        sectionId,
-                        project: {
-                            id: `project-${Date.now()}`,
-                            projectName: '',
-                            description: '',
-                            link: '',
-                            period: '',
-                            location: '',
-                            bullets: [],
-                            visibility: {
-                                bullets: false,
-                                description: false,
-                                link: false,
-                                location: false,
-                                period: false
-                            }
-                        },
-                    }),
-                )
+                dispatch(addProject({ sectionId, project: entry as ProjectSectionItem }))
                 break
             case SectionTypeEnum.LANGUAGES:
-                dispatch(
-                    addLanguage({
-                        sectionId,
-                        language: {
-                            id: `lang-${Date.now()}`,
-                            name: "Language",
-                            level: "Beginner",
-                            proficiency: 1,
-                            visibility: {
-                                proficiency: false,
-                                slider: false,
-                            }
-                        },
-                    }),
-                )
+                dispatch(addLanguage({ sectionId, language: entry as LanguageSectionItem }))
                 break
             case SectionTypeEnum.SKILLS:
-                dispatch(
-                    addSkill({
-                        sectionId,
-                        groupId: "",
-                        skill: "",
-                    }),
-                )
+                dispatch(addSkill({ sectionId, groupId: "", skill: "" }))
                 break
         }
     }
 
-    // const handleRemoveEntry = (entryId: string) => {
-    //     dispatch(
-    //         removeEntry({
-    //             sectionId: section.id,
-    //             entryId,
-    //         }),
-    //     )
-    // }
 
     const handleEntrySwitch = (e: React.MouseEvent, entryId: string) => {
         // console.log("Inside handleEntryToggle: ", entryId)
@@ -178,27 +102,98 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         setShowVisibilityMenu(true)
     }
 
-    const handleToggleVisibility = (field: keyof EducationContentVisibility, value: boolean) => {
-        console.log('handleToggleVisibility called()')
-        console.log(`
-            {
-                section.id: ${section.id}
-                activeEntryId: ${activeEntryId}
-                field: ${field},
-                value: ${value}
-            }
-                `)
-        if (activeEntryId) {
+    const visibilityDispatchMap: VisibilityDispatchMap = {
+        [SectionTypeEnum.EDUCATION]: toggleEducationContentVisibility,
+        [SectionTypeEnum.PROJECTS]: toggleProjectContentVisibility,
+        [SectionTypeEnum.LANGUAGES]: toggleLanguageVisibility,
+        [SectionTypeEnum.SKILLS]: toggleSkillsContentVisibility,
+    }
+
+    // const handleToggleVisibility = (
+    //     field: keyof EducationContentVisibility | keyof ProjectContentVisibility | keyof LanguageContentVisibility | keyof SkillVisibility,
+    //     value: boolean
+    // ) => {
+    //     if (activeEntryId && section.type in visibilityDispatchMap) {
+    //         const actionCreator = visibilityDispatchMap[section.type as keyof VisibilityDispatchMap] as (
+    //             payload: any
+    //         ) => any
+
+    //         dispatch(
+    //             actionCreator({
+    //                 sectionId: section.id,
+    //                 entryId: activeEntryId,
+    //                 field,
+    //                 value,
+    //             })
+    //         )
+    //     }
+    // }
+
+    const handleToggleVisibility = (
+        field: keyof (EducationContentVisibility & ProjectContentVisibility & LanguageContentVisibility & SkillVisibility),
+        value: boolean
+    ) => {
+        if (!activeEntryId) {
+            console.warn('No activeEntryId found. Skipping toggle.')
+            return
+        }
+
+        console.log('handleToggleVisibility called with:')
+        console.log(`section.id: ${section.id}`)
+        console.log(`section.type: ${section.type}`)
+        console.log(`activeEntryId: ${activeEntryId}`)
+        console.log(`field: ${field}`)
+        console.log(`value: ${value}`)
+
+        if (section.type === SectionTypeEnum.EDUCATION) {
+            console.log('Dispatching toggleEducationContentVisibility')
             dispatch(
                 toggleEducationContentVisibility({
                     sectionId: section.id,
                     entryId: activeEntryId,
-                    field,
+                    field: field as keyof EducationContentVisibility,
                     value,
-                }),
+                })
+            )
+        }
+
+        if (section.type === SectionTypeEnum.PROJECTS) {
+            console.log('Dispatching toggleProjectContentVisibility')
+            dispatch(
+                toggleProjectContentVisibility({
+                    sectionId: section.id,
+                    entryId: activeEntryId,
+                    field: field as keyof ProjectContentVisibility,
+                    value,
+                })
+            )
+        }
+
+        if (section.type === SectionTypeEnum.LANGUAGES) {
+            console.log('Dispatching toggleLanguageVisibility')
+            dispatch(
+                toggleLanguageVisibility({
+                    sectionId: section.id,
+                    entryId: activeEntryId,
+                    field: field as keyof LanguageContentVisibility,
+                    value,
+                })
+            )
+        }
+
+        if (section.type === SectionTypeEnum.SKILLS) {
+            console.log('Dispatching toggleSkillsContentVisibility')
+            dispatch(
+                toggleSkillsContentVisibility({
+                    sectionId: section.id,
+                    entryId: activeEntryId,
+                    field: field as keyof SkillVisibility,
+                    value,
+                })
             )
         }
     }
+
 
     const handleDragStartSection = () => {
         if (onDragStart) {
@@ -229,12 +224,11 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     }, [showVisibilityMenu])
 
     const renderSectionContent = () => {
-
         switch (section.type) {
             case SectionTypeEnum.EDUCATION:
                 return <EducationSection section={section} isActive={isActive} darkMode={darkMode} handleContextMenu={handleContextMenu} handleEntrySwitch={handleEntrySwitch} handleActivateSection={handleActivateSection} />
             case SectionTypeEnum.PROJECTS:
-                return <ProjectsSection section={section} isActive={isActive} darkMode={darkMode} />
+                return <ProjectsSection section={section} isActive={isActive} darkMode={darkMode} handleContextMenu={handleContextMenu} handleEntrySwitch={handleEntrySwitch} handleActivateSection={handleActivateSection} />
             case SectionTypeEnum.LANGUAGES:
                 return <LanguageSection section={section} isActive={isActive} darkMode={darkMode} />
             case SectionTypeEnum.SKILLS:
@@ -247,6 +241,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     return (
         <div
             ref={sectionRef}
+            data-active-section-type={section.type}
             className={cn("mb-6 relative group p-4", isActive && "ring-1 ring-gray-300 rounded-md resume-section-active", darkMode && "resume-section-active--darkmode")}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => {
@@ -267,11 +262,39 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                         darkMode={darkMode}
                     />
                     {showVisibilityMenu && activeEntryId && (
-                        <EducationSettingsPanel
-                            education={section.content.educations?.find((e) => e.id === activeEntryId) || null}
-                            onToggleVisibility={handleToggleVisibility}
-                            onClose={() => setShowVisibilityMenu(false)}
-                        />
+                        <>
+                            {section.type === SectionTypeEnum.EDUCATION && (
+                                <EducationSettingsPanel
+                                    education={section.content.educations?.find((e) => e.id === activeEntryId) || null}
+                                    onToggleVisibility={handleToggleVisibility}
+                                    onClose={() => setShowVisibilityMenu(false)}
+                                />
+                            )}
+
+                            {section.type === SectionTypeEnum.PROJECTS && (
+                                <ProjectsSettingsPanel
+                                    projectItem={section.content.projects?.find((e) => e.id === activeEntryId) || null}
+                                    onToggleVisibility={handleToggleVisibility}
+                                    onClose={() => setShowVisibilityMenu(false)}
+                                />
+                            )}
+
+                            {section.type === SectionTypeEnum.LANGUAGES && (
+                                <LanguageSettingsPanel
+                                    language={section.content.languages?.find((e) => e.id === activeEntryId) || null}
+                                    onToggleVisibility={handleToggleVisibility}
+                                    onClose={() => setShowVisibilityMenu(false)}
+                                />
+                            )}
+
+                            {section.type === SectionTypeEnum.SKILLS && (
+                                <SkillsSettingsPanel
+                                    skill={section.content.skills?.find((e) => e.id === activeEntryId) || null}
+                                    onToggleVisibility={handleToggleVisibility}
+                                    onClose={() => setShowVisibilityMenu(false)}
+                                />
+                            )}
+                        </>
                     )}
                 </div>
             )}
@@ -286,15 +309,6 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
             </div>
 
             {renderSectionContent()}
-
-            {/* {showVisibilityMenu && activeEntryId && (
-                <FieldVisibilityMenu
-                    position={menuPosition}
-                    onClose={() => setShowVisibilityMenu(false)}
-                    visibility={section.content?.educations?.find((e) => e.id === activeEntryId)?.visibility || null}
-                    onToggle={() => handleToggleVisibility}
-                />
-            )} */}
         </div>
     )
 }

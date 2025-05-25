@@ -2,91 +2,40 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useDispatch } from "react-redux"
-import {
-    toggleProjectContentVisibility,
-    addProject,
-    updateProject,
-    removeProject,
-} from "@/lib/features/resume/resumeSlice"
-import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Settings, MoveVertical, Calendar, MapPin, PlusCircle } from "lucide-react"
+import { updateProject } from "@/lib/features/resume/resumeSlice"
 import EditableText from "@/components/editable-text"
 import { cn } from "@/lib/utils"
-import { ProjectContentVisibility, type ProjectSectionItem, type Section } from "@/lib/types"
-import EducationSettingsPanel from "./education-settings-panel"
+import { type ProjectSectionItem, type Section } from "@/lib/types"
+import { Calendar, Link } from "lucide-react"
 
 interface SectionProps {
     section: Section
     isActive: boolean
     darkMode?: boolean
+    handleContextMenu: (e: React.MouseEvent, entryId?: string) => void
+    handleEntrySwitch: (e: React.MouseEvent, entryId: string) => void
+    handleActivateSection: () => void
 }
 
-export default function ProjectSection({ section, isActive, darkMode = false }: SectionProps) {
+export default function ProjectSection({ section, isActive, darkMode = false, handleContextMenu, handleEntrySwitch, handleActivateSection }: SectionProps) {
     const dispatch = useDispatch()
-    const [showSettings, setShowSettings] = useState(false)
-    const [activeProjectId, setActiveProjectId] = useState<string | null>(null)
-    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
-    const settingsRef = useRef<HTMLDivElement>(null)
+    const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
 
-    const handleAddProject = () => {
-        dispatch(
-            addProject({
-                sectionId: section.id,
-                project: {
-                    id: `project-${Date.now()}`,
-                    projectName:'',
-                    description: '',
-                    link:'',
-                    period:'',
-                    location:'',
-                    bullets:[],
-                    visibility:{
-                        bullets:true,
-                        description:true,
-                        link:true,
-                        location:true,
-                        period:true
-                    }
-                },
-            }),
-        )
-    }
-
-    const handleUpdateProject = (projectId: string, field: string, value: string | string[]) => {
-        dispatch(
-            updateProject({
-                sectionId: section.id,
-                projectId,
-                field,
-                value
-            }),
-        )
-    }
-
-    const handleRemoveProject = (projectId: string) => {
-        dispatch(
-            removeProject({
-                sectionId: section.id,
-                projectId
-            }),
-        )
-    }
-
-    const handleSettingsClick = (e: React.MouseEvent, projectId: string) => {
+    const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
         e.stopPropagation()
-        setActiveProjectId(projectId)
-        setMenuPosition({ x: e.clientX, y: e.clientY })
-        setShowSettings(true)
+        setActiveEntryId(entryId)
+        handleEntrySwitch(e, entryId)
+        handleActivateSection()
     }
 
-    const handleProjectChange = (field: keyof ProjectContentVisibility, value: string | string[]) => {
-        if (activeProjectId) {
+    const handleEntryChange = (entryId: string, field: keyof ProjectSectionItem, value: string | string[]) => {
+        if (activeEntryId) {
             dispatch(
                 updateProject({
                     sectionId: section.id,
-                    projectId: activeProjectId,
+                    projectId: entryId,
                     field,
                     value
                 })
@@ -94,152 +43,101 @@ export default function ProjectSection({ section, isActive, darkMode = false }: 
         }
     }
 
-    const handleToggleVisibility = (field: keyof ProjectContentVisibility, value: boolean) => {
-        if (activeProjectId) {
-            dispatch(
-                toggleProjectContentVisibility({
-                    sectionId: section.id,
-                    entryId: activeProjectId,
-                    field,
-                    value
-                }),
-            )
-        }
-    }
-
-    const handleContextMenu = (e: React.MouseEvent, entryId?: string) => {
-        e.preventDefault()
+    const handleContextClick = (e: React.MouseEvent, entryId?: string) => {
+        e.stopPropagation()
         if (entryId) {
-            setActiveProjectId(entryId)
+            setActiveEntryId(entryId)
         } else {
-            setActiveProjectId(null)
+            setActiveEntryId(null)
         }
-        setMenuPosition({ x: e.clientX, y: e.clientY })
-        // setShowVisibilityMenu(true)
+        handleContextMenu(e, entryId)
     }
 
     return (
         <div className="space-y-4">
-            {section.content.projects?.map((education: ProjectSectionItem) => (
-                <div
-                    key={education.id}
+            {section.content.projects?.map((item: ProjectSectionItem) => (
+                <div key={item.id}
                     className={cn(
-                        "relative p-3 -mx-3 group/entry border border-transparent",
-                        isActive && "hover:bg-gray-50 hover:border-gray-200 rounded-md",
+                        "relative p-2 -mx-2 group/entry",
+                        isActive && "hover:bg-gray-50 rounded",
+                        darkMode && isActive && "hover:bg-slate-700 rounded",
+                        activeEntryId === item.id && 'selected-resume-item'
                     )}
+                    onContextMenu={(e) => handleContextClick(e, item.id)}
+                    onClick={(e) => handleEntryToggle(e, item.id)}
                 >
-                    {isActive && (
-                        <div className="absolute right-2 top-2 opacity-0 group-hover/entry:opacity-100 transition-opacity flex space-x-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 bg-white border shadow-sm"
-                                onClick={(e) => handleSettingsClick(e, education.id)}
-                            >
-                                <Settings size={14} />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 bg-white border shadow-sm cursor-move">
-                                <MoveVertical size={14} />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 bg-white border shadow-sm text-gray-400 hover:text-red-500"
-                                onClick={() => handleRemoveProject(education.id)}
-                            >
-                                <Trash2 size={14} />
-                            </Button>
-                        </div>
-                    )}
-
-                    {/* Add Start */}
-                    <div className="space-y-4">
-                        {section.content.projects?.map((project: ProjectSectionItem) => (
-                            <div
-                                key={project.id}
-                                className={cn(
-                                    "relative p-2 -mx-2 group/entry",
-                                    isActive && "hover:bg-gray-50 rounded",
-                                    darkMode && isActive && "hover:bg-slate-700 rounded",
-                                )}
-                                onContextMenu={(e) => handleContextMenu(e, project.id)}
-                            >
-                                {isActive && (
-                                    <div className="absolute right-2 top-2 opacity-0 group-hover/entry:opacity-100 transition-opacity">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className={cn("h-6 w-6 hover:text-red-500", darkMode ? "text-gray-300" : "text-gray-400")}
-                                            onClick={() => handleRemoveProject(project.id)}
-                                        >
-                                            <Trash2 size={14} />
-                                        </Button>
-                                    </div>
-                                )}
-
-                                {project.visibility?.description !== false && (
-                                    <EditableText
-                                        value={project.description}
-                                        onChange={(value) => handleProjectChange("description", value)}
-                                        className={cn("font-medium", darkMode && "text-white")}
-                                    />
-                                )}
-
-                                {project.visibility?.location !== false && (
-                                    <EditableText
-                                        value={project.location}
-                                        onChange={(value) => handleProjectChange("location", value)}
-                                        className={cn(darkMode ? "text-teal-300" : "text-teal-500")}
-                                    />
-                                )}
-
-                                {project.visibility?.link !== false && (
-                                    <div className="flex items-center">
-                                        <Calendar size={12} className="mr-1" />
-                                        <EditableText
-                                            value={project.link}
-                                            onChange={(value) => handleProjectChange("link", value)}
-                                            className={cn("font-normal", darkMode && "text-white")}
-                                        />
-                                    </div>
-                                )}
-
-                                <div
-                                    className={cn("flex items-center text-sm mt-1 gap-4", darkMode ? "text-gray-300" : "text-gray-500")}
-                                >
-                                    {project.visibility?.period !== false && (
-                                        <div className="flex items-center">
-                                            <Calendar size={12} className="mr-1" />
+                    <div className="flex flex-nowrap">
+                        <div className="col ml-0 flex-1">
+                            <div className="flex items-center justify-start">
+                                <EditableText
+                                    value={item.projectName}
+                                    onChange={(value) => handleEntryChange(item.id, "projectName", value)}
+                                    className={cn("editable-field", darkMode && "text-white")}
+                                    placeholder="Project Name"
+                                />
+                            </div>
+                            {(item.visibility?.period !== false || item.visibility?.location !== false) && (
+                                <div className="flex items-start justify-start gap-5">
+                                    {item.visibility?.period !== false && (
+                                        <div className="flex items-start justify-start gap-2">
+                                            <Calendar className="w-2 h-2" />
                                             <EditableText
-                                                value={project.period}
-                                                onChange={(value) => handleProjectChange("period", value)}
-                                                className="text-sm"
+                                                value={item.period}
+                                                onChange={(value) => handleEntryChange(item.id, "period", value)}
+                                                className={cn("editable-field date-range-field", darkMode && "text-white")}
+                                                placeholder="Date period"
                                             />
                                         </div>
                                     )}
 
-                                    {project.visibility?.location !== false && (
-                                        <div className="flex items-center">
-                                            <MapPin size={12} className="mr-1" />
+                                    {item.visibility?.location !== false && (
+                                        <div className="flex items-start justify-start gap-2">
                                             <EditableText
-                                                value={project.location}
-                                                onChange={(value) => handleProjectChange("location", value)}
-                                                className="text-sm"
+                                                value={item.location}
+                                                onChange={(value) => handleEntryChange(item.id, "location", value)}
+                                                className={cn("editable-field location-field", darkMode && "text-white")}
+                                                placeholder="Location"
                                             />
                                         </div>
                                     )}
                                 </div>
+                            )}
 
-                                {project.visibility?.bullets !== false && (
+                            {item.visibility?.link !== false && (
+                                <div className="flex items-start justify-start gap-2">
+                                    <Link className="w-2 h-2" />
+                                    <EditableText
+                                        value={item.link}
+                                        onChange={(value) => handleEntryChange(item.id, "link", value)}
+                                        className={cn("editable-field", darkMode && "text-white")}
+                                        placeholder="URL"
+                                    />
+                                </div>
+                            )}
+
+                            {item.visibility?.description !== false && (
+                                <div className="flex items-start justify-start gap-2">
+                                    <Link className="w-2 h-2" />
+                                    <EditableText
+                                        value={item.description}
+                                        onChange={(value) => handleEntryChange(item.id, "description", value)}
+                                        className={cn("editable-field", darkMode && "text-white")}
+                                        placeholder="Short summary of your work"
+                                    />
+                                </div>
+                            )}
+
+                            <div className="flex flex-align-start flex-justify-space-between flex-nowrap">
+                                {item.visibility?.bullets !== false && (
                                     <ul className="list-disc pl-5 mt-1">
-                                        {project.bullets.map((bullet, index) => (
+                                        {item.bullets.map((bullet, index) => (
                                             <li key={index} className={cn("text-sm", darkMode && "text-gray-300")}>
                                                 <EditableText
                                                     value={bullet}
                                                     onChange={(value) => {
-                                                        const newBullets = [...project.bullets]
+                                                        const newBullets = [...item.bullets]
                                                         newBullets[index] = value
-                                                        handleProjectChange("bullets", newBullets)
+                                                        handleEntryChange(item.id, "bullets", newBullets)
                                                     }}
                                                     className="text-sm"
                                                 />
@@ -248,50 +146,10 @@ export default function ProjectSection({ section, isActive, darkMode = false }: 
                                     </ul>
                                 )}
                             </div>
-                        ))}
-
-                        {(!section.content.projects || section.content.projects.length === 0) && isActive && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className={cn("w-full mt-2", darkMode && "border-slate-600 text-white hover:bg-slate-700")}
-                                onClick={handleAddProject}
-                            >
-                                <PlusCircle size={14} className="mr-1" />
-                                Add Entry
-                            </Button>
-                        )}
+                        </div>
                     </div>
-                    {/* Add Ends */}
                 </div>
             ))}
-
-            {isActive && (
-                <div className="flex">
-                    <Button
-                        variant="default"
-                        size="sm"
-                        className="bg-teal-500 hover:bg-teal-600 text-white"
-                        onClick={handleAddProject}
-                    >
-                        <Plus size={16} className="mr-1" /> Entry
-                    </Button>
-                </div>
-            )}
-
-            {/* {showSettings && activeProjectId && (
-                <div
-                    ref={settingsRef}
-                    className="fixed z-50"
-                    style={{ top: `${menuPosition.y}px`, left: `${menuPosition.x}px` }}
-                >
-                    <EducationSettingsPanel
-                        education={section.content.projects?.find((lang) => lang.id === activeProjectId) || null}
-                        onToggleVisibility={handleToggleVisibility}
-                        onClose={() => setShowSettings(false)}
-                    />
-                </div>
-            )} */}
         </div>
     )
 }

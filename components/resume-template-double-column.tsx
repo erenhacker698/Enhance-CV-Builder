@@ -24,10 +24,10 @@ interface ResumeTemplateProps {
 }
 
 const sectionComponentMap = {
-  education: EducationSection,
-  projects: ProjectSection,
-  skills: SkillsSection,
-  languages: LanguageSection,
+    education: EducationSection,
+    projects: ProjectSection,
+    skills: SkillsSection,
+    languages: LanguageSection,
 };
 
 export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplateProps) {
@@ -36,7 +36,7 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
     const [draggedSection, setDraggedSection] = useState<string | null>(null)
 
     const handleHeaderClick = () => {
-        dispatch(setActiveSection({ sectionId: null }))
+        dispatch(setActiveSection({ sectionId: null, sectionType: null }))
     }
 
     const handleAddSectionClick = (column: "left" | "right") => {

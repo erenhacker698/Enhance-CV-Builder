@@ -2,13 +2,12 @@
 
 import type React from "react"
 
-import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { Button } from "@/components/ui/button"
-import { Plus, Trash2, ChevronDown, Type, Calendar, Settings, MoveVertical, ArrowRight, ArrowLeft } from "lucide-react"
+import { Plus, Trash2, Settings, MoveVertical, ArrowRight, ArrowLeft } from "lucide-react"
 import { removeSection, removeSectionEntry } from "@/lib/features/resume/resumeSlice"
 import { cn } from "@/lib/utils"
-import { SectionTypeEnum, type Section } from "@/lib/types"
+import { type Section } from "@/lib/types"
 
 interface SectionToolbarProps {
     section: Section
@@ -65,7 +64,7 @@ export default function SectionToolbar({
                 darkMode ? "bg-slate-700" : "bg-white",
             )}
         >
-            {section.type === SectionTypeEnum.EDUCATION && onAddEntry && (
+            {onAddEntry && (
                 <Button
                     variant="ghost"
                     size="sm"
@@ -84,7 +83,6 @@ export default function SectionToolbar({
                 </Button>
             )}
 
-            {/* Column movement buttons */}
             {section.column === "left" && (
                 <Button
                     variant={darkMode ? "default" : "ghost"}

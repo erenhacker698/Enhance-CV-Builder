@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { cn } from "@/lib/utils"
 import { SectionTypeEnum, type Section } from "@/lib/types"
 import type { RootState } from "@/lib/store"
+import { getDefaultSection } from "@/lib/utils/sectionDefaults"
 
 type AddSectionModalProps = {}
 
@@ -94,103 +95,12 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
     const [selectedType, setSelectedType] = useState("")
 
     const handleAddSection = (sectionType: string) => {
-        const section = sectionTypes.find((s) => s.type === sectionType)
+        const sectionMeta = sectionTypes.find((s) => s.type === sectionType)
+        if (!sectionMeta) return
 
+        const section = getDefaultSection(sectionMeta.type, addSectionColumn, sectionMeta.title.toUpperCase())
         if (section) {
-            switch (section.type) {
-                case SectionTypeEnum.EDUCATION:
-                    const education: Section = {
-                        id: `section-${Date.now()}`,
-                        type: SectionTypeEnum.EDUCATION,
-                        column: addSectionColumn,
-                        title: section.title.toUpperCase(),
-                        content: {
-                            educations: [
-                                {
-                                    id: `entry-${Date.now()}`,
-                                    school: "School or University Name",
-                                    degree: "BCA",
-                                    period: "Date period",
-                                    location: "",
-                                    bullets: [],
-                                    gpa: "",
-                                    logo:""
-                                },
-                            ],
-                        },
-                    }
-                    dispatch(addSection({ section: education, column: addSectionColumn }))
-                    break
-
-                case SectionTypeEnum.SKILLS:
-                    const skillsSection: Section = {
-                        id: `section-${Date.now()}`,
-                        type: SectionTypeEnum.SKILLS,
-                        column: addSectionColumn,
-                        title: section.title.toUpperCase(),
-                        content: {
-                            skills: [
-                                {
-                                    id: `group-${Date.now()}`,
-                                    groupName: "Technical Skills",
-                                    skills: ["HTML", "CSS", "JavaScript", "React"],
-                                    borderStyle: "all",
-                                    compactMode: false
-                                },
-                            ],
-                        },
-                    }
-                    dispatch(addSection({ section: skillsSection, column: addSectionColumn }))
-                    break
-
-                case SectionTypeEnum.LANGUAGES:
-                    const languagesSection: Section = {
-                        id: `section-${Date.now()}`,
-                        type: SectionTypeEnum.LANGUAGES,
-                        column: addSectionColumn,
-                        title: section.title.toUpperCase(),
-                        content: {
-                            languages: [
-                                {
-                                    id: `lang-${Date.now()}`,
-                                    name: "English",
-                                    level: "Proficient",
-                                    proficiency: 4,
-                                    visibility: {
-                                        proficiency: true,
-                                        slider: true,
-                                    },
-                                },
-                            ],
-                        },
-                    }
-                    dispatch(addSection({ section: languagesSection, column: addSectionColumn }))
-                    break
-
-                case SectionTypeEnum.PROJECTS:
-                    const entriesSection: Section = {
-                        id: `section-${Date.now()}`,
-                        type: SectionTypeEnum.PROJECTS,
-                        column: addSectionColumn,
-                        title: section.title.toUpperCase(),
-                        content: {
-                            projects: [
-                                {
-                                    id: `entry-${Date.now()}`,
-                                    projectName: "Project Name",
-                                    link: "",
-                                    period: "Date period",
-                                    location: "",
-                                    description: "Project description",
-                                    bullets: ["Project detail 1", "Project detail 2"],
-                                },
-                            ],
-                        },
-                    }
-                    dispatch(addSection({ section: entriesSection, column: addSectionColumn }))
-                    break
-            }
-
+            dispatch(addSection({ section, column: addSectionColumn }))
             dispatch(setAddSectionModal({ isOpen: false }))
             setSelectedType("")
         }
