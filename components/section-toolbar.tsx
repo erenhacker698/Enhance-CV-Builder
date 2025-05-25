@@ -6,13 +6,15 @@ import { useState } from "react"
 import { useDispatch } from "react-redux"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, ChevronDown, Type, Calendar, Settings, MoveVertical, ArrowRight, ArrowLeft } from "lucide-react"
-import { removeSection } from "@/lib/features/resume/resumeSlice"
+import { removeSection, removeSectionEntry } from "@/lib/features/resume/resumeSlice"
 import { cn } from "@/lib/utils"
 import { SectionTypeEnum, type Section } from "@/lib/types"
 
 interface SectionToolbarProps {
     section: Section
+    activeEntryId: string | null
     onAddEntry: () => void
+    onShowSettingsPanel: () => void
     onDragStart?: () => void
     onMoveToColumn?: (column: "left" | "right") => void
     darkMode?: boolean
@@ -20,16 +22,26 @@ interface SectionToolbarProps {
 
 export default function SectionToolbar({
     section,
+    activeEntryId,
     onAddEntry,
+    onShowSettingsPanel,
     onDragStart,
     onMoveToColumn,
     darkMode = false,
 }: SectionToolbarProps) {
     const dispatch = useDispatch()
-    const [showDropdown, setShowDropdown] = useState(false)
 
     const handleRemoveSection = () => {
-        dispatch(removeSection({ sectionId: section.id }))
+        if (activeEntryId) {
+            dispatch(
+                removeSectionEntry({
+                    sectionId: section.id,
+                    entryId: activeEntryId
+                }),
+            )
+        } else {
+            dispatch(removeSection({ sectionId: section.id }))
+        }
     }
 
     const handleDragStart = (e: React.MouseEvent) => {
@@ -47,9 +59,9 @@ export default function SectionToolbar({
     }
 
     return (
-        <div
+        <div data-activeentryid={activeEntryId}
             className={cn(
-                "absolute -top-4 left-1/2 transform -translate-x-1/2 border border-gray-200 rounded-md shadow-sm flex z-10",
+                "SectionToolbar border border-gray-200 rounded-md shadow-sm flex",
                 darkMode ? "bg-slate-700" : "bg-white",
             )}
         >
@@ -58,7 +70,7 @@ export default function SectionToolbar({
                     variant="ghost"
                     size="sm"
                     className={cn(
-                        "h-8 px-3 text-white rounded-l-md rounded-r-none border-r",
+                        "h-8 px-3 text-white rounded-l-md rounded-r-none border-r hover:text-white cursor-pointer",
                         darkMode
                             ? "bg-teal-600 hover:bg-teal-700 border-teal-700"
                             : "bg-teal-500 hover:bg-teal-600 border-teal-600",
@@ -69,65 +81,6 @@ export default function SectionToolbar({
                     }}
                 >
                     <Plus size={16} className="mr-1" /> Entry
-                </Button>
-            )}
-
-            {section.type === SectionTypeEnum.SKILLS && (
-                <>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                            "h-8 px-3 text-white rounded-l-md rounded-r-none border-r",
-                            darkMode
-                                ? "bg-teal-600 hover:bg-teal-700 border-teal-700"
-                                : "bg-teal-500 hover:bg-teal-600 border-teal-600",
-                        )}
-                    >
-                        <Plus size={16} className="mr-1" /> Skill
-                    </Button>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        className={cn(
-                            "h-8 px-3 text-white rounded-none border-r",
-                            darkMode
-                                ? "bg-indigo-700 hover:bg-indigo-800 border-indigo-800"
-                                : "bg-indigo-600 hover:bg-indigo-700 border-indigo-700",
-                        )}
-                    >
-                        <Plus size={16} className="mr-1" /> Group
-                    </Button>
-                </>
-            )}
-
-            {section.type === SectionTypeEnum.LANGUAGES && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                        "h-8 px-3 text-white rounded-l-md rounded-r-none border-r",
-                        darkMode
-                            ? "bg-teal-600 hover:bg-teal-700 border-teal-700"
-                            : "bg-teal-500 hover:bg-teal-600 border-teal-600",
-                    )}
-                >
-                    <Plus size={16} className="mr-1" /> Language
-                </Button>
-            )}
-
-            {section.type === SectionTypeEnum.PROJECTS && (
-                <Button
-                    variant="ghost"
-                    size="sm"
-                    className={cn(
-                        "h-8 px-3 text-white rounded-l-md rounded-r-none border-r",
-                        darkMode
-                            ? "bg-teal-600 hover:bg-teal-700 border-teal-700"
-                            : "bg-teal-500 hover:bg-teal-600 border-teal-600",
-                    )}
-                >
-                    <Plus size={16} className="mr-1" /> Achievement
                 </Button>
             )}
 
@@ -159,19 +112,17 @@ export default function SectionToolbar({
             <Button
                 variant={darkMode ? "default" : "ghost"}
                 size="sm"
-                className={cn("h-8 w-8", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
-                onClick={(e) => {
-                    e.stopPropagation()
-                    setShowDropdown(!showDropdown)
-                }}
+                className={cn("h-8 w-8 cursor-move", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
+                draggable
+                onMouseDown={handleDragStart}
             >
-                <ChevronDown size={16} className={darkMode ? "text-white" : ""} />
-            </Button>            
+                <MoveVertical size={16} className={darkMode ? "text-white" : ""} />
+            </Button>
 
             <Button
                 variant={darkMode ? "default" : "ghost"}
                 size="sm"
-                className={cn("h-8 w-8", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
+                className={cn("h-8 w-8 cursor-pointer", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
                 onClick={(e) => {
                     e.stopPropagation()
                     handleRemoveSection()
@@ -183,17 +134,8 @@ export default function SectionToolbar({
             <Button
                 variant={darkMode ? "default" : "ghost"}
                 size="sm"
-                className={cn("h-8 w-8 cursor-move", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
-                draggable
-                onMouseDown={handleDragStart}
-            >
-                <MoveVertical size={16} className={darkMode ? "text-white" : ""} />
-            </Button>
-
-            <Button
-                variant={darkMode ? "default" : "ghost"}
-                size="sm"
-                className={cn("h-8 w-8 rounded-r-md", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
+                className={cn("h-8 w-8 rounded-r-md cursor-pointer", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
+                onClick={onShowSettingsPanel}
             >
                 <Settings size={16} className={darkMode ? "text-white" : ""} />
             </Button>

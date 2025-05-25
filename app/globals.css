@@ -165,6 +165,147 @@ body {
   background: transparent;
 }
 
+.SectionNameItemElegant-module_sectionName {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  margin: 0;
+  min-height: 10px;
+  outline: none;
+  padding: 0;
+  resize: none;
+  word-wrap: break-word;
+  text-size-adjust: none;
+  font-variant-ligatures: no-common-ligatures !important;
+  letter-spacing: normal;
+  list-style: none;
+  position: relative;
+  word-break: break-word;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  min-width: 2px;
+  overflow: hidden;
+  font-weight: 400;
+  color: #3e3e3e;
+  text-transform: uppercase;
+  border-bottom: 1px solid #bdbdbd;
+  padding-bottom: 8px;
+  white-space: pre-wrap;
+  font-family: Rubik, Arial, Helvetica, "Noto Sans Devanagari", "Noto Sans CJK SC Thin", "Noto Sans SC", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
+  font-size: 16px;
+  line-height: 19px;
+}
+
+.education__logo-upload {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  background-image: url(/placeholder-university-logo.svg);
+  background-size: contain;
+  background-position: center center;
+  background-repeat: no-repeat;
+  visibility: visible;
+}
+
+.editable-field {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  display: block;
+  margin: 0;
+  width: 100%;
+  min-width: 2px;
+  min-height: 10px;
+  outline: none;
+  overflow-wrap: break-word;
+  overflow: hidden;
+  padding: 0;
+  resize: none;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  text-size-adjust: none;
+  font-variant-ligatures: no-common-ligatures !important;
+  letter-spacing: normal;
+  list-style: none;
+  position: relative;
+  word-break: break-word;
+  z-index: 1;
+  white-space: pre-wrap;
+  font-family: Rubik, Arial, Helvetica, "Noto Sans Devanagari", "Noto Sans CJK SC Thin", "Noto Sans SC", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
+  font-size: 15px;
+  line-height: 18px;
+  display: flex;
+  align-items: center;
+  clear: both;
+  flex: 0 1 auto;
+}
+
+.date-range-field {
+  font-size: 12px;
+  line-height: normal;
+  cursor: pointer;
+  margin: 0;
+  color: #3e3e3e;
+  word-break: unset;
+  padding-left: 4px;
+  bottom: -1px;
+  width: 140px !important;
+  text-align: right;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.education__school-name {
+  color: rgb(0, 140, 255);
+  font-size: 14px;
+  line-height: 17px;
+}
+
+.location-field {
+  font-size: 12px;
+  line-height: normal;
+  cursor: pointer;
+  margin: 0;
+  color: #3e3e3e;
+  word-break: unset;
+  padding-left: 4px;
+  bottom: -1px;
+  text-align: right;
+  display: block;
+  position: relative;
+  z-index: 1;
+}
+
+.education__gpa-element {
+  display: inline-block;
+  border-radius: 3px;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+}
+
+.education__gpa-label {
+  white-space: pre-wrap;
+  font-family: Inter, Arial, Helvetica, "Noto Sans Devanagari", "Noto Sans CJK SC Thin", "Noto Sans SC", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
+  font-size: 12px;
+  line-height: 18px;
+  text-transform: uppercase;
+  color: #3e3e3e;
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: 4px;
+  border-right: 1px solid #3e3e3e;
+  padding-right: 4px;
+}
+
+.selected-resume-item {
+  border: 1px solid #60d5ba;
+  background: #fff;
+  border-radius: 5px;
+}
+
 @media screen and (max-width:767px) {
   .mobile_stickey_menu {
     position: fixed;
@@ -177,7 +318,7 @@ body {
   }
 }
 
-@media (min-width: 1024px) {
+@media screen and (min-width: 1024px) {
   .section-blocks-layout-wrapper {
     display: grid;
     grid-auto-flow: column;

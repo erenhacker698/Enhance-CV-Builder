@@ -71,7 +71,7 @@ export default function EditableText({
                     onBlur={handleBlur}
                     onKeyDown={handleKeyDown}
                     className={cn(
-                        "w-full p-1 border border-teal-500 rounded resize-none focus:outline-none focus:ring-1 focus:ring-teal-500",
+                        "cursor-text",
                         className,
                     )}
                     rows={3}
@@ -89,7 +89,7 @@ export default function EditableText({
                 onBlur={handleBlur}
                 onKeyDown={handleKeyDown}
                 className={cn(
-                    "w-full p-1 border border-teal-500 rounded focus:outline-none focus:ring-1 focus:ring-teal-500",
+                    "cursor-text",
                     className,
                 )}
                 placeholder={placeholder}
@@ -98,7 +98,7 @@ export default function EditableText({
     }
 
     return (
-        <div onClick={handleClick} className={cn("cursor-text min-h-[1.5em]", !value && "text-gray-400 italic", className)}>
+        <div onClick={handleClick} className={cn("cursor-text", !value && "text-gray-400", className)}>
             {value || placeholder}
         </div>
     )

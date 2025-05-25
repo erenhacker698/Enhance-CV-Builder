@@ -34,7 +34,7 @@ export default function EducationSettingsPanel({
     if (!education) return null
 
     return (
-        <div ref={panelRef} className="bg-white rounded-md shadow-lg border border-gray-200 w-64 p-4 space-y-3">
+        <div ref={panelRef} className="EducationSettingsPanel bg-white rounded-md shadow-lg border border-gray-200 w-auto p-4 space-y-3 mt-2">
             <div className="flex items-center justify-between">
                 <Label htmlFor="show-proficiency" className="text-sm">
                     Show GPA
@@ -43,7 +43,7 @@ export default function EducationSettingsPanel({
                     id="show-proficiency"
                     checked={education.visibility?.gpa !== false}
                     onCheckedChange={(checked) => onToggleVisibility("gpa", checked)}
-                    className="data-[state=checked]:bg-teal-500"
+                    className="data-[state=checked]:bg-teal-500 cursor-pointer"
                 />
             </div>
 
@@ -55,7 +55,7 @@ export default function EducationSettingsPanel({
                     id="show-location"
                     checked={education.visibility?.location !== false}
                     onCheckedChange={(checked) => onToggleVisibility("location", checked)}
-                    className="data-[state=checked]:bg-teal-500"
+                    className="data-[state=checked]:bg-teal-500 cursor-pointer"
                 />
             </div>
 
@@ -67,7 +67,31 @@ export default function EducationSettingsPanel({
                     id="show-period"
                     checked={education.visibility?.period !== false}
                     onCheckedChange={(checked) => onToggleVisibility("period", checked)}
-                    className="data-[state=checked]:bg-teal-500"
+                    className="data-[state=checked]:bg-teal-500 cursor-pointer"
+                />
+            </div>
+
+            <div className="flex items-center justify-between">
+                <Label htmlFor="show-bullets" className="text-sm">
+                    Show Bullets
+                </Label>
+                <Switch
+                    id="show-bullets"
+                    checked={education.visibility?.bullets !== false}
+                    onCheckedChange={(checked) => onToggleVisibility("bullets", checked)}
+                    className="data-[state=checked]:bg-teal-500 cursor-pointer"
+                />
+            </div>
+
+            <div className="flex items-center justify-between">
+                <Label htmlFor="show-logo" className="text-sm">
+                    Show Logo
+                </Label>
+                <Switch
+                    id="show-logo"
+                    checked={education.visibility?.logo !== false}
+                    onCheckedChange={(checked) => onToggleVisibility("logo", checked)}
+                    className="data-[state=checked]:bg-teal-500 cursor-pointer"
                 />
             </div>
         </div>

@@ -2,92 +2,49 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useDispatch } from "react-redux"
-import {
-    toggleEducationContentVisibility,
-    addEducation,
-    updateEducation,
-    removeEducation,
-} from "@/lib/features/resume/resumeSlice"
-import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Settings, MoveVertical, Calendar, MapPin, PlusCircle } from "lucide-react"
+import { updateEducation } from "@/lib/features/resume/resumeSlice"
 import EditableText from "@/components/editable-text"
 import { cn } from "@/lib/utils"
-import { EducationContentVisibility, type EducationSectionItem, type Section } from "@/lib/types"
-import EducationSettingsPanel from "./education-settings-panel"
+import { SectionTypeEnum, type EducationSectionItem, type Section } from "@/lib/types"
 
 interface SectionProps {
     section: Section
     isActive: boolean
     darkMode?: boolean
+    handleContextMenu: (e: React.MouseEvent, entryId?: string) => void
+    handleEntrySwitch: (e: React.MouseEvent, entryId: string) => void
+    handleActivateSection: () => void
+    // handleAddEntry: (sectionType: SectionTypeEnum, sectionId: string) => void
+    // handleDragStartSection: () => void
+    // handleMoveToColumn: (targetColumn: "left" | "right") => void
 }
 
-export default function EducationSection({ section, isActive, darkMode = false }: SectionProps) {
+export default function EducationSection({ section, isActive, darkMode = false, handleContextMenu, handleEntrySwitch, handleActivateSection }: SectionProps) {
     const dispatch = useDispatch()
-    const [showSettings, setShowSettings] = useState(false)
-    const [activeEducationId, setActiveEducationId] = useState<string | null>(null)
-    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
-    const settingsRef = useRef<HTMLDivElement>(null)
+    const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
 
-    const handleAddEducation = () => {
-        dispatch(
-            addEducation({
-                sectionId: section.id,
-                education: {
-                    id: `edu-${Date.now()}`,
-                    school: "",
-                    degree: "",
-                    location: "",
-                    gpa: "",
-                    logo: "",
-                    period: "",
-                    bullets: [],
-                    visibility: {
-                        bullets: false,
-                        gpa: false,
-                        location: false,
-                        logo: false,
-                        period: false
-                    }
-                },
-            }),
-        )
-    }
-
-    const handleUpdateEducation = (educationId: string, field: string, value: string | string[]) => {
-        dispatch(
-            updateEducation({
-                sectionId: section.id,
-                educationId,
-                field,
-                value
-            }),
-        )
-    }
-
-    const handleRemoveEducation = (educationId: string) => {
-        dispatch(
-            removeEducation({
-                sectionId: section.id,
-                educationId
-            }),
-        )
-    }
-
-    const handleSettingsClick = (e: React.MouseEvent, educationId: string) => {
+    const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
+        // console.log("Inside handleEntryToggle: ", entryId)
         e.stopPropagation()
-        setActiveEducationId(educationId)
-        setMenuPosition({ x: e.clientX, y: e.clientY })
-        setShowSettings(true)
+        setActiveEntryId(entryId)
+        handleEntrySwitch(e, entryId)
+        handleActivateSection()
     }
 
-    const handleEducationChange = (field: keyof EducationContentVisibility, value: string | string[]) => {
-        if (activeEducationId) {
+    const handleEntryChange = (entryId: string, field: keyof EducationSectionItem, value: string | string[]) => {
+        // e.stopPropagation()
+        console.log("-----------------------------------------------------------------------")
+        console.log("Inside handleEntryChange")
+        if (activeEntryId) {
+            console.log("entryId - ", entryId)
+            console.log("field - ", field)
+            console.log("value - ", value)
             dispatch(
                 updateEducation({
                     sectionId: section.id,
-                    educationId: activeEducationId,
+                    entryId: entryId,
                     field,
                     value
                 })
@@ -95,142 +52,89 @@ export default function EducationSection({ section, isActive, darkMode = false }
         }
     }
 
-    const handleToggleVisibility = (field: keyof EducationContentVisibility, value: boolean) => {
-        if (activeEducationId) {
-            dispatch(
-                toggleEducationContentVisibility({
-                    sectionId: section.id,
-                    entryId: activeEducationId,
-                    field,
-                    value
-                }),
-            )
+    const handleContextClick = (e: React.MouseEvent, entryId?: string) => {
+        console.log("Inside handleContextClick")
+        e.stopPropagation()
+        if (entryId) {
+            setActiveEntryId(entryId)
+        } else {
+            setActiveEntryId(null)
         }
+        handleContextMenu(e, entryId)
     }
 
-    const handleContextMenu = (e: React.MouseEvent, entryId?: string) => {
-        e.preventDefault()
-        if (entryId) {
-            setActiveEducationId(entryId)
-        } else {
-            setActiveEducationId(null)
-        }
-        setMenuPosition({ x: e.clientX, y: e.clientY })
-        // setShowVisibilityMenu(true)
-    }
+    // const handleToggleVisibility = (field: keyof EducationContentVisibility, value: boolean) => {
+    //     if (activeEntryId) {
+    //         dispatch(
+    //             toggleEducationContentVisibility({
+    //                 sectionId: section.id,
+    //                 entryId: activeEntryId,
+    //                 field,
+    //                 value
+    //             }),
+    //         )
+    //     }
+    // }
 
     return (
         <div className="space-y-4">
-            {section.content?.educations?.map((education: EducationSectionItem) => (
-                <div
-                    key={education.id}
+            {section.content.educations?.map((edu: EducationSectionItem) => (
+                <div key={edu.id}
                     className={cn(
-                        "relative p-3 -mx-3 group/entry border border-transparent",
-                        isActive && "hover:bg-gray-50 hover:border-gray-200 rounded-md",
+                        "relative p-2 -mx-2 group/entry",
+                        isActive && "hover:bg-gray-50 rounded",
+                        darkMode && isActive && "hover:bg-slate-700 rounded",
+                        activeEntryId === edu.id && 'selected-resume-item'
                     )}
+                    onContextMenu={(e) => handleContextClick(e, edu.id)}
+                    onClick={(e) => handleEntryToggle(e, edu.id)}
                 >
-                    {isActive && (
-                        <div className="absolute right-2 top-2 opacity-0 group-hover/entry:opacity-100 transition-opacity flex space-x-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 bg-white border shadow-sm"
-                                onClick={(e) => handleSettingsClick(e, education.id)}
-                            >
-                                <Settings size={14} />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 bg-white border shadow-sm cursor-move">
-                                <MoveVertical size={14} />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 bg-white border shadow-sm text-gray-400 hover:text-red-500"
-                                onClick={() => handleRemoveEducation(education.id)}
-                            >
-                                <Trash2 size={14} />
-                            </Button>
-                        </div>
-                    )}
+                    <div className="flex flex-nowrap">
+                        {edu.visibility?.logo !== false && (
+                            <div className="mr-4 col-auto company-logo relative cursor-pointer overflow-hidden rounded-full education__logo-upload">
+                            </div>
+                        )}
 
-                    {/* Add Start */}
-                    <div className="space-y-4">
-                        {section.content.educations?.map((edu: EducationSectionItem) => (
-                            <div
-                                key={edu.id}
-                                className={cn(
-                                    "relative p-2 -mx-2 group/entry",
-                                    isActive && "hover:bg-gray-50 rounded",
-                                    darkMode && isActive && "hover:bg-slate-700 rounded",
-                                )}
-                                onContextMenu={(e) => handleContextMenu(e, edu.id)}
-                            >
-                                {isActive && (
-                                    <div className="absolute right-2 top-2 opacity-0 group-hover/entry:opacity-100 transition-opacity">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            className={cn("h-6 w-6 hover:text-red-500", darkMode ? "text-gray-300" : "text-gray-400")}
-                                            onClick={() => handleRemoveEducation(edu.id)}
-                                        >
-                                            <Trash2 size={14} />
-                                        </Button>
-                                    </div>
-                                )}
-
-                                {edu.visibility?.gpa !== false && (
-                                    <EditableText
-                                        value={edu.gpa}
-                                        onChange={(value) => handleEducationChange("gpa", value)}
-                                        className={cn("font-medium", darkMode && "text-white")}
-                                    />
-                                )}
-
-                                {edu.visibility?.location !== false && (
-                                    <EditableText
-                                        value={edu.location}
-                                        onChange={(value) => handleEducationChange("location", value)}
-                                        className={cn(darkMode ? "text-teal-300" : "text-teal-500")}
-                                    />
-                                )}
+                        <div className="col ml-0 flex-1">
+                            <div className="flex flex-align-start flex-justify-space-between flex-nowrap">
+                                <EditableText
+                                    value={edu.degree}
+                                    onChange={(value) => handleEntryChange(edu.id, "degree", value)}
+                                    className={cn("editable-field", darkMode && "text-white")}
+                                    placeholder="Degree and Field of Study"
+                                />
 
                                 {edu.visibility?.period !== false && (
-                                    <div className="flex items-center">
-                                        <Calendar size={12} className="mr-1" />
+                                    <EditableText
+                                        value={edu.period}
+                                        onChange={(value) => handleEntryChange(edu.id, "period", value)}
+                                        className={cn("editable-field date-range-field", darkMode && "text-white")}
+                                        placeholder="Date period"
+                                    />
+                                )}
+                            </div>
+
+                            <div className="flex flex-align-start flex-justify-space-between flex-nowrap">
+                                <EditableText
+                                    value={edu.school}
+                                    onChange={(value) => handleEntryChange(edu.id, "school", value)}
+                                    className={cn("font-medium editable-field education__school-name", darkMode && "text-white")}
+                                    placeholder="School or University"
+                                />
+
+                                {edu.visibility?.location !== false && (
+                                    <div className="flex items-end">
                                         <EditableText
-                                            value={edu.period}
-                                            onChange={(value) => handleEducationChange("period", value)}
-                                            className={cn("font-normal", darkMode && "text-white")}
+                                            value={edu.location}
+                                            onChange={(value) => handleEntryChange(edu.id, "location", value)}
+                                            className={cn("editable-field location-field", darkMode && "text-white")}
+                                            placeholder="location"
                                         />
                                     </div>
                                 )}
+                            </div>
 
-                                <div
-                                    className={cn("flex items-center text-sm mt-1 gap-4", darkMode ? "text-gray-300" : "text-gray-500")}
-                                >
-                                    {edu.visibility?.period !== false && (
-                                        <div className="flex items-center">
-                                            <Calendar size={12} className="mr-1" />
-                                            <EditableText
-                                                value={edu.period}
-                                                onChange={(value) => handleEducationChange("period", value)}
-                                                className="text-sm"
-                                            />
-                                        </div>
-                                    )}
-
-                                    {edu.visibility?.location !== false && (
-                                        <div className="flex items-center">
-                                            <MapPin size={12} className="mr-1" />
-                                            <EditableText
-                                                value={edu.location}
-                                                onChange={(value) => handleEducationChange("location", value)}
-                                                className="text-sm"
-                                            />
-                                        </div>
-                                    )}
-                                </div>
-
+                            <div className="flex flex-align-start flex-justify-space-between flex-nowrap">
                                 {edu.visibility?.bullets !== false && (
                                     <ul className="list-disc pl-5 mt-1">
                                         {edu.bullets.map((bullet, index) => (
@@ -240,7 +144,7 @@ export default function EducationSection({ section, isActive, darkMode = false }
                                                     onChange={(value) => {
                                                         const newBullets = [...edu.bullets]
                                                         newBullets[index] = value
-                                                        handleEducationChange("bullets", newBullets)
+                                                        handleEntryChange(edu.id, "bullets", newBullets)
                                                     }}
                                                     className="text-sm"
                                                 />
@@ -249,50 +153,24 @@ export default function EducationSection({ section, isActive, darkMode = false }
                                     </ul>
                                 )}
                             </div>
-                        ))}
 
-                        {(!section.content.educations || section.content.educations.length === 0) && isActive && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className={cn("w-full mt-2", darkMode && "border-slate-600 text-white hover:bg-slate-700")}
-                                onClick={handleAddEducation}
-                            >
-                                <PlusCircle size={14} className="mr-1" />
-                                Add Entry
-                            </Button>
-                        )}
+                            <div className="education__gpa-element">
+                                {edu.visibility?.gpa !== false && (
+                                    <>
+                                        <span className="education__gpa-label">gpa</span>
+                                        <EditableText
+                                            value={edu.gpa}
+                                            onChange={(value) => handleEntryChange(edu.id, "gpa", value)}
+                                            className={cn("font-medium editable-field", darkMode && "text-white")}
+                                            placeholder="3.8 / 4.0"
+                                        />
+                                    </>
+                                )}
+                            </div>
+                        </div>
                     </div>
-                    {/* Add Ends */}
                 </div>
             ))}
-
-            {isActive && (
-                <div className="flex">
-                    <Button
-                        variant="default"
-                        size="sm"
-                        className="bg-teal-500 hover:bg-teal-600 text-white"
-                        onClick={handleAddEducation}
-                    >
-                        <Plus size={16} className="mr-1" /> Entry
-                    </Button>
-                </div>
-            )}
-
-            {showSettings && activeEducationId && (
-                <div
-                    ref={settingsRef}
-                    className="fixed z-50"
-                    style={{ top: `${menuPosition.y}px`, left: `${menuPosition.x}px` }}
-                >
-                    <EducationSettingsPanel
-                        education={section.content.educations?.find((lang) => lang.id === activeEducationId) || null}
-                        onToggleVisibility={handleToggleVisibility}
-                        onClose={() => setShowSettings(false)}
-                    />
-                </div>
-            )}
         </div>
     )
 }

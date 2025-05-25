@@ -5,6 +5,7 @@ import {
   LanguageSectionItem,
   ProjectContentVisibility,
   ProjectSectionItem,
+  SectionContentMap,
   SectionTypeEnum,
   SkillSectionItem,
   type ResumeState,
@@ -231,6 +232,33 @@ export const resumeSlice = createSlice({
       }
     },
 
+    removeSectionEntry: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        entryId: string
+      }>
+    ) => {
+      saveToHistory(state)
+
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+
+      if (section) {
+        const sectionType = section.type
+
+        if (sectionType === "educations" && section.content.educations) {
+          section.content.educations = section.content.educations.filter((e) => e.id !== action.payload.entryId)
+        } else if (sectionType === "projects" && section.content.projects) {
+          section.content.projects = section.content.projects.filter((e) => e.id !== action.payload.entryId)
+        } else if (sectionType === "skills" && section.content.skills) {
+          section.content.skills = section.content.skills.filter((e) => e.id !== action.payload.entryId)
+        } else if (sectionType === "languages" && section.content.languages) {
+          section.content.languages = section.content.languages.filter((e) => e.id !== action.payload.entryId)
+        }
+      }
+    }
+    ,
+
     updateSectionTitle: (
       state,
       action: PayloadAction<{
@@ -287,25 +315,32 @@ export const resumeSlice = createSlice({
       }>,
     ) => {
       saveToHistory(state)
+      // console.log("action.payload.sectionId= ", action.payload.sectionId)
+      // console.log("action.payload.education= ", action.payload.education)
+      // console.log("state.sections chck= ",JSON.parse(JSON.stringify(state.sections)))
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      // console.log("section chck= ", JSON.parse(JSON.stringify(section)))
       if (section && section.content.educations) {
         section.content.educations.push(action.payload.education)
+        // console.log("this1")
       } else if (section) {
         section.content.educations = [action.payload.education]
+        // console.log("this2")
       }
+      // console.log("state.sections chck2= ",JSON.parse(JSON.stringify(state.sections)))
     },
 
     removeEducation: (
       state,
       action: PayloadAction<{
         sectionId: string
-        educationId: string
+        entryId: string
       }>,
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
       if (section && section.content.educations) {
-        section.content.educations = section.content.educations.filter((e) => e.id !== action.payload.educationId)
+        section.content.educations = section.content.educations.filter((e) => e.id !== action.payload.entryId)
       }
     },
 
@@ -313,15 +348,19 @@ export const resumeSlice = createSlice({
       state,
       action: PayloadAction<{
         sectionId: string
-        educationId: string
+        entryId: string
         field: string
         value: string | string[]
       }>,
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      // console.log("action.payload.sectionId= ", action.payload.sectionId)
+      // console.log("action.payload.entryId= ", action.payload.entryId)
+      // console.log("state.sections chck= ", JSON.parse(JSON.stringify(state.sections)))
       if (section && section.content.educations) {
-        const entry = section.content.educations.find((e) => e.id === action.payload.educationId)
+        const entry = section.content.educations.find((e) => e.id === action.payload.entryId)
+        // console.log("entry= ", entry)
         if (entry) {
           (entry as any)[action.payload.field] = action.payload.value
         }
@@ -338,10 +377,17 @@ export const resumeSlice = createSlice({
       }>,
     ) => {
       saveToHistory(state)
+      console.log("action.payload.sectionId= ", action.payload.sectionId)
+      console.log("action.payload.entryId= ", action.payload.entryId)
+      console.log("action.payload.field= ", action.payload.field)
+      console.log("action.payload.value= ", action.payload.value)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      console.log("section chck= ", JSON.parse(JSON.stringify(section)))
       if (section && section.content.educations) {
+        console.log("section.content.educations chck= ", JSON.parse(JSON.stringify(section)))
         const entry = section.content.educations.find((e) => e.id === action.payload.entryId)
         if (entry && entry.visibility) {
+          console.log("entry= ", JSON.stringify(entry))
           entry.visibility[action.payload.field] = action.payload.value
         }
       }
@@ -581,6 +627,7 @@ export const {
   setActiveSection,
   addSection,
   removeSection,
+  removeSectionEntry,
   updateSectionTitle,
   updateSectionContent,
   reorderSections,

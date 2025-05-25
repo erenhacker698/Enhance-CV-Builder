@@ -9,13 +9,11 @@ import Sidebar from "@/components/sidebar"
 import ResumeTemplateDoubleColumn from "@/components/resume-template-double-column"
 import ResumeTemplateElegant from "@/components/resume-template-elegant"
 import ResumeTemplateTimeline from "@/components/resume-template-timeline"
-import { undo, redo } from "@/lib/features/resume/resumeSlice"
 import { cn } from "@/lib/utils"
 
 export default function ResumeBuilder() {
   const dispatch = useDispatch()
   const { template } = useSelector((state: RootState) => state.settings)
-  const { history } = useSelector((state: RootState) => state.resume)
   const resumeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
 
   const handleAddSectionClick = (column: "left" | "right") => {

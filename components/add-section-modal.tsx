@@ -5,8 +5,6 @@ import { useDispatch, useSelector } from "react-redux"
 import { addSection } from "@/lib/features/resume/resumeSlice"
 import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { SectionTypeEnum, type Section } from "@/lib/types"
 import type { RootState } from "@/lib/store"
@@ -15,7 +13,6 @@ type AddSectionModalProps = {}
 
 const sectionTypes = [
     {
-        id: "skills",
         title: "Skills",
         type: SectionTypeEnum.SKILLS,
         preview: (
@@ -31,7 +28,6 @@ const sectionTypes = [
         ),
     },
     {
-        id: "education",
         title: "Education",
         type: SectionTypeEnum.EDUCATION,
         preview: (
@@ -49,7 +45,6 @@ const sectionTypes = [
         ),
     },
     {
-        id: "languages",
         title: "Languages",
         type: SectionTypeEnum.LANGUAGES,
         preview: (
@@ -70,7 +65,6 @@ const sectionTypes = [
         ),
     },
     {
-        id: "projects",
         title: "Projects",
         type: SectionTypeEnum.PROJECTS,
         preview: (
@@ -100,9 +94,7 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
     const [selectedType, setSelectedType] = useState("")
 
     const handleAddSection = (sectionType: string) => {
-        const section = sectionTypes.find((s) => s.id === sectionType)
-        console.log("sectionType: ", sectionType)
-        console.log("section: ", section)
+        const section = sectionTypes.find((s) => s.type === sectionType)
 
         if (section) {
             switch (section.type) {
@@ -122,14 +114,7 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                                     location: "",
                                     bullets: [],
                                     gpa: "",
-                                    logo: "",
-                                    visibility: {
-                                        location: false,
-                                        gpa: true,
-                                        bullets: section.id === "projects",
-                                        logo: false,
-                                        period: false
-                                    },
+                                    logo:""
                                 },
                             ],
                         },
@@ -198,13 +183,6 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                                     location: "",
                                     description: "Project description",
                                     bullets: ["Project detail 1", "Project detail 2"],
-                                    visibility: {
-                                        location: false,
-                                        description: true,
-                                        bullets: section.id === "projects",
-                                        link: false,
-                                        period: false
-                                    },
                                 },
                             ],
                         },
@@ -231,14 +209,14 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
                     {sectionTypes.map((section) => (
                         <div
-                            key={section.id}
+                            key={section.title}
                             className={cn(
                                 "border rounded-md overflow-hidden cursor-pointer hover:border-teal-500 transition-colors h-[280px] relative",
-                                selectedType === section.id ? "border-teal-500 ring-1 ring-teal-500" : "border-gray-200",
+                                selectedType === section.title ? "border-teal-500 ring-1 ring-teal-500" : "border-gray-200",
                             )}
                             onClick={() => {
-                                setSelectedType(section.id)
-                                handleAddSection(section.id)
+                                setSelectedType(section.type)
+                                handleAddSection(section.type)
                             }}
                         >
                             <div className="p-4 h-full">{section.preview}</div>

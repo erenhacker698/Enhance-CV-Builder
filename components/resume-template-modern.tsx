@@ -34,7 +34,7 @@ export default function ResumeTemplateModern({ resumeRef }: ResumeTemplateModern
     })
 
     return (
-        <div className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
+        <div className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay-later")} ref={resumeRef}>
             <div onClick={handleHeaderClick} className="flex items-start">
                 <div className="flex-1">
                     <ResumeHeader isActive={activeSectionId === null} />

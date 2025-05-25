@@ -44,6 +44,14 @@ export interface EducationContentVisibility {
   logo: boolean
 }
 
+  export const EducationFields: { key: keyof EducationContentVisibility; label: string }[] = [
+    { key: "bullets", label: "Show Bullets" },
+    { key: "location", label: "Show Location" },
+    { key: "period", label: "Show Period" },
+    { key: "logo", label: "Show Company Logo" },
+    { key: "gpa", label: "Show GPA" },
+  ];
+
 export interface ProjectSectionItem {
   id: string
   projectName: string
@@ -91,7 +99,7 @@ export interface SkillVisibility {
 }
 
 export enum SectionTypeEnum {
-  EDUCATION = "education",
+  EDUCATION = "educations",
   PROJECTS = "projects",
   SKILLS = "skills",
   LANGUAGES = "languages",
@@ -115,6 +123,14 @@ export interface Section {
     skills?: SkillSectionItem[];
   }
 }
+
+export type SectionContentMap = {
+  educations: EducationSectionItem[];
+  projects: ProjectSectionItem[];
+  skills: SkillSectionItem[];
+  languages: LanguageSectionItem[];
+};
+
 
 export interface ResumeState {
   header: Header

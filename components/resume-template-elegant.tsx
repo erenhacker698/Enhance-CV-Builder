@@ -108,7 +108,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
     }
 
     return (
-        <div id="resume-container" className={cn("w-full mx-auto bg-white p-0 min-h-[842px] flex flex-col md:flex-row", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
+        <div id="resume-container" className={cn("w-full mx-auto bg-white p-0 min-h-[842px] flex flex-col md:flex-row", activeSectionId !== null && "resume-editor-overlay-later")} ref={resumeRef}>
             <div className="w-[65%] p-8">
                 {/* Header - Name and title only */}
                 <div onClick={handleHeaderClick}>

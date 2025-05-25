@@ -135,7 +135,7 @@ export default function ResumeTemplateTimeline({ resumeRef }: ResumeTemplateProp
     }
 
     return (
-        <div id="resume-container" className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay")} ref={resumeRef}>
+        <div id="resume-container" className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay-later")} ref={resumeRef}>
             <div onClick={handleHeaderClick}>
                 <ResumeHeader isActive={activeSectionId === null} />
             </div>
