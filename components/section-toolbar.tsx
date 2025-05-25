@@ -129,14 +129,16 @@ export default function SectionToolbar({
                 <Trash2 size={16} className={darkMode ? "text-white" : ""} />
             </Button>
 
-            <Button
-                variant={darkMode ? "default" : "ghost"}
-                size="sm"
-                className={cn("h-8 w-8 rounded-r-md cursor-pointer", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
-                onClick={onShowSettingsPanel}
-            >
-                <Settings size={16} className={darkMode ? "text-white" : ""} />
-            </Button>
+            {activeEntryId && (
+                <Button
+                    variant={darkMode ? "default" : "ghost"}
+                    size="sm"
+                    className={cn("h-8 w-8 rounded-r-md cursor-pointer", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
+                    onClick={onShowSettingsPanel}
+                >
+                    <Settings size={16} className={darkMode ? "text-white" : ""} />
+                </Button>
+            )}
         </div>
     )
 }

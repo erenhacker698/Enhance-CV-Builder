@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import {
     addLanguage,
@@ -15,39 +15,49 @@ import { Plus, Trash2, Settings, MoveVertical } from "lucide-react"
 import EditableText from "@/components/editable-text"
 import { cn } from "@/lib/utils"
 import LanguageSettingsPanel from "@/components/language-settings-panel"
-import type { LanguageSectionItem, Section } from "@/lib/types"
+import { proficiencyLabels, type LanguageSectionItem, type Section } from "@/lib/types"
 
 interface SectionProps {
     section: Section
     isActive: boolean
     darkMode?: boolean
+    handleContextMenu: (e: React.MouseEvent, entryId?: string) => void
+    handleEntrySwitch: (e: React.MouseEvent, entryId: string) => void
+    handleActivateSection: () => void
 }
 
-const proficiencyLabels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Proficient", "Native"]
-
-export default function LanguageSection({ section, isActive, darkMode = false }: SectionProps) {
+export default function LanguageSection({ section, isActive, darkMode = false, handleContextMenu, handleEntrySwitch, handleActivateSection }: SectionProps) {
     const dispatch = useDispatch()
-    const [showSettings, setShowSettings] = useState(false)
-    const [activeLanguageId, setActiveLanguageId] = useState<string | null>(null)
-    const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
-    const settingsRef = useRef<HTMLDivElement>(null)
+    const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
+    const sectionRef = useRef<HTMLDivElement>(null)
 
-    const handleAddLanguage = () => {
-        dispatch(
-            addLanguage({
-                sectionId: section.id,
-                language: {
-                    id: `lang-${Date.now()}`,
-                    name: "Language",
-                    level: "Beginner",
-                    proficiency: 1,
-                    visibility: {
-                        proficiency: true,
-                        slider: true,
-                    },
-                },
-            }),
-        )
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (sectionRef.current && !sectionRef.current.contains(event.target as Node)) {
+                setActiveEntryId(null)
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
+
+
+    const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
+        e.stopPropagation()
+        setActiveEntryId(entryId)
+        handleEntrySwitch(e, entryId)
+        handleActivateSection()
+    }
+
+    const handleContextClick = (e: React.MouseEvent, entryId?: string) => {
+        e.stopPropagation()
+        if (entryId) {
+            setActiveEntryId(entryId)
+        } else {
+            setActiveEntryId(null)
+        }
+        handleContextMenu(e, entryId)
     }
 
     const handleUpdateLanguage = (langId: string, field: string, value: string | number) => {
@@ -60,7 +70,6 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
             }),
         )
 
-        // Update proficiency level text based on rating
         if (field === "proficiency") {
             const proficiencyIndex = Math.min(Math.max(1, Number(value)), 5) - 1
             dispatch(
@@ -74,130 +83,55 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
         }
     }
 
-    const handleRemoveLanguage = (langId: string) => {
-        dispatch(
-            removeLanguage({
-                sectionId: section.id,
-                langId,
-            }),
-        )
-    }
-
-    const handleSettingsClick = (e: React.MouseEvent, langId: string) => {
-        e.stopPropagation()
-        setActiveLanguageId(langId)
-        setMenuPosition({ x: e.clientX, y: e.clientY })
-        setShowSettings(true)
-    }
-
-    const handleToggleVisibility = (field: string, value: boolean) => {
-        if (activeLanguageId) {
-            dispatch(
-                toggleLanguageVisibility({
-                    sectionId: section.id,
-                    langId: activeLanguageId,
-                    field,
-                    value,
-                }),
-            )
-        }
-    }
-
     return (
-        <div className="space-y-4">
+        <div ref={sectionRef} className="space-y-1">
             {section.content.languages?.map((language: LanguageSectionItem) => (
                 <div
                     key={language.id}
                     className={cn(
-                        "relative p-3 -mx-3 group/entry border border-transparent",
+                        "relative p-2 -mx-2 group/entry border border-transparent",
                         isActive && "hover:bg-gray-50 hover:border-gray-200 rounded-md",
+                        darkMode && isActive && "hover:bg-slate-700 rounded",
+                        activeEntryId === language.id && 'selected-resume-item'
                     )}
+                    onContextMenu={(e) => handleContextClick(e, language.id)}
+                    onClick={(e) => handleEntryToggle(e, language.id)}
                 >
-                    {isActive && (
-                        <div className="absolute right-2 top-2 opacity-0 group-hover/entry:opacity-100 transition-opacity flex space-x-1">
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 bg-white border shadow-sm"
-                                onClick={(e) => handleSettingsClick(e, language.id)}
-                            >
-                                <Settings size={14} />
-                            </Button>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 bg-white border shadow-sm cursor-move">
-                                <MoveVertical size={14} />
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-6 w-6 bg-white border shadow-sm text-gray-400 hover:text-red-500"
-                                onClick={() => handleRemoveLanguage(language.id)}
-                            >
-                                <Trash2 size={14} />
-                            </Button>
-                        </div>
-                    )}
 
-                    <div className="font-medium">
+                    <div className="flex items-center justify-between">
                         <EditableText
                             value={language.name}
                             onChange={(value) => handleUpdateLanguage(language.id, "name", value)}
-                            className="font-medium"
+                            className={cn("editable-field", darkMode && "text-white")}
+                            placeholder="Language"
                         />
+
+                        <div className="flex items-center justify-end gap-2">
+                            {language.visibility?.proficiency !== false && (
+                                <EditableText
+                                    value={language.level}
+                                    onChange={(value) => handleUpdateLanguage(language.id, "level", value)}
+                                    className="text-sm"
+                                />
+                            )}
+                            {language.visibility?.slider !== false && (
+                                <div className="flex items-center">
+                                    {[1, 2, 3, 4, 5].map((rating) => (
+                                        <div
+                                            key={rating}
+                                            className={cn(
+                                                "w-4 h-4 rounded-full mx-0.5 cursor-pointer",
+                                                rating <= language.proficiency ? "bg-teal-500" : "bg-gray-200",
+                                            )}
+                                            onClick={() => handleUpdateLanguage(language.id, "proficiency", rating)}
+                                        ></div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
                     </div>
-
-                    {language.visibility?.proficiency !== false && (
-                        <div className="text-gray-500 text-sm">
-                            <EditableText
-                                value={language.level}
-                                onChange={(value) => handleUpdateLanguage(language.id, "level", value)}
-                                className="text-sm"
-                            />
-                        </div>
-                    )}
-
-                    {language.visibility?.slider !== false && (
-                        <div className="flex mt-1">
-                            {[1, 2, 3, 4, 5].map((rating) => (
-                                <div
-                                    key={rating}
-                                    className={cn(
-                                        "w-5 h-5 rounded-full mx-0.5 cursor-pointer",
-                                        rating <= language.proficiency ? "bg-teal-500" : "bg-gray-200",
-                                    )}
-                                    onClick={() => handleUpdateLanguage(language.id, "proficiency", rating)}
-                                ></div>
-                            ))}
-                        </div>
-                    )}
                 </div>
             ))}
-
-            {isActive && (
-                <div className="flex">
-                    <Button
-                        variant="default"
-                        size="sm"
-                        className="bg-teal-500 hover:bg-teal-600 text-white"
-                        onClick={handleAddLanguage}
-                    >
-                        <Plus size={16} className="mr-1" /> Entry
-                    </Button>
-                </div>
-            )}
-
-            {showSettings && activeLanguageId && (
-                <div
-                    ref={settingsRef}
-                    className="fixed z-50"
-                    style={{ top: `${menuPosition.y}px`, left: `${menuPosition.x}px` }}
-                >
-                    <LanguageSettingsPanel
-                        language={section.content.languages?.find((lang) => lang.id === activeLanguageId) || null}
-                        onToggleVisibility={handleToggleVisibility}
-                        onClose={() => setShowSettings(false)}
-                    />
-                </div>
-            )}
         </div>
     )
 }

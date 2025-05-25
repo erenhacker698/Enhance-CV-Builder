@@ -109,91 +109,90 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         [SectionTypeEnum.SKILLS]: toggleSkillsContentVisibility,
     }
 
-    // const handleToggleVisibility = (
-    //     field: keyof EducationContentVisibility | keyof ProjectContentVisibility | keyof LanguageContentVisibility | keyof SkillVisibility,
-    //     value: boolean
-    // ) => {
-    //     if (activeEntryId && section.type in visibilityDispatchMap) {
-    //         const actionCreator = visibilityDispatchMap[section.type as keyof VisibilityDispatchMap] as (
-    //             payload: any
-    //         ) => any
-
-    //         dispatch(
-    //             actionCreator({
-    //                 sectionId: section.id,
-    //                 entryId: activeEntryId,
-    //                 field,
-    //                 value,
-    //             })
-    //         )
-    //     }
-    // }
-
     const handleToggleVisibility = (
-        field: keyof (EducationContentVisibility & ProjectContentVisibility & LanguageContentVisibility & SkillVisibility),
+        field: keyof EducationContentVisibility | keyof ProjectContentVisibility | keyof LanguageContentVisibility | keyof SkillVisibility,
         value: boolean
     ) => {
-        if (!activeEntryId) {
-            console.warn('No activeEntryId found. Skipping toggle.')
-            return
-        }
+        if (activeEntryId && section.type in visibilityDispatchMap) {
+            const actionCreator = visibilityDispatchMap[section.type as keyof VisibilityDispatchMap] as (
+                payload: any
+            ) => any
 
-        console.log('handleToggleVisibility called with:')
-        console.log(`section.id: ${section.id}`)
-        console.log(`section.type: ${section.type}`)
-        console.log(`activeEntryId: ${activeEntryId}`)
-        console.log(`field: ${field}`)
-        console.log(`value: ${value}`)
-
-        if (section.type === SectionTypeEnum.EDUCATION) {
-            console.log('Dispatching toggleEducationContentVisibility')
             dispatch(
-                toggleEducationContentVisibility({
+                actionCreator({
                     sectionId: section.id,
                     entryId: activeEntryId,
-                    field: field as keyof EducationContentVisibility,
-                    value,
-                })
-            )
-        }
-
-        if (section.type === SectionTypeEnum.PROJECTS) {
-            console.log('Dispatching toggleProjectContentVisibility')
-            dispatch(
-                toggleProjectContentVisibility({
-                    sectionId: section.id,
-                    entryId: activeEntryId,
-                    field: field as keyof ProjectContentVisibility,
-                    value,
-                })
-            )
-        }
-
-        if (section.type === SectionTypeEnum.LANGUAGES) {
-            console.log('Dispatching toggleLanguageVisibility')
-            dispatch(
-                toggleLanguageVisibility({
-                    sectionId: section.id,
-                    entryId: activeEntryId,
-                    field: field as keyof LanguageContentVisibility,
-                    value,
-                })
-            )
-        }
-
-        if (section.type === SectionTypeEnum.SKILLS) {
-            console.log('Dispatching toggleSkillsContentVisibility')
-            dispatch(
-                toggleSkillsContentVisibility({
-                    sectionId: section.id,
-                    entryId: activeEntryId,
-                    field: field as keyof SkillVisibility,
+                    field,
                     value,
                 })
             )
         }
     }
 
+    // const handleToggleVisibility = (
+    //     field: keyof (EducationContentVisibility & ProjectContentVisibility & LanguageContentVisibility & SkillVisibility),
+    //     value: boolean
+    // ) => {
+    //     if (!activeEntryId) {
+    //         console.warn('No activeEntryId found. Skipping toggle.')
+    //         return
+    //     }
+
+    //     console.log('handleToggleVisibility called with:')
+    //     console.log(`section.id: ${section.id}`)
+    //     console.log(`section.type: ${section.type}`)
+    //     console.log(`activeEntryId: ${activeEntryId}`)
+    //     console.log(`field: ${field}`)
+    //     console.log(`value: ${value}`)
+
+    //     if (section.type === SectionTypeEnum.EDUCATION) {
+    //         console.log('Dispatching toggleEducationContentVisibility')
+    //         dispatch(
+    //             toggleEducationContentVisibility({
+    //                 sectionId: section.id,
+    //                 entryId: activeEntryId,
+    //                 field: field as keyof EducationContentVisibility,
+    //                 value,
+    //             })
+    //         )
+    //     }
+
+    //     if (section.type === SectionTypeEnum.PROJECTS) {
+    //         console.log('Dispatching toggleProjectContentVisibility')
+    //         dispatch(
+    //             toggleProjectContentVisibility({
+    //                 sectionId: section.id,
+    //                 entryId: activeEntryId,
+    //                 field: field as keyof ProjectContentVisibility,
+    //                 value,
+    //             })
+    //         )
+    //     }
+
+    //     if (section.type === SectionTypeEnum.LANGUAGES) {
+    //         console.log('Dispatching toggleLanguageVisibility')
+    //         dispatch(
+    //             toggleLanguageVisibility({
+    //                 sectionId: section.id,
+    //                 entryId: activeEntryId,
+    //                 field: field as keyof LanguageContentVisibility,
+    //                 value,
+    //             })
+    //         )
+    //     }
+
+    //     if (section.type === SectionTypeEnum.SKILLS) {
+    //         console.log('Dispatching toggleSkillsContentVisibility')
+    //         dispatch(
+    //             toggleSkillsContentVisibility({
+    //                 sectionId: section.id,
+    //                 entryId: activeEntryId,
+    //                 field: field as keyof SkillVisibility,
+    //                 value,
+    //             })
+    //         )
+    //     }
+    // }
 
     const handleDragStartSection = () => {
         if (onDragStart) {
@@ -230,7 +229,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
             case SectionTypeEnum.PROJECTS:
                 return <ProjectsSection section={section} isActive={isActive} darkMode={darkMode} handleContextMenu={handleContextMenu} handleEntrySwitch={handleEntrySwitch} handleActivateSection={handleActivateSection} />
             case SectionTypeEnum.LANGUAGES:
-                return <LanguageSection section={section} isActive={isActive} darkMode={darkMode} />
+                return <LanguageSection section={section} isActive={isActive} darkMode={darkMode}  handleContextMenu={handleContextMenu} handleEntrySwitch={handleEntrySwitch} handleActivateSection={handleActivateSection} />
             case SectionTypeEnum.SKILLS:
                 return <SkillsSection section={section} isActive={isActive} darkMode={darkMode} />
             default:
@@ -258,7 +257,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                         onAddEntry={() => handleAddEntry(section.type, section.id)}
                         onDragStart={handleDragStartSection}
                         onMoveToColumn={handleMoveToColumn}
-                        onShowSettingsPanel={() => setShowVisibilityMenu(!showVisibilityMenu)}
+                        onShowSettingsPanel={() => setShowVisibilityMenu(prev => !prev)}
                         darkMode={darkMode}
                     />
                     {showVisibilityMenu && activeEntryId && (
