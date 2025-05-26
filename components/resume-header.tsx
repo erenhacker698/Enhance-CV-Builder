@@ -9,7 +9,7 @@ import {
     toggleUppercaseName,
     togglePhotoStyle,
 } from "@/lib/features/resume/resumeSlice"
-import { Camera, Settings } from "lucide-react"
+import { Camera, Link, LocateIcon, Mail, MapPin, Phone, Settings, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import EditableText from "@/components/editable-text"
 import HeaderSettingsPanel from "@/components/header-settings-panel"
@@ -22,6 +22,8 @@ interface ResumeHeaderProps {
     hidePhoto?: boolean
 }
 
+const STORAGE_KEY = 'resume_header_data'
+
 export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHeaderProps) {
     const dispatch = useDispatch()
     const header = useSelector((state: RootState) => state.resume.header)
@@ -29,6 +31,51 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
     const [showSettings, setShowSettings] = useState(false)
     const [showPhotoUpload, setShowPhotoUpload] = useState(false)
     const settingsRef = useRef<HTMLDivElement>(null)
+
+    // Load data from localStorage on mount
+    useEffect(() => {
+        const loadHeaderData = () => {
+            try {
+                const savedData = localStorage.getItem(STORAGE_KEY)
+                if (savedData) {
+                    const parsedData = JSON.parse(savedData)
+
+                    // Restore header fields
+                    Object.keys(parsedData).forEach(field => {
+                        if (field === 'visibility') {
+                            Object.keys(parsedData.visibility).forEach(visField => {
+                                dispatch(toggleHeaderFieldVisibility({
+                                    field: visField,
+                                    value: parsedData.visibility[visField]
+                                }))
+                            })
+                        } else if (field === 'uppercaseName') {
+                            dispatch(toggleUppercaseName({ value: parsedData.uppercaseName }))
+                        } else if (field === 'roundPhoto') {
+                            dispatch(togglePhotoStyle({ value: parsedData.roundPhoto }))
+                        } else if (field === 'photoUrl') {
+                            dispatch(uploadProfilePhoto({ photoUrl: parsedData.photoUrl }))
+                        } else {
+                            dispatch(updateHeaderField({ field, value: parsedData[field] }))
+                        }
+                    })
+                }
+            } catch (error) {
+                console.error('Error loading header data from localStorage:', error)
+            }
+        }
+
+        loadHeaderData()
+    }, [dispatch])
+
+    // Save to localStorage whenever header state changes
+    useEffect(() => {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(header))
+        } catch (error) {
+            console.error('Error saving header data to localStorage:', error)
+        }
+    }, [header])
 
     useEffect(() => {
         const handleOpenPhotoUpload = () => {
@@ -62,6 +109,15 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
         setShowPhotoUpload(false)
     }
 
+    // Add function to clear all data
+    const handleClearData = () => {
+        if (confirm('Are you sure you want to clear all resume data?')) {
+            localStorage.removeItem(STORAGE_KEY)
+            // You might want to dispatch actions to reset Redux state too
+            window.location.reload() // Simple way to reset everything
+        }
+    }
+
     return (
         <div
             className={cn(
@@ -78,7 +134,8 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
                         <EditableText
                             value={header.name}
                             onChange={(value) => handleFieldChange("name", value)}
-                            className="w-full"
+                            className="w-full border-none outline-none"
+                            placeholder="YOUR NAME"
                         />
                     </div>
 
@@ -87,7 +144,8 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
                             <EditableText
                                 value={header.title}
                                 onChange={(value) => handleFieldChange("title", value)}
-                                className="w-full"
+                                className="w-full border-none outline-none"
+                                placeholder="The role you are applying for?"
                             />
                         </div>
                     )}
@@ -95,192 +153,72 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
                     <div className="flex flex-wrap gap-4 mt-3">
                         {header.visibility.phone && header.phone !== "" && (
                             <div className="flex items-center text-gray-600">
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="mr-1"
-                                >
-                                    <path
-                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
+                                <Phone className="w-4 h-4 mr-1" />
                                 <EditableText
                                     value={header.phone}
                                     onChange={(value) => handleFieldChange("phone", value)}
                                     placeholder="Phone"
-                                    className="text-sm"
+                                    className="text-sm border-none outline-none"
                                 />
                             </div>
                         )}
 
                         {header.visibility.email && (
                             <div className="flex items-center text-gray-600">
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="mr-1"
-                                >
-                                    <path
-                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                    <path
-                                        d="M22 6l-10 7L2 6"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
+                                <Mail className="w-4 h-4 mr-1" />
                                 <EditableText
                                     value={header.email}
                                     onChange={(value) => handleFieldChange("email", value)}
                                     placeholder="Email"
-                                    className="text-sm"
+                                    className="text-sm border-none outline-none"
                                 />
                             </div>
                         )}
 
                         {header.visibility.link && (
                             <div className="flex items-center text-gray-600">
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="mr-1"
-                                >
-                                    <path
-                                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                    <path
-                                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
+                                <Link className="w-4 h-4 mr-1" />
                                 <EditableText
                                     value={header.link}
                                     onChange={(value) => handleFieldChange("link", value)}
                                     placeholder="LinkedIn/Portfolio"
-                                    className="text-sm"
+                                    className="text-sm border-none outline-none"
                                 />
                             </div>
                         )}
 
                         {header.visibility.extraLink && (
                             <div className="flex items-center text-gray-600">
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="mr-1"
-                                >
-                                    <path
-                                        d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                    <path
-                                        d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
+                                <Link className="w-4 h-4 mr-1" />
                                 <EditableText
                                     value={header.extraLink}
                                     onChange={(value) => handleFieldChange("extraLink", value)}
                                     placeholder="Extra Link"
-                                    className="text-sm"
+                                    className="text-sm border-none outline-none"
                                 />
                             </div>
                         )}
 
                         {header.visibility.location && (
                             <div className="flex items-center text-gray-600">
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="mr-1"
-                                >
-                                    <path
-                                        d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                    <circle
-                                        cx="12"
-                                        cy="10"
-                                        r="3"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
+                                <MapPin className="w-4 h-4 mr-1" />
                                 <EditableText
                                     value={header.location}
                                     onChange={(value) => handleFieldChange("location", value)}
                                     placeholder="Location"
-                                    className="text-sm"
+                                    className="text-sm border-none outline-none"
                                 />
                             </div>
                         )}
 
                         {header.visibility.extraField && (
                             <div className="flex items-center text-gray-600">
-                                <svg
-                                    width="16"
-                                    height="16"
-                                    viewBox="0 0 24 24"
-                                    fill="none"
-                                    xmlns="http://www.w3.org/2000/svg"
-                                    className="mr-1"
-                                >
-                                    <path
-                                        d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    />
-                                </svg>
+                                <Shield className="w-4 h-4 mr-1" />
                                 <EditableText
                                     value={header.extraField}
                                     onChange={(value) => handleFieldChange("extraField", value)}
                                     placeholder="Extra Field"
-                                    className="text-sm"
+                                    className="text-sm border-none outline-none"
                                 />
                             </div>
                         )}
@@ -296,7 +234,7 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
                         onClick={() => setShowPhotoUpload(true)}
                     >
                         {header.photoUrl ? (
-                            <img src={header.photoUrl || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
+                            <img src={header.photoUrl} alt="Profile" className="w-full h-full object-cover" />
                         ) : (
                             <div className="flex flex-col items-center justify-center text-gray-400">
                                 <Camera size={24} />
@@ -349,6 +287,7 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
                     onClose={() => setShowPhotoUpload(false)}
                     onUpload={handlePhotoUpload}
                     currentPhotoUrl={header.photoUrl}
+                    storageKey="resume_profile_photo" // Separate key for just the photo
                 />
             )}
         </div>

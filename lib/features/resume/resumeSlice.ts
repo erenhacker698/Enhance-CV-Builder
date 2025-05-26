@@ -15,14 +15,14 @@ import {
 
 const initialState: ResumeState = {
   header: {
-    name: "OM SHARMA",
-    title: "Software Developer",
-    phone: "123-456-7890",
-    email: "om.sharma@example.com",
-    link: "linkedin.com/in/omsharma",
-    extraLink: "github.com/omsharma",
-    location: "San Francisco, CA",
-    extraField: "Available for hire",
+    name: "YOUR NAME",
+    title: "The role you are applying for?",
+    phone: "Phone",
+    email: "Email",
+    link: "LinkedIn/Portfolio",
+    extraLink: "Extra Link",
+    location: "Location",
+    extraField: "Extra Field",
     photoUrl: "",
     visibility: {
       title: true,
@@ -324,19 +324,12 @@ export const resumeSlice = createSlice({
       }>,
     ) => {
       saveToHistory(state)
-      // console.log("action.payload.sectionId= ", action.payload.sectionId)
-      // console.log("action.payload.education= ", action.payload.education)
-      // console.log("state.sections chck= ",JSON.parse(JSON.stringify(state.sections)))
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      // console.log("section chck= ", JSON.parse(JSON.stringify(section)))
       if (section && section.content.educations) {
         section.content.educations.push(action.payload.education)
-        // console.log("this1")
       } else if (section) {
         section.content.educations = [action.payload.education]
-        // console.log("this2")
       }
-      // console.log("state.sections chck2= ",JSON.parse(JSON.stringify(state.sections)))
     },
 
     removeEducation: (
@@ -364,12 +357,9 @@ export const resumeSlice = createSlice({
     ) => {
       saveToHistory(state)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      // console.log("action.payload.sectionId= ", action.payload.sectionId)
-      // console.log("action.payload.entryId= ", action.payload.entryId)
-      // console.log("state.sections chck= ", JSON.parse(JSON.stringify(state.sections)))
+
       if (section && section.content.educations) {
         const entry = section.content.educations.find((e) => e.id === action.payload.entryId)
-        // console.log("entry= ", entry)
         if (entry) {
           (entry as any)[action.payload.field] = action.payload.value
         }
@@ -386,17 +376,10 @@ export const resumeSlice = createSlice({
       }>,
     ) => {
       saveToHistory(state)
-      console.log("action.payload.sectionId= ", action.payload.sectionId)
-      console.log("action.payload.entryId= ", action.payload.entryId)
-      console.log("action.payload.field= ", action.payload.field)
-      console.log("action.payload.value= ", action.payload.value)
       const section = state.sections.find((s) => s.id === action.payload.sectionId)
-      console.log("section chck= ", JSON.parse(JSON.stringify(section)))
       if (section && section.content.educations) {
-        console.log("section.content.educations chck= ", JSON.parse(JSON.stringify(section)))
         const entry = section.content.educations.find((e) => e.id === action.payload.entryId)
         if (entry && entry.visibility) {
-          console.log("entry= ", JSON.stringify(entry))
           entry.visibility[action.payload.field] = action.payload.value
         }
       }

@@ -68,7 +68,7 @@ export default function SectionToolbar({
                 darkMode ? "bg-slate-700" : "bg-white",
             )}
         >
-            {typeof activeSkillData?.skillIndex === "number" && onAddEntry && (
+            {(section.type !== SectionTypeEnum.SKILLS || typeof activeSkillData?.skillIndex === "number") && onAddEntry && (
                 <Button
                     variant="ghost"
                     size="sm"
