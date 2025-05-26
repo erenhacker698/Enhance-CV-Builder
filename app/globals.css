@@ -241,6 +241,10 @@ body {
   flex: 0 1 auto;
 }
 
+.editable-field--skill {
+  width: auto;
+}
+
 .date-range-field {
   font-size: 12px;
   line-height: normal;
@@ -304,6 +308,10 @@ body {
   border: 1px solid #60d5ba;
   background: #fff;
   border-radius: 5px;
+}
+
+.text-custom-teal {
+  color: rgb(0, 140, 255);
 }
 
 @media screen and (max-width:767px) {

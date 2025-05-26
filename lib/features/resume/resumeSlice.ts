@@ -87,8 +87,10 @@ const initialState: ResumeState = {
       },
     },
   ],
+  activeSection: null,
   activeSectionId: null,
   activeSectionType: null,
+  activeSkillData: null,
   history: {
     past: [],
     future: [],
@@ -207,9 +209,11 @@ export const resumeSlice = createSlice({
 
     // Section actions
     setActiveSection: (state, action: PayloadAction<{
+      section: Section | null
       sectionId: string | null
       sectionType: string | null
     }>) => {
+      state.activeSection = action.payload.section
       state.activeSectionId = action.payload.sectionId
       state.activeSectionType = action.payload.sectionType
     },
@@ -519,6 +523,22 @@ export const resumeSlice = createSlice({
       }
     },
 
+    setActiveSkillData: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        groupId: string
+        skillIndex: number
+      } | null>
+    ) => {
+      if (action.payload) {
+        const { sectionId, groupId, skillIndex } = action.payload
+        state.activeSkillData = { sectionId, groupId, skillIndex }
+      } else {
+        state.activeSkillData = null
+      }
+    },
+
     addSkill: (
       state,
       action: PayloadAction<{
@@ -533,6 +553,25 @@ export const resumeSlice = createSlice({
         const group = section.content.skills.find((g) => g.id === action.payload.groupId)
         if (group) {
           group.skills.push(action.payload.skill)
+        }
+      }
+    },
+
+    updateSkill: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        groupId: string
+        skillIndex: number
+        newSkill: string
+      }>,
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section?.content.skills) {
+        const group = section.content.skills.find((g) => g.id === action.payload.groupId)
+        if (group) {
+          group.skills[action.payload.skillIndex] = action.payload.newSkill
         }
       }
     },
@@ -670,7 +709,9 @@ export const {
   addSkillGroup,
   updateSkillGroup,
   removeSkillGroup,
+  setActiveSkillData,
   addSkill,
+  updateSkill,
   removeSkill,
   toggleSkillsContentVisibility,
   addLanguage,

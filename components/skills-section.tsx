@@ -2,42 +2,50 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useDispatch } from "react-redux"
-import { addSkillGroup, updateSkillGroup, removeSkillGroup, addSkill, removeSkill, } from "@/lib/features/resume/resumeSlice"
+import { updateSkillGroup, removeSkillGroup, removeSkill, updateSkill, setActiveSkillData, } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
-import { Plus, X } from "lucide-react"
+import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Section, SkillSectionItem } from "@/lib/types"
+import EditableText from "./editable-text"
 
-interface SkillsSectionProps {
+interface SectionProps {
     section: Section
     isActive: boolean
     darkMode?: boolean
+    handleContextMenu: (e: React.MouseEvent, entryId?: string) => void
+    handleEntrySwitch: (e: React.MouseEvent, entryId: string) => void
+    handleActivateSection: () => void
+    handleAddGroup?: () => void
 }
 
-export default function SkillsSection({ section, isActive, darkMode = false }: SkillsSectionProps) {
+export default function SkillsSection({ section, isActive, darkMode = false, handleContextMenu, handleEntrySwitch, handleActivateSection }: SectionProps) {
+    const skillSectionRef = useRef<HTMLDivElement>(null)
+    const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
     const dispatch = useDispatch()
-    const [newSkill, setNewSkill] = useState("")
-    const skills = section.content?.skills || []
 
-    const handleAddSkill = (groupId: string) => {
-        if (newSkill.trim()) {
-            dispatch(
-                addSkill({
-                    sectionId: section.id,
-                    groupId,
-                    skill: newSkill.trim(),
-                }),
-            )
-            setNewSkill("")
-        }
+    const handleSkillOp = (sectionId: string, groupId: string, index: number) => {
+        dispatch(
+            setActiveSkillData({
+                sectionId,
+                groupId,
+                skillIndex: index
+            })
+        )
     }
 
-    const handleKeyDown = (e: React.KeyboardEvent, groupId: string) => {
-        if (e.key === "Enter" && newSkill.trim()) {
-            e.preventDefault()
-            handleAddSkill(groupId)
+    const handleUpdateSkill = (groupId: string, skillIndex: number, newSkill: string) => {
+        if (activeEntryId) {
+            dispatch(
+                updateSkill({
+                    sectionId: section.id,
+                    groupId,
+                    skillIndex,
+                    newSkill
+                })
+            )
         }
     }
 
@@ -50,24 +58,7 @@ export default function SkillsSection({ section, isActive, darkMode = false }: S
             }),
         )
     }
-    const handleAddGroup = () => {
-        dispatch(
-            addSkillGroup({
-                sectionId: section.id,
-                skillItem: {
-                    id: `group-${Date.now()}`,
-                    groupName: "New Group",
-                    skills: [],
-                    compactMode: false,
-                    borderStyle: "bottom",
-                    visibility: {
-                        groupName: true,
-                        compactMode: false
-                    }
-                },
-            }),
-        )
-    }
+
     const handleRemoveGroup = (groupId: string) => {
         dispatch(
             removeSkillGroup({
@@ -77,35 +68,71 @@ export default function SkillsSection({ section, isActive, darkMode = false }: S
         )
     }
 
-    const handleUpdateGroupName = (groupId: string, name: string) => {
+    const handleUpdate = (groupId: string, name: string) => {
         dispatch(
             updateSkillGroup({
                 sectionId: section.id,
                 groupId,
-                groupName:name
+                groupName: name
             }),
         )
     }
 
-    // If no skill groups exist, create a default one
-    if (skills.length === 0 && isActive) {
-        return (
-            <Button
-                variant="outline"
-                size="sm"
-                className={cn("w-full mt-2", darkMode && "border-slate-600 text-white hover:bg-slate-700")}
-                onClick={handleAddGroup}
-            >
-                <Plus size={14} className="mr-1" />
-                Add Skill Group
-            </Button>
-        )
+    const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
+        e.stopPropagation()
+        setActiveEntryId(entryId)
+        handleEntrySwitch(e, entryId,)
+        handleActivateSection()
     }
+
+    const handleContextClick = (e: React.MouseEvent, entryId?: string) => {
+        e.stopPropagation()
+        if (entryId) {
+            setActiveEntryId(entryId)
+        } else {
+            setActiveEntryId(null)
+        }
+        handleContextMenu(e, entryId)
+    }
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (
+                skillSectionRef.current &&
+                !skillSectionRef.current.contains(event.target as Node)
+            ) {
+                dispatch(setActiveSkillData((null)))
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside)
+        return () => document.removeEventListener("mousedown", handleClickOutside)
+    }, [])
 
     return (
         <div className="space-y-4">
-            {skills.map((group: SkillSectionItem) => (
-                <div key={group.id} className="relative">
+            {section.content.skills?.map((skillGroupItem: SkillSectionItem) => (
+                <div key={skillGroupItem.id}
+                    className={cn(
+                        "relative p-2 -mx-2 group/entry",
+                        isActive && "hover:bg-gray-50 rounded",
+                        darkMode && isActive && "hover:bg-slate-700 rounded",
+                        activeEntryId === skillGroupItem.id && 'selected-resume-item'
+                    )}
+                    onContextMenu={(e) => handleContextClick(e, skillGroupItem.id)}
+                    onClick={(e) => handleEntryToggle(e, skillGroupItem.id)}
+                >
+                    {skillGroupItem.visibility?.groupName && (
+                        <div className="flex items-center justify-start">
+                            <EditableText
+                                value={skillGroupItem.groupName ?? ''}
+                                onChange={(value) => handleUpdate(skillGroupItem.id, value)}
+                                className={cn("editable-field text-custom-teal mb-2", darkMode && "text-white")}
+                                placeholder="Group Title"
+                            />
+                        </div>
+                    )}
+
                     {isActive && (
                         <Button
                             variant="ghost"
@@ -114,23 +141,31 @@ export default function SkillsSection({ section, isActive, darkMode = false }: S
                                 "absolute right-0 top-0 h-6 w-6",
                                 darkMode ? "text-gray-300 hover:text-red-400" : "text-gray-400 hover:text-red-500",
                             )}
-                            onClick={() => handleRemoveGroup(group.id)}
+                            onClick={() => handleRemoveGroup(skillGroupItem.id)}
+                            title="Remove Skills Group"
                         >
                             <X size={14} />
                         </Button>
                     )}
 
                     <div className="flex flex-wrap gap-2 mb-2">
-                        {group.skills.map((skill, index) => (
+                        {skillGroupItem.skills.map((skill, index) => (
                             <div
                                 key={index}
                                 className={cn(
                                     "px-2 py-1 flex items-center",
                                     isActive && "group/skill",
-                                    darkMode ? "border-b border-gray-500 text-white" : "border-b border-gray-300",
+                                    darkMode ? "border-gray-500 text-white" : "border-gray-300",
+                                    skillGroupItem.compactMode ? "border" : "border-b"
                                 )}
                             >
-                                <span>{skill}</span>
+                                <EditableText
+                                    value={skill}
+                                    onChange={(value) => handleUpdateSkill(skillGroupItem.id, index, value)}
+                                    onStartEdit={() => handleSkillOp(section.id, skillGroupItem.id, index)}
+                                    className={cn("editable-field editable-field--skill w-max bg-transparent border-none focus:outline-none text-sm flex items-center justify-start", darkMode && "text-white")}
+                                    placeholder="Your Skill"
+                                />
                                 {isActive && (
                                     <Button
                                         variant="ghost"
@@ -139,44 +174,16 @@ export default function SkillsSection({ section, isActive, darkMode = false }: S
                                             "h-4 w-4 ml-1 opacity-0 group-hover/skill:opacity-100",
                                             darkMode ? "text-gray-300 hover:text-red-400" : "text-gray-400 hover:text-red-500",
                                         )}
-                                        onClick={() => handleRemoveSkill(group.id, index)}
+                                        onClick={() => handleRemoveSkill(skillGroupItem.id, index)}
                                     >
                                         <X size={10} />
                                     </Button>
                                 )}
                             </div>
                         ))}
-
-                        {isActive && (
-                            <div className={cn("px-2 py-1 rounded-md", darkMode ? "bg-slate-700" : "bg-gray-100")}>
-                                <input
-                                    type="text"
-                                    value={newSkill}
-                                    onChange={(e) => setNewSkill(e.target.value)}
-                                    onKeyDown={(e) => handleKeyDown(e, group.id)}
-                                    placeholder="Your Skill"
-                                    className={cn(
-                                        "w-20 bg-transparent border-none focus:outline-none text-sm",
-                                        darkMode && "text-white placeholder:text-gray-400",
-                                    )}
-                                />
-                            </div>
-                        )}
                     </div>
                 </div>
             ))}
-
-            {isActive && (
-                <Button
-                    variant="outline"
-                    size="sm"
-                    className={cn("w-full mt-2", darkMode && "border-slate-600 text-white hover:bg-slate-700")}
-                    onClick={handleAddGroup}
-                >
-                    <Plus size={14} className="mr-1" />
-                    Add Skill Group
-                </Button>
-            )}
         </div>
     )
 }

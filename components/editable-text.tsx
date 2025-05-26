@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils"
 interface EditableTextProps {
     value: string
     onChange: (value: string) => void
+    onStartEdit?: () => void
     className?: string
     multiline?: boolean
     placeholder?: string
@@ -16,6 +17,7 @@ interface EditableTextProps {
 export default function EditableText({
     value,
     onChange,
+    onStartEdit,
     className,
     multiline = false,
     placeholder = "Click to edit",
@@ -41,11 +43,12 @@ export default function EditableText({
 
     const handleClick = () => {
         setIsEditing(true)
+        onStartEdit?.()
     }
 
     const handleBlur = () => {
-        setIsEditing(false)
-        onChange(editValue)
+        // setIsEditing(false)
+        // onChange(editValue)
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {

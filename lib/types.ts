@@ -168,8 +168,14 @@ export type VisibilityDispatchMap = {
 export interface ResumeState {
   header: Header
   sections: Section[]
+  activeSection: Section | null
   activeSectionId: string | null
   activeSectionType: string | null
+  activeSkillData: {
+    sectionId: string
+    groupId: string
+    skillIndex: number
+  } | null
   history: {
     past: Array<{
       header: Header

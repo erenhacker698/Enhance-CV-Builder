@@ -2,17 +2,19 @@
 
 import type React from "react"
 
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Settings, MoveVertical, ArrowRight, ArrowLeft } from "lucide-react"
 import { removeSection, removeSectionEntry } from "@/lib/features/resume/resumeSlice"
 import { cn } from "@/lib/utils"
-import { type Section } from "@/lib/types"
+import { SectionTypeEnum, type Section } from "@/lib/types"
+import { RootState } from "@/lib/store"
 
 interface SectionToolbarProps {
     section: Section
     activeEntryId: string | null
     onAddEntry: () => void
+    onAddGroup?: () => void
     onShowSettingsPanel: () => void
     onDragStart?: () => void
     onMoveToColumn?: (column: "left" | "right") => void
@@ -23,12 +25,14 @@ export default function SectionToolbar({
     section,
     activeEntryId,
     onAddEntry,
+    onAddGroup,
     onShowSettingsPanel,
     onDragStart,
     onMoveToColumn,
     darkMode = false,
 }: SectionToolbarProps) {
     const dispatch = useDispatch()
+    const { activeSkillData } = useSelector((state: RootState) => state.resume)
 
     const handleRemoveSection = () => {
         if (activeEntryId) {
@@ -58,13 +62,13 @@ export default function SectionToolbar({
     }
 
     return (
-        <div data-activeentryid={activeEntryId}
+        <div data-activeentryid={activeEntryId} data-section-type={section.type}
             className={cn(
                 "SectionToolbar border border-gray-200 rounded-md shadow-sm flex",
                 darkMode ? "bg-slate-700" : "bg-white",
             )}
         >
-            {onAddEntry && (
+            {typeof activeSkillData?.skillIndex === "number" && onAddEntry && (
                 <Button
                     variant="ghost"
                     size="sm"
@@ -80,6 +84,28 @@ export default function SectionToolbar({
                     }}
                 >
                     <Plus size={16} className="mr-1" /> Entry
+                </Button>
+            )}
+
+            {onAddGroup && section.type === SectionTypeEnum.SKILLS && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    className={cn(
+                        "h-8 px-3 text-white rounded-none hover:text-white cursor-pointer",
+                        typeof activeSkillData?.skillIndex === "number"
+                            ? ""
+                            : "rounded-l-md rounded-r-none border-r",
+                        darkMode
+                            ? "bg-purple-600 hover:bg-purple-700 border-purple-700"
+                            : "bg-purple-500 hover:bg-purple-600 border-purple-600",
+                    )}
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        onAddGroup()
+                    }}
+                >
+                    <Plus size={16} className="mr-1" /> Group
                 </Button>
             )}
 
