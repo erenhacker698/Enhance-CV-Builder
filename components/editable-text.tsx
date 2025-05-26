@@ -47,8 +47,8 @@ export default function EditableText({
     }
 
     const handleBlur = () => {
-        // setIsEditing(false)
-        // onChange(editValue)
+        setIsEditing(false)
+        onChange(editValue)
     }
 
     const handleKeyDown = (e: React.KeyboardEvent) => {

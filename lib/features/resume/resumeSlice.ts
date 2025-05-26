@@ -87,7 +87,6 @@ const initialState: ResumeState = {
       },
     },
   ],
-  activeSection: null,
   activeSectionId: null,
   activeSectionType: null,
   activeSkillData: null,
@@ -209,11 +208,9 @@ export const resumeSlice = createSlice({
 
     // Section actions
     setActiveSection: (state, action: PayloadAction<{
-      section: Section | null
       sectionId: string | null
       sectionType: string | null
     }>) => {
-      state.activeSection = action.payload.section
       state.activeSectionId = action.payload.sectionId
       state.activeSectionType = action.payload.sectionType
     },

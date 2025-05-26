@@ -19,7 +19,7 @@ export default function ResumeTemplateStandard({ resumeRef }: ResumeTemplateStan
     const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
 
     const handleHeaderClick = () => {
-        dispatch(setActiveSection({ sectionId: null }))
+        dispatch(setActiveSection({ sectionId: null, sectionType: null }))
     }
 
     // Filter sections by column

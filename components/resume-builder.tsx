@@ -8,7 +8,7 @@ import type { RootState } from "@/lib/store"
 import Sidebar from "@/components/sidebar"
 import ResumeTemplateDoubleColumn from "@/components/resume-template-double-column"
 import ResumeTemplateElegant from "@/components/resume-template-elegant"
-import ResumeTemplateTimeline from "@/components/resume-template-timeline"
+// import ResumeTemplateTimeline from "@/components/resume-template-timeline"
 import { cn } from "@/lib/utils"
 
 export default function ResumeBuilder() {
@@ -42,8 +42,8 @@ export default function ResumeBuilder() {
     switch (template) {
       case "elegant":
         return <ResumeTemplateElegant resumeRef={resumeRef} />
-      case "timeline":
-        return <ResumeTemplateTimeline resumeRef={resumeRef} />
+      // case "timeline":
+      //   return <ResumeTemplateTimeline resumeRef={resumeRef} />
       case "double-column":
       default:
         return <ResumeTemplateDoubleColumn resumeRef={resumeRef} />

@@ -52,7 +52,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     const sectionRef = useRef<HTMLDivElement>(null)
 
     const handleActivateSection = () => {
-        dispatch(setActiveSection({ sectionId: section.id, sectionType: section.type, section: section }))
+        dispatch(setActiveSection({ sectionId: section.id, sectionType: section.type }))
         setShowToolbar(true)
     }
 

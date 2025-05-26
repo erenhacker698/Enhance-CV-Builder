@@ -19,7 +19,7 @@ export default function ResumeTemplateModern({ resumeRef }: ResumeTemplateModern
     const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
 
     const handleHeaderClick = () => {
-        dispatch(setActiveSection({ sectionId: null }))
+        dispatch(setActiveSection({ sectionId: null, sectionType: null }))
     }
 
     // For modern template, we'll display all sections in a single column

@@ -26,7 +26,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
     const [draggedSection, setDraggedSection] = useState<string | null>(null)
 
     const handleHeaderClick = () => {
-        dispatch(setActiveSection({ sectionId: null }))
+        dispatch(setActiveSection({ sectionId: null, sectionType: null }))
     }
 
     const leftSections = sections.filter((section) => section.column === "left")
@@ -124,7 +124,6 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                                         key={section.id}
                                         draggableId={section.id}
                                         index={index}
-                                        isDragDisabled={section.type === "text" && section.content.title.includes("SHARMA")}
                                     >
                                         {(provided, snapshot) => (
                                             <div
@@ -210,10 +209,10 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                                             >
                                                 <div className="mb-6">
                                                     <h2 className="text-xl font-bold uppercase mb-4 border-b border-slate-600 pb-2">
-                                                        {section.content.title}
+                                                        {section.title}
                                                     </h2>
                                                     <ResumeSection
-                                                        section={{ ...section, content: { ...section.content, title: "" } }}
+                                                        section={{ ...section, title: "" }}
                                                         isActive={section.id === activeSectionId}
                                                         darkMode={true}
                                                     />

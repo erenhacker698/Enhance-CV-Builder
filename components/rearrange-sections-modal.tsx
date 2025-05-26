@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 import { reorderSections } from "@/lib/features/resume/resumeSlice"
 import { Lock, GripVertical } from "lucide-react"
 import type { RootState } from "@/lib/store"
-import type { Section } from "@/lib/types"
+import type { Section, SectionTypeEnum } from "@/lib/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import { cn } from "@/lib/utils"
 
@@ -98,18 +98,18 @@ export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSec
     }
 
     const getSectionTitle = (section: Section) => {
-        if (section.type === "text" && section.content.title.includes("SHARMA")) {
-            return "Header"
-        }
-        return section.content.title
+        // if (section.type === "text" && section.content.title.includes("SHARMA")) {
+        //     return "Header"
+        // }
+        return section.title
     }
 
-    const isHeader = (section: Section) => {
-        return section.type === "text" && section.content.title.includes("SHARMA")
-    }
+    // const isHeader = (section: Section) => {
+    //     return section.type === SectionTypeEnum.EDUCATION || SectionTypeEnum.LANGUAGES || SectionTypeEnum.PROJECTS || SectionTypeEnum.SKILLS
+    // }
 
-    const leftSections = allSections.filter((section) => section.column === "left" && !isHeader(section))
-    const rightSections = allSections.filter((section) => section.column === "right" && !isHeader(section))
+    const leftSections = allSections.filter((section) => section.column === "left")
+    const rightSections = allSections.filter((section) => section.column === "right")
 
     const isOneColumnTemplate = template === "timeline"
 

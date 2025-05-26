@@ -2,12 +2,13 @@
 
 import { useState } from "react"
 import { useDispatch } from "react-redux"
-import { addAchievement, updateAchievement, removeAchievement } from "@/lib/features/resume/resumeSlice"
+// import { addAchievement, updateAchievement, removeAchievement } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Info, Award } from "lucide-react"
 import EditableText from "@/components/editable-text"
 import { cn } from "@/lib/utils"
-import type { Section, Achievement } from "@/lib/types"
+import type { Section } from "@/lib/types"
+// import type { Section, Achievement } from "@/lib/types"
 
 interface AchievementsSectionProps {
     section: Section
@@ -17,41 +18,41 @@ interface AchievementsSectionProps {
 
 export default function AchievementsSection({ section, isActive, darkMode = false }: AchievementsSectionProps) {
     const dispatch = useDispatch()
-    const achievements = section.content.achievements || []
+    // const achievements = section.content.achievements || []
     const [selectedIcon, setSelectedIcon] = useState<string>("info")
 
     const handleAddAchievement = () => {
-        dispatch(
-            addAchievement({
-                sectionId: section.id,
-                achievement: {
-                    id: `achievement-${Date.now()}`,
-                    title: "New Achievement",
-                    description: "Achievement description",
-                    icon: selectedIcon,
-                },
-            }),
-        )
+        // dispatch(
+        //     addAchievement({
+        //         sectionId: section.id,
+        //         achievement: {
+        //             id: `achievement-${Date.now()}`,
+        //             title: "New Achievement",
+        //             description: "Achievement description",
+        //             icon: selectedIcon,
+        //         },
+        //     }),
+        // )
     }
 
     const handleUpdateAchievement = (achievementId: string, field: string, value: string) => {
-        dispatch(
-            updateAchievement({
-                sectionId: section.id,
-                achievementId,
-                field,
-                value,
-            }),
-        )
+        // dispatch(
+        //     updateAchievement({
+        //         sectionId: section.id,
+        //         achievementId,
+        //         field,
+        //         value,
+        //     }),
+        // )
     }
 
     const handleRemoveAchievement = (achievementId: string) => {
-        dispatch(
-            removeAchievement({
-                sectionId: section.id,
-                achievementId,
-            }),
-        )
+        // dispatch(
+        //     removeAchievement({
+        //         sectionId: section.id,
+        //         achievementId,
+        //     }),
+        // )
     }
 
     const renderIcon = (iconName: string) => {
@@ -67,7 +68,7 @@ export default function AchievementsSection({ section, isActive, darkMode = fals
 
     return (
         <div className="space-y-4">
-            {achievements.map((achievement: Achievement) => (
+            {/* {achievements.map((achievement: Achievement) => (
                 <div
                     key={achievement.id}
                     className={cn(
@@ -106,7 +107,7 @@ export default function AchievementsSection({ section, isActive, darkMode = fals
                         />
                     </div>
                 </div>
-            ))}
+            ))} */}
 
             {isActive && (
                 <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleAddAchievement}>

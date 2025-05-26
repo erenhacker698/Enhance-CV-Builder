@@ -23,12 +23,12 @@ const templates = [
         description: "Professional design with sidebar",
         image: "/templates/Elegent.png",
     },
-    {
-        id: "timeline",
-        name: "Timeline",
-        description: "Chronological timeline format",
-        image: "/templates/Timeline.png",
-    },
+    // {
+    //     id: "timeline",
+    //     name: "Timeline",
+    //     description: "Chronological timeline format",
+    //     image: "/templates/Timeline.png",
+    // },
 ]
 
 export default function TemplatesModal({ }: TemplatesModalProps) {

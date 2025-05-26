@@ -1,16 +1,17 @@
 "use client"
 import { useDispatch } from "react-redux"
-import {
-    addCustomItem,
-    updateCustomItem,
-    removeCustomItem,
-    toggleCustomItemFeatured,
-} from "@/lib/features/resume/resumeSlice"
+// import {
+//     addCustomItem,
+//     updateCustomItem,
+//     removeCustomItem,
+//     toggleCustomItemFeatured,
+// } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Info, Star, Calendar } from "lucide-react"
 import EditableText from "@/components/editable-text"
 import { cn } from "@/lib/utils"
-import type { Section, CustomItem } from "@/lib/types"
+import type { Section } from "@/lib/types"
+// import type { Section, CustomItem } from "@/lib/types"
 
 interface CustomSectionProps {
     section: Section
@@ -20,51 +21,51 @@ interface CustomSectionProps {
 
 export default function CustomSection({ section, isActive, darkMode = false }: CustomSectionProps) {
     const dispatch = useDispatch()
-    const items = section.content.items || []
+    // const items = section.content.items || []
 
     const handleAddItem = () => {
-        dispatch(
-            addCustomItem({
-                sectionId: section.id,
-                item: {
-                    id: `custom-${Date.now()}`,
-                    title: "New Item",
-                    dateRange: "Date period",
-                    description: "Item description",
-                    icon: "info",
-                    featured: false,
-                },
-            }),
-        )
+        // dispatch(
+        //     addCustomItem({
+        //         sectionId: section.id,
+        //         item: {
+        //             id: `custom-${Date.now()}`,
+        //             title: "New Item",
+        //             dateRange: "Date period",
+        //             description: "Item description",
+        //             icon: "info",
+        //             featured: false,
+        //         },
+        //     }),
+        // )
     }
 
     const handleUpdateItem = (itemId: string, field: string, value: string) => {
-        dispatch(
-            updateCustomItem({
-                sectionId: section.id,
-                itemId,
-                field,
-                value,
-            }),
-        )
+        // dispatch(
+        //     updateCustomItem({
+        //         sectionId: section.id,
+        //         itemId,
+        //         field,
+        //         value,
+        //     }),
+        // )
     }
 
     const handleRemoveItem = (itemId: string) => {
-        dispatch(
-            removeCustomItem({
-                sectionId: section.id,
-                itemId,
-            }),
-        )
+        // dispatch(
+        //     removeCustomItem({
+        //         sectionId: section.id,
+        //         itemId,
+        //     }),
+        // )
     }
 
     const handleToggleFeatured = (itemId: string) => {
-        dispatch(
-            toggleCustomItemFeatured({
-                sectionId: section.id,
-                itemId,
-            }),
-        )
+        // dispatch(
+        //     toggleCustomItemFeatured({
+        //         sectionId: section.id,
+        //         itemId,
+        //     }),
+        // )
     }
 
     const renderIcon = (iconName: string) => {
@@ -78,7 +79,7 @@ export default function CustomSection({ section, isActive, darkMode = false }: C
 
     return (
         <div className="space-y-4">
-            {items.map((item: CustomItem) => (
+            {/* {items.map((item: CustomItem) => (
                 <div
                     key={item.id}
                     className={cn("relative p-2 -mx-2 group/item flex items-start", isActive && "hover:bg-gray-50 rounded")}
@@ -130,7 +131,7 @@ export default function CustomSection({ section, isActive, darkMode = false }: C
                         />
                     </div>
                 </div>
-            ))}
+            ))} */}
 
             {isActive && (
                 <Button variant="outline" size="sm" className="w-full mt-2" onClick={handleAddItem}>
