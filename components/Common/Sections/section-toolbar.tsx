@@ -5,14 +5,15 @@ import type React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Settings, MoveVertical, ArrowRight, ArrowLeft } from "lucide-react"
-import { removeSection, removeSectionEntry } from "@/lib/features/resume/resumeSlice"
+import { removeSection, removeSectionEntry, upsertActiveSection } from "@/lib/features/resume/resumeSlice"
 import { cn } from "@/lib/utils"
 import { SectionTypeEnum, type Section } from "@/lib/types"
 import { RootState } from "@/lib/store"
 
 interface SectionToolbarProps {
     section: Section
-    activeEntryId: string | null
+    isActive: boolean
+    activeEntryId: string | null | undefined
     onAddEntry: () => void
     onAddGroup?: () => void
     onShowSettingsPanel: () => void
@@ -23,6 +24,7 @@ interface SectionToolbarProps {
 
 export default function SectionToolbar({
     section,
+    isActive,
     activeEntryId,
     onAddEntry,
     onAddGroup,
@@ -36,14 +38,19 @@ export default function SectionToolbar({
 
     const handleRemoveSection = () => {
         console.log('handleRemoveSection()')
-        console.log('section.id: ',section.id)
-        console.log('activeEntryId: ',activeEntryId)
+        console.log('section.id: ', section.id)
+        console.log('activeEntryId: ', activeEntryId)
         if (activeEntryId) {
             dispatch(
                 removeSectionEntry({
                     sectionId: section.id,
                     entryId: activeEntryId
                 }),
+            )
+            dispatch(
+                upsertActiveSection({
+                    activeSection: null
+                })
             )
         } else {
             dispatch(removeSection({ sectionId: section.id }))

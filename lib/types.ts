@@ -119,6 +119,14 @@ export interface ActiveSection {
   entryId: string | null
 }
 
+export interface SectionProps {
+  section: Section
+  isActive: boolean
+  darkMode?: boolean
+  handleEntryToggle: (e: React.MouseEvent, entryId: string) => void
+  handleContextMenu: (e: React.MouseEvent, entryId?: string, groupId?: string) => void
+}
+
 export interface Section {
   id: string;
   type: SectionType

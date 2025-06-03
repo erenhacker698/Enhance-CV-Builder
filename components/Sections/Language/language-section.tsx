@@ -2,39 +2,30 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
-import { useDispatch } from "react-redux"
+import { useRef, useEffect } from "react"
+import { useDispatch, useSelector } from "react-redux"
 import {
-    addEntryLanguage,
     updateEntryLanguage,
-    removeEntryLanguage,
-    toggleEntryVisibility_Language
+    upsertActiveSection,
 } from "@/lib/features/resume/resumeSlice"
-import { Button } from "@/components/ui/button"
-import { Plus, Trash2, Settings, MoveVertical } from "lucide-react"
 import EditableText from "@/components/Shared/editable-text"
 import { cn } from "@/lib/utils"
-import LanguageSettingsPanel from "@/components/Sections/Language/SettingsPannel/language-settings-panel"
-import { proficiencyLabels, type LanguageSectionItem, type Section } from "@/lib/types"
+import { proficiencyLabels, SectionProps, type LanguageSectionItem, type Section } from "@/lib/types"
+import { RootState } from "@/lib/store"
 
-interface SectionProps {
-    section: Section
-    isActive: boolean
-    darkMode?: boolean
-    handleContextMenu: (e: React.MouseEvent, entryId?: string) => void
-    handleEntrySwitch: (e: React.MouseEvent, entryId: string) => void
-    handleActivateSection: () => void
-}
-
-export default function LanguageSection({ section, isActive, darkMode = false, handleContextMenu, handleEntrySwitch, handleActivateSection }: SectionProps) {
+export default function LanguageSection({ section, isActive, darkMode = false, handleEntryToggle, handleContextMenu }: SectionProps) {
     const dispatch = useDispatch()
-    const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
+    const activeSection = useSelector((state: RootState) => state.resume.activeSection)
     const sectionRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (sectionRef.current && !sectionRef.current.contains(event.target as Node)) {
-                setActiveEntryId(null)
+                dispatch(
+                    upsertActiveSection({
+                        activeSection: null
+                    })
+                )
             }
         }
 
@@ -42,25 +33,7 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
         return () => document.removeEventListener("mousedown", handleClickOutside)
     }, [])
 
-
-    const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
-        e.stopPropagation()
-        setActiveEntryId(entryId)
-        handleEntrySwitch(e, entryId)
-        handleActivateSection()
-    }
-
-    const handleContextClick = (e: React.MouseEvent, entryId?: string) => {
-        e.stopPropagation()
-        if (entryId) {
-            setActiveEntryId(entryId)
-        } else {
-            setActiveEntryId(null)
-        }
-        handleContextMenu(e, entryId)
-    }
-
-    const handleupdateEntryLanguage = (langId: string, field: string, value: string | number) => {
+    const handleEntryUpdate = (langId: string, field: string, value: string | number) => {
         dispatch(
             updateEntryLanguage({
                 sectionId: section.id,
@@ -92,16 +65,16 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
                         "relative p-2 -mx-2 group/entry border border-transparent",
                         isActive && "hover:bg-gray-50 hover:border-gray-200 rounded-md",
                         darkMode && isActive && "hover:bg-slate-700 rounded",
-                        activeEntryId === language.id && 'selected-resume-item'
+                        activeSection?.id === language.id && 'selected-resume-item'
                     )}
-                    onContextMenu={(e) => handleContextClick(e, language.id)}
+                    onContextMenu={(e) => handleContextMenu(e, language.id)}
                     onClick={(e) => handleEntryToggle(e, language.id)}
                 >
 
                     <div className="flex items-center justify-between">
                         <EditableText
                             value={language.name}
-                            onChange={(value) => handleupdateEntryLanguage(language.id, "name", value)}
+                            onChange={(value) => handleEntryUpdate(language.id, "name", value)}
                             className={cn("editable-field", darkMode && "text-white")}
                             placeholder="Language"
                         />
@@ -110,7 +83,7 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
                             {language.visibility?.proficiency !== false && (
                                 <EditableText
                                     value={language.level}
-                                    onChange={(value) => handleupdateEntryLanguage(language.id, "level", value)}
+                                    onChange={(value) => handleEntryUpdate(language.id, "level", value)}
                                     className="text-sm"
                                 />
                             )}
@@ -123,7 +96,7 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
                                                 "w-4 h-4 rounded-full mx-0.5 cursor-pointer",
                                                 rating <= language.proficiency ? "bg-teal-500" : "bg-gray-200",
                                             )}
-                                            onClick={() => handleupdateEntryLanguage(language.id, "proficiency", rating)}
+                                            onClick={() => handleEntryUpdate(language.id, "proficiency", rating)}
                                         ></div>
                                     ))}
                                 </div>

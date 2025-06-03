@@ -2,55 +2,27 @@
 
 import type React from "react"
 
-import { useState, useRef, useEffect } from "react"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { updateEntryProject } from "@/lib/features/resume/resumeSlice"
 import EditableText from "@/components/Shared/editable-text"
 import { cn } from "@/lib/utils"
-import { type ProjectSectionItem, type Section } from "@/lib/types"
+import { SectionProps, type ProjectSectionItem } from "@/lib/types"
 import { Calendar, Link } from "lucide-react"
+import { RootState } from "@/lib/store"
 
-interface SectionProps {
-    section: Section
-    isActive: boolean
-    darkMode?: boolean
-    handleContextMenu: (e: React.MouseEvent, entryId?: string) => void
-    handleEntrySwitch: (e: React.MouseEvent, entryId: string) => void
-    handleActivateSection: () => void
-}
-
-export default function ProjectSection({ section, isActive, darkMode = false, handleContextMenu, handleEntrySwitch, handleActivateSection }: SectionProps) {
+export default function ProjectSection({ section, isActive, darkMode = false, handleEntryToggle, handleContextMenu }: SectionProps) {
     const dispatch = useDispatch()
-    const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
+    const activeSection = useSelector((state: RootState) => state.resume.activeSection)
 
-    const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
-        e.stopPropagation()
-        setActiveEntryId(entryId)
-        handleEntrySwitch(e, entryId)
-        handleActivateSection()
-    }
-
-    const handleEntryChange = (entryId: string, field: keyof ProjectSectionItem, value: string | string[]) => {
-        if (activeEntryId) {
-            dispatch(
-                updateEntryProject({
-                    sectionId: section.id,
-                    projectId: entryId,
-                    field,
-                    value
-                })
-            )
-        }
-    }
-
-    const handleContextClick = (e: React.MouseEvent, entryId?: string) => {
-        e.stopPropagation()
-        if (entryId) {
-            setActiveEntryId(entryId)
-        } else {
-            setActiveEntryId(null)
-        }
-        handleContextMenu(e, entryId)
+    const handleEntryUpdate = (entryId: string, field: keyof ProjectSectionItem, value: string | string[]) => {
+        dispatch(
+            updateEntryProject({
+                sectionId: section.id,
+                projectId: entryId,
+                field,
+                value
+            })
+        )
     }
 
     return (
@@ -61,9 +33,9 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                         "relative p-2 -mx-2 group/entry",
                         isActive && "hover:bg-gray-50 rounded",
                         darkMode && isActive && "hover:bg-slate-700 rounded",
-                        activeEntryId === item.id && 'selected-resume-item'
+                        activeSection?.entryId === item.id && 'selected-resume-item'
                     )}
-                    onContextMenu={(e) => handleContextClick(e, item.id)}
+                    onContextMenu={(e) => handleContextMenu(e, item.id)}
                     onClick={(e) => handleEntryToggle(e, item.id)}
                 >
                     <div className="flex flex-nowrap">
@@ -71,7 +43,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                             <div className="flex items-center justify-start">
                                 <EditableText
                                     value={item.projectName}
-                                    onChange={(value) => handleEntryChange(item.id, "projectName", value)}
+                                    onChange={(value) => handleEntryUpdate(item.id, "projectName", value)}
                                     className={cn("editable-field", darkMode && "text-white")}
                                     placeholder="Project Name"
                                 />
@@ -83,7 +55,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                                             <Calendar className="w-2 h-2" />
                                             <EditableText
                                                 value={item.period}
-                                                onChange={(value) => handleEntryChange(item.id, "period", value)}
+                                                onChange={(value) => handleEntryUpdate(item.id, "period", value)}
                                                 className={cn("editable-field date-range-field", darkMode && "text-white")}
                                                 placeholder="Date period"
                                             />
@@ -94,7 +66,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                                         <div className="flex items-start justify-start gap-2">
                                             <EditableText
                                                 value={item.location}
-                                                onChange={(value) => handleEntryChange(item.id, "location", value)}
+                                                onChange={(value) => handleEntryUpdate(item.id, "location", value)}
                                                 className={cn("editable-field location-field", darkMode && "text-white")}
                                                 placeholder="Location"
                                             />
@@ -108,7 +80,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                                     <Link className="w-2 h-2" />
                                     <EditableText
                                         value={item.link}
-                                        onChange={(value) => handleEntryChange(item.id, "link", value)}
+                                        onChange={(value) => handleEntryUpdate(item.id, "link", value)}
                                         className={cn("editable-field", darkMode && "text-white")}
                                         placeholder="URL"
                                     />
@@ -120,7 +92,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                                     <Link className="w-2 h-2" />
                                     <EditableText
                                         value={item.description}
-                                        onChange={(value) => handleEntryChange(item.id, "description", value)}
+                                        onChange={(value) => handleEntryUpdate(item.id, "description", value)}
                                         className={cn("editable-field", darkMode && "text-white")}
                                         placeholder="Short summary of your work"
                                     />
@@ -137,7 +109,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                                                     onChange={(value) => {
                                                         const newBullets = [...item.bullets]
                                                         newBullets[index] = value
-                                                        handleEntryChange(item.id, "bullets", newBullets)
+                                                        handleEntryUpdate(item.id, "bullets", newBullets)
                                                     }}
                                                     className="text-sm"
                                                 />
