@@ -2,9 +2,9 @@
 import { Provider } from "react-redux"
 import { store } from "@/lib/store"
 import ResumeBuilder from "@/components/resume-builder"
-import Header from "@/components/header"
-import AddSectionModal from "@/components/add-section-modal"
-import TemplatesModal from "@/components/templates-modal"
+import Header from "@/components/Common/Header/header"
+import AddSectionModal from "@/components/Common/Dialogs/add-section-modal"
+import TemplatesModal from "@/components/Common/Dialogs/templates-modal"
 
 export default function Home() {
   return (

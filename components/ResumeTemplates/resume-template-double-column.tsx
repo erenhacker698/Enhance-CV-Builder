@@ -15,7 +15,7 @@ import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
 import EducationSection from "../Sections/Education/education-section"
-import ProjectSection from "../projects-section"
+import ProjectSection from "../Sections/Projects/projects-section"
 import LanguageSection from "../Sections/Language/language-section"
 import SkillsSection from "../Sections/Skills/skills-section"
 

@@ -3,8 +3,8 @@
 import { EducationContentVisibility, EducationFields } from "@/lib/types";
 import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { Label } from "./ui/label";
-import { Switch } from "./ui/switch";
+import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
 
 interface FieldVisibilityMenuProps {
   position: { x: number; y: number };

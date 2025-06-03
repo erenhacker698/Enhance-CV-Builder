@@ -11,9 +11,9 @@ import {
 } from "@/lib/features/resume/resumeSlice"
 import { Camera, Link, LocateIcon, Mail, MapPin, Phone, Settings, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import EditableText from "@/components/editable-text"
-import HeaderSettingsPanel from "@/components/header-settings-panel"
-import PhotoUploadModal from "@/components/photo-upload-modal"
+import EditableText from "@/components/Shared/editable-text"
+import HeaderSettingsPanel from "@/components/Common/Header/header-settings-panel"
+import PhotoUploadModal from "@/components/Common/Dialogs/photo-upload-modal"
 import { cn } from "@/lib/utils"
 import type { RootState } from "@/lib/store"
 

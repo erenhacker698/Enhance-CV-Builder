@@ -12,7 +12,7 @@ import {
 } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Settings, MoveVertical } from "lucide-react"
-import EditableText from "@/components/editable-text"
+import EditableText from "@/components/Shared/editable-text"
 import { cn } from "@/lib/utils"
 import LanguageSettingsPanel from "@/components/Sections/Language/SettingsPannel/language-settings-panel"
 import type { LanguageSectionItem, Section } from "@/lib/types"

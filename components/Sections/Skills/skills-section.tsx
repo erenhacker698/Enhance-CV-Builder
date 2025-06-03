@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { Section, SkillSectionItem } from "@/lib/types"
-import EditableText from "../../editable-text"
+import EditableText from "../../Shared/editable-text"
 
 interface SectionProps {
     section: Section

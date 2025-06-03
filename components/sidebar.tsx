@@ -19,9 +19,9 @@ import {
 } from "lucide-react"
 import { setTemplatesModal, setAddSectionModal } from "@/lib/features/settings/settingsSlice"
 import { undo, redo } from "@/lib/features/resume/resumeSlice"
-import RearrangeSectionsModal from "@/components/rearrange-sections-modal"
+import RearrangeSectionsModal from "@/components/Common/Dialogs/rearrange-sections-modal"
 import type { RootState } from "@/lib/store"
-import PDFExportButton from "./pdf-export-button"
+import PDFExportButton from "./Common/ExportResume/pdf-export-button"
 
 interface SidebarProps {
   resumeRef: React.RefObject<HTMLDivElement>
