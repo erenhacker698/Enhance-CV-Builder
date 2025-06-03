@@ -3,6 +3,11 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@theme {
+  --font-inter: var(--font-inter), sans-serif;
+  --font-fira: var(--font-fira), monospace;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -125,6 +130,22 @@
 body {
   --reach-dialog: 1;
   /* important for modals from Radix or Reach UI */
+  font-family: Rubik, Arial, Helvetica, "Noto Sans Devanagari", "Noto Sans CJK SC Thin", "Noto Sans SC", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
+  font-family: var(--font-inter), sans-serif;
+}
+
+code,
+pre {
+  font-family: var(--font-fira), monospace;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-fira), monospace;
 }
 
 .max-w-4xl {
