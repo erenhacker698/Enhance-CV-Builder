@@ -3,12 +3,12 @@
 import type React from "react"
 
 import { useSelector, useDispatch } from "react-redux"
-import { setActiveSection } from "@/lib/features/resume/resumeSlice"
 import ResumeHeader from "@/components/resume-header"
 import ResumeSection from "@/components/resume-section"
 import type { RootState } from "@/lib/store"
 import type { Section } from "@/lib/types"
 import { cn } from "@/lib/utils"
+import { upsertActiveSection } from "@/lib/features/resume/resumeSlice"
 
 interface ResumeTemplateModernProps {
     resumeRef: React.RefObject<HTMLDivElement>
@@ -16,10 +16,11 @@ interface ResumeTemplateModernProps {
 
 export default function ResumeTemplateModern({ resumeRef }: ResumeTemplateModernProps) {
     const dispatch = useDispatch()
-    const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
+    const activeSection = useSelector((state: RootState) => state.resume.activeSection)
+    const { sections } = useSelector((state: RootState) => state.resume)
 
     const handleHeaderClick = () => {
-        dispatch(setActiveSection({ sectionId: null, sectionType: null }))
+        dispatch(upsertActiveSection({ activeSection: null }))
     }
 
     // For modern template, we'll display all sections in a single column
@@ -34,16 +35,16 @@ export default function ResumeTemplateModern({ resumeRef }: ResumeTemplateModern
     })
 
     return (
-        <div className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay-later")} ref={resumeRef}>
+        <div className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
             <div onClick={handleHeaderClick} className="flex items-start">
                 <div className="flex-1">
-                    <ResumeHeader isActive={activeSectionId === null} />
+                    <ResumeHeader isActive={activeSection?.id === null} />
                 </div>
             </div>
 
             <div className="mt-6">
                 {allSections.map((section: Section) => (
-                    <ResumeSection key={section.id} section={section} isActive={section.id === activeSectionId} />
+                    <ResumeSection key={section.id} section={section} isActive={section.id === activeSection?.id} />
                 ))}
             </div>
         </div>

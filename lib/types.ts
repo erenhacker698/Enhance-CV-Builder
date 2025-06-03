@@ -111,6 +111,14 @@ export type SectionType = SectionTypeEnum.EDUCATION | SectionTypeEnum.PROJECTS |
 
 export type SectionContent = EducationSectionItem | ProjectSectionItem | LanguageSectionItem | SkillSectionItem
 
+export interface ActiveSection {
+  id: string;
+  type: SectionType
+  column: "left" | "right"
+  title: string
+  entryId: string | null
+}
+
 export interface Section {
   id: string;
   type: SectionType
@@ -168,8 +176,7 @@ export type VisibilityDispatchMap = {
 export interface ResumeState {
   header: Header
   sections: Section[]
-  activeSectionId: string | null
-  activeSectionType: string | null
+  activeSection: ActiveSection | null
   activeSkillData: {
     sectionId: string
     groupId: string

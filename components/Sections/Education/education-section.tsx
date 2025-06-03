@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
 import { useDispatch } from "react-redux"
-import { updateEducation } from "@/lib/features/resume/resumeSlice"
+import { updateEntryEducation } from "@/lib/features/resume/resumeSlice"
 import EditableText from "@/components/Shared/editable-text"
 import { cn } from "@/lib/utils"
 import { SectionTypeEnum, type EducationSectionItem, type Section } from "@/lib/types"
@@ -42,7 +42,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
             console.log("field - ", field)
             console.log("value - ", value)
             dispatch(
-                updateEducation({
+                updateEntryEducation({
                     sectionId: section.id,
                     entryId: entryId,
                     field,
@@ -66,7 +66,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
     // const handleToggleVisibility = (field: keyof EducationContentVisibility, value: boolean) => {
     //     if (activeEntryId) {
     //         dispatch(
-    //             toggleEducationContentVisibility({
+    //             toggleEntryVisibility_Education({
     //                 sectionId: section.id,
     //                 entryId: activeEntryId,
     //                 field,

@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { setActiveSection, reorderSections } from "@/lib/features/resume/resumeSlice"
+import { reorderSections, upsertActiveSection } from "@/lib/features/resume/resumeSlice"
 import ResumeSection from "@/components/resume-section"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
@@ -21,12 +21,13 @@ interface ResumeTemplateProps {
 
 export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps) {
     const dispatch = useDispatch()
-    const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
+    const activeSection = useSelector((state: RootState) => state.resume.activeSection)
+    const { sections } = useSelector((state: RootState) => state.resume)
     const { header } = useSelector((state: RootState) => state.resume)
     const [draggedSection, setDraggedSection] = useState<string | null>(null)
 
     const handleHeaderClick = () => {
-        dispatch(setActiveSection({ sectionId: null, sectionType: null }))
+        dispatch(upsertActiveSection({ activeSection: null }))
     }
 
     const leftSections = sections.filter((section) => section.column === "left")
@@ -101,18 +102,18 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
     }
 
     const handlePhotoClick = () => {
-        if (activeSectionId === null) {
+        if (activeSection?.id === null) {
             const event = new CustomEvent("openPhotoUpload", {})
             window.dispatchEvent(event)
         }
     }
 
     return (
-        <div id="resume-container" className={cn("w-full mx-auto bg-white p-0 min-h-[842px] flex flex-col md:flex-row", activeSectionId !== null && "resume-editor-overlay-later")} ref={resumeRef}>
+        <div id="resume-container" className={cn("w-full mx-auto bg-white p-0 min-h-[842px] flex flex-col md:flex-row", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
             <div className="w-[65%] p-8">
                 {/* Header - Name and title only */}
                 <div onClick={handleHeaderClick}>
-                    <ResumeHeader isActive={activeSectionId === null} hidePhoto={true} />
+                    <ResumeHeader isActive={activeSection?.id === null} hidePhoto={true} />
                 </div>
 
                 <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -132,14 +133,14 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                                                 {...provided.dragHandleProps}
                                                 className={`${snapshot.isDragging ? "opacity-50" : ""}`}
                                             >
-                                                <ResumeSection section={section} isActive={section.id === activeSectionId} />
+                                                <ResumeSection section={section} isActive={section.id === activeSection?.id} />
                                             </div>
                                         )}
                                     </Draggable>
                                 ))}
                                 {provided.placeholder}
 
-                                {activeSectionId && (
+                                {activeSection?.id && (
                                     <div className="mt-4">
                                         <Button
                                             variant="outline"
@@ -213,7 +214,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                                                     </h2>
                                                     <ResumeSection
                                                         section={{ ...section, title: "" }}
-                                                        isActive={section.id === activeSectionId}
+                                                        isActive={section.id === activeSection?.id}
                                                         darkMode={true}
                                                     />
                                                 </div>
@@ -223,7 +224,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                                 ))}
                                 {provided.placeholder}
 
-                                {activeSectionId && (
+                                {activeSection?.id && (
                                     <div className="mt-4">
                                         <Button
                                             variant="outline"

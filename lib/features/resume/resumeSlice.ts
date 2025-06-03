@@ -1,11 +1,11 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import {
+  ActiveSection,
   EducationContentVisibility,
   EducationSectionItem,
   LanguageSectionItem,
   ProjectContentVisibility,
   ProjectSectionItem,
-  SectionContentMap,
   SectionTypeEnum,
   SkillSectionItem,
   SkillVisibility,
@@ -87,8 +87,7 @@ const initialState: ResumeState = {
       },
     },
   ],
-  activeSectionId: null,
-  activeSectionType: null,
+  activeSection: null,
   activeSkillData: null,
   history: {
     past: [],
@@ -206,15 +205,19 @@ export const resumeSlice = createSlice({
       state.header.photoUrl = action.payload.photoUrl
     },
 
-    // Section actions
-    setActiveSection: (state, action: PayloadAction<{
-      sectionId: string | null
-      sectionType: string | null
-    }>) => {
-      state.activeSectionId = action.payload.sectionId
-      state.activeSectionType = action.payload.sectionType
+    // Active section action
+    upsertActiveSection: (state, action: PayloadAction<{
+      activeSection: ActiveSection | null
+    }>,
+    ) => {
+      if (action.payload.activeSection) {
+        state.activeSection = action.payload.activeSection
+      } else {
+        state.activeSection = null
+      }
     },
 
+    // Section actions
     addSection: (
       state,
       action: PayloadAction<{
@@ -228,16 +231,13 @@ export const resumeSlice = createSlice({
         column: action.payload.column,
       }
       state.sections.push(newSection)
-      state.activeSectionId = newSection.id
-      state.activeSectionType = newSection.type
     },
 
     removeSection: (state, action: PayloadAction<{ sectionId: string }>) => {
       saveToHistory(state)
       state.sections = state.sections.filter((section) => section.id !== action.payload.sectionId)
-      if (state.activeSectionId === action.payload.sectionId) {
-        state.activeSectionId = null
-        state.activeSectionType = null
+      if (state.activeSection?.id === action.payload.sectionId) {
+        state.activeSection = null
       }
     },
 
@@ -316,7 +316,7 @@ export const resumeSlice = createSlice({
     },
 
     // Education actions
-    addEducation: (
+    addEntryEducation: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -332,7 +332,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    removeEducation: (
+    removeEntryEducation: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -346,7 +346,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    updateEducation: (
+    updateEntryEducation: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -366,7 +366,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    toggleEducationContentVisibility: (
+    toggleEntryVisibility_Education: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -386,7 +386,7 @@ export const resumeSlice = createSlice({
     },
 
     // Project actions
-    addProject: (
+    addEntryProject: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -402,7 +402,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    removeProject: (
+    removeEntryProject: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -416,7 +416,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    updateProject: (
+    updateEntryProject: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -435,7 +435,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    toggleProjectContentVisibility: (
+    toggleEntryVisibility_Project: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -455,7 +455,7 @@ export const resumeSlice = createSlice({
     },
 
     // Skills actions
-    addSkillGroup: (
+    addEntrySkillGroup: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -471,7 +471,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    updateSkillGroup: (
+    updateEntrySkillGroup: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -489,7 +489,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    removeSkillGroup: (
+    removeEntrySkillGroup: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -519,7 +519,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    addSkill: (
+    addEntrySkill: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -537,7 +537,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    updateSkill: (
+    updateEntrySkill: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -556,7 +556,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    removeSkill: (
+    removeEntrySkill: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -574,7 +574,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    toggleSkillsContentVisibility: (
+    toggleEntryVisibility_SkillsContent: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -594,7 +594,7 @@ export const resumeSlice = createSlice({
     },
 
     // Language actions
-    addLanguage: (
+    addEntryLanguage: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -610,7 +610,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    updateLanguage: (
+    updateEntryLanguage: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -629,7 +629,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    removeLanguage: (
+    removeEntryLanguage: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -643,7 +643,7 @@ export const resumeSlice = createSlice({
       }
     },
 
-    toggleLanguageVisibility: (
+    toggleEntryVisibility_Language: (
       state,
       action: PayloadAction<{
         sectionId: string
@@ -670,7 +670,7 @@ export const {
   toggleUppercaseName,
   togglePhotoStyle,
   uploadProfilePhoto,
-  setActiveSection,
+  upsertActiveSection,
   addSection,
   removeSection,
   removeSectionEntry,
@@ -678,26 +678,26 @@ export const {
   updateSectionContent,
   reorderSections,
   updateSectionColumn,
-  addEducation,
-  updateEducation,
-  removeEducation,
-  toggleEducationContentVisibility,
-  addProject,
-  updateProject,
-  removeProject,
-  toggleProjectContentVisibility,
-  addSkillGroup,
-  updateSkillGroup,
-  removeSkillGroup,
+  addEntryEducation,
+  updateEntryEducation,
+  removeEntryEducation,
+  toggleEntryVisibility_Education,
+  addEntryProject,
+  updateEntryProject,
+  removeEntryProject,
+  toggleEntryVisibility_Project,
+  addEntrySkillGroup,
+  updateEntrySkillGroup,
+  removeEntrySkillGroup,
   setActiveSkillData,
-  addSkill,
-  updateSkill,
-  removeSkill,
-  toggleSkillsContentVisibility,
-  addLanguage,
-  updateLanguage,
-  removeLanguage,
-  toggleLanguageVisibility,
+  addEntrySkill,
+  updateEntrySkill,
+  removeEntrySkill,
+  toggleEntryVisibility_SkillsContent,
+  addEntryLanguage,
+  updateEntryLanguage,
+  removeEntryLanguage,
+  toggleEntryVisibility_Language,
   undo,
   redo,
 } = resumeSlice.actions

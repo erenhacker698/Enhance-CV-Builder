@@ -5,18 +5,18 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux"
 import {
-    setActiveSection,
     updateSectionColumn,
     updateSectionTitle,
-    addEducation,
-    addProject,
-    addLanguage,
-    addSkill,
-    toggleEducationContentVisibility,
-    toggleProjectContentVisibility,
-    toggleLanguageVisibility,
-    toggleSkillsContentVisibility,
-    addSkillGroup,
+    addEntryEducation,
+    addEntryProject,
+    addEntryLanguage,
+    addEntrySkill,
+    toggleEntryVisibility_Education,
+    toggleEntryVisibility_Project,
+    toggleEntryVisibility_Language,
+    toggleEntryVisibility_SkillsContent,
+    addEntrySkillGroup,
+    upsertActiveSection,
 } from "@/lib/features/resume/resumeSlice"
 import { EducationContentVisibility, EducationSectionItem, LanguageContentVisibility, LanguageSectionItem, ProjectContentVisibility, ProjectSectionItem, type Section, SectionTypeEnum, SkillVisibility, VisibilityDispatchMap } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -52,7 +52,15 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     const sectionRef = useRef<HTMLDivElement>(null)
 
     const handleActivateSection = () => {
-        dispatch(setActiveSection({ sectionId: section.id, sectionType: section.type }))
+        dispatch(upsertActiveSection({
+            activeSection: {
+                id: section.id,
+                type: section.type,
+                column: section.column,
+                title: section.title,
+                entryId: activeEntryId
+            }
+        }))
         setShowToolbar(true)
     }
 
@@ -72,17 +80,17 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
 
         switch (sectionType) {
             case SectionTypeEnum.EDUCATION:
-                dispatch(addEducation({ sectionId, education: entry as EducationSectionItem }))
+                dispatch(addEntryEducation({ sectionId, education: entry as EducationSectionItem }))
                 break
             case SectionTypeEnum.PROJECTS:
-                dispatch(addProject({ sectionId, project: entry as ProjectSectionItem }))
+                dispatch(addEntryProject({ sectionId, project: entry as ProjectSectionItem }))
                 break
             case SectionTypeEnum.LANGUAGES:
-                dispatch(addLanguage({ sectionId, language: entry as LanguageSectionItem }))
+                dispatch(addEntryLanguage({ sectionId, language: entry as LanguageSectionItem }))
                 break
             case SectionTypeEnum.SKILLS:
                 if (activeSkillData?.groupId) {
-                    dispatch(addSkill({ sectionId, groupId: activeSkillData.groupId, skill: "Your Skill" }))
+                    dispatch(addEntrySkill({ sectionId, groupId: activeSkillData.groupId, skill: "Your Skill" }))
                 }
                 break
         }
@@ -90,7 +98,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
 
     const handleAddGroup = () => {
         dispatch(
-            addSkillGroup({
+            addEntrySkillGroup({
                 sectionId: section.id,
                 skillItem: {
                     id: `group-${Date.now()}`,
@@ -132,10 +140,10 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     }
 
     const visibilityDispatchMap: VisibilityDispatchMap = {
-        [SectionTypeEnum.EDUCATION]: toggleEducationContentVisibility,
-        [SectionTypeEnum.PROJECTS]: toggleProjectContentVisibility,
-        [SectionTypeEnum.LANGUAGES]: toggleLanguageVisibility,
-        [SectionTypeEnum.SKILLS]: toggleSkillsContentVisibility,
+        [SectionTypeEnum.EDUCATION]: toggleEntryVisibility_Education,
+        [SectionTypeEnum.PROJECTS]: toggleEntryVisibility_Project,
+        [SectionTypeEnum.LANGUAGES]: toggleEntryVisibility_Language,
+        [SectionTypeEnum.SKILLS]: toggleEntryVisibility_SkillsContent,
     }
 
     const handleToggleVisibility = (

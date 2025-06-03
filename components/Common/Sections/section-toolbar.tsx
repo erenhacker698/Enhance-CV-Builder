@@ -35,6 +35,9 @@ export default function SectionToolbar({
     const { activeSkillData } = useSelector((state: RootState) => state.resume)
 
     const handleRemoveSection = () => {
+        console.log('handleRemoveSection()')
+        console.log('section.id: ',section.id)
+        console.log('activeEntryId: ',activeEntryId)
         if (activeEntryId) {
             dispatch(
                 removeSectionEntry({

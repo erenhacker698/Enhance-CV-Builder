@@ -5,10 +5,10 @@ import type React from "react"
 import { useState, useRef, useEffect } from "react"
 import { useDispatch } from "react-redux"
 import {
-    addLanguage,
-    updateLanguage,
-    removeLanguage,
-    toggleLanguageVisibility
+    addEntryLanguage,
+    updateEntryLanguage,
+    removeEntryLanguage,
+    toggleEntryVisibility_Language
 } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Settings, MoveVertical } from "lucide-react"
@@ -60,9 +60,9 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
         handleContextMenu(e, entryId)
     }
 
-    const handleUpdateLanguage = (langId: string, field: string, value: string | number) => {
+    const handleupdateEntryLanguage = (langId: string, field: string, value: string | number) => {
         dispatch(
-            updateLanguage({
+            updateEntryLanguage({
                 sectionId: section.id,
                 langId,
                 field,
@@ -73,7 +73,7 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
         if (field === "proficiency") {
             const proficiencyIndex = Math.min(Math.max(1, Number(value)), 5) - 1
             dispatch(
-                updateLanguage({
+                updateEntryLanguage({
                     sectionId: section.id,
                     langId,
                     field: "level",
@@ -101,7 +101,7 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
                     <div className="flex items-center justify-between">
                         <EditableText
                             value={language.name}
-                            onChange={(value) => handleUpdateLanguage(language.id, "name", value)}
+                            onChange={(value) => handleupdateEntryLanguage(language.id, "name", value)}
                             className={cn("editable-field", darkMode && "text-white")}
                             placeholder="Language"
                         />
@@ -110,7 +110,7 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
                             {language.visibility?.proficiency !== false && (
                                 <EditableText
                                     value={language.level}
-                                    onChange={(value) => handleUpdateLanguage(language.id, "level", value)}
+                                    onChange={(value) => handleupdateEntryLanguage(language.id, "level", value)}
                                     className="text-sm"
                                 />
                             )}
@@ -123,7 +123,7 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
                                                 "w-4 h-4 rounded-full mx-0.5 cursor-pointer",
                                                 rating <= language.proficiency ? "bg-teal-500" : "bg-gray-200",
                                             )}
-                                            onClick={() => handleUpdateLanguage(language.id, "proficiency", rating)}
+                                            onClick={() => handleupdateEntryLanguage(language.id, "proficiency", rating)}
                                         ></div>
                                     ))}
                                 </div>

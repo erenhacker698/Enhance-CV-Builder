@@ -5,10 +5,10 @@ import type React from "react"
 import { useState, useRef } from "react"
 import { useDispatch } from "react-redux"
 import {
-    addLanguage,
-    updateLanguage,
-    removeLanguage,
-    toggleLanguageVisibility
+    addEntryLanguage,
+    updateEntryLanguage,
+    removeEntryLanguage,
+    toggleEntryVisibility_Language
 } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Settings, MoveVertical } from "lucide-react"
@@ -32,9 +32,9 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
     const [menuPosition, setMenuPosition] = useState({ x: 0, y: 0 })
     const settingsRef = useRef<HTMLDivElement>(null)
 
-    const handleUpdateLanguage = (langId: string, field: string, value: string | number) => {
+    const handleupdateEntryLanguage = (langId: string, field: string, value: string | number) => {
         dispatch(
-            updateLanguage({
+            updateEntryLanguage({
                 sectionId: section.id,
                 langId,
                 field,
@@ -46,7 +46,7 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
         if (field === "proficiency") {
             const proficiencyIndex = Math.min(Math.max(1, Number(value)), 5) - 1
             dispatch(
-                updateLanguage({
+                updateEntryLanguage({
                     sectionId: section.id,
                     langId,
                     field: "level",
@@ -56,9 +56,9 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
         }
     }
 
-    const handleRemoveLanguage = (langId: string) => {
+    const handleremoveEntryLanguage = (langId: string) => {
         dispatch(
-            removeLanguage({
+            removeEntryLanguage({
                 sectionId: section.id,
                 langId,
             }),
@@ -75,7 +75,7 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
     const handleToggleVisibility = (field: string, value: boolean) => {
         if (activeLanguageId) {
             dispatch(
-                toggleLanguageVisibility({
+                toggleEntryVisibility_Language({
                     sectionId: section.id,
                     entryId: activeLanguageId,
                     field,
@@ -112,7 +112,7 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
                                 variant="ghost"
                                 size="icon"
                                 className="h-6 w-6 bg-white border shadow-sm text-gray-400 hover:text-red-500"
-                                onClick={() => handleRemoveLanguage(language.id)}
+                                onClick={() => handleremoveEntryLanguage(language.id)}
                             >
                                 <Trash2 size={14} />
                             </Button>
@@ -122,7 +122,7 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
                     <div className="font-medium">
                         <EditableText
                             value={language.name}
-                            onChange={(value) => handleUpdateLanguage(language.id, "name", value)}
+                            onChange={(value) => handleupdateEntryLanguage(language.id, "name", value)}
                             className="font-medium"
                         />
                     </div>
@@ -131,7 +131,7 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
                         <div className="text-gray-500 text-sm">
                             <EditableText
                                 value={language.level}
-                                onChange={(value) => handleUpdateLanguage(language.id, "level", value)}
+                                onChange={(value) => handleupdateEntryLanguage(language.id, "level", value)}
                                 className="text-sm"
                             />
                         </div>
@@ -146,7 +146,7 @@ export default function LanguageSection({ section, isActive, darkMode = false }:
                                         "w-5 h-5 rounded-full mx-0.5 cursor-pointer",
                                         rating <= language.proficiency ? "bg-teal-500" : "bg-gray-200",
                                     )}
-                                    onClick={() => handleUpdateLanguage(language.id, "proficiency", rating)}
+                                    onClick={() => handleupdateEntryLanguage(language.id, "proficiency", rating)}
                                 ></div>
                             ))}
                         </div>

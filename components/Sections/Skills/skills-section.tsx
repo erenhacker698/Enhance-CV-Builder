@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect, useRef, useState } from "react"
 import { useDispatch } from "react-redux"
-import { updateSkillGroup, removeSkillGroup, removeSkill, updateSkill, setActiveSkillData, } from "@/lib/features/resume/resumeSlice"
+import { updateEntrySkillGroup, removeEntrySkillGroup, removeEntrySkill, updateEntrySkill, setActiveSkillData, } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -36,10 +36,10 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
         )
     }
 
-    const handleUpdateSkill = (groupId: string, skillIndex: number, newSkill: string) => {
+    const handleupdateEntrySkill = (groupId: string, skillIndex: number, newSkill: string) => {
         if (activeEntryId) {
             dispatch(
-                updateSkill({
+                updateEntrySkill({
                     sectionId: section.id,
                     groupId,
                     skillIndex,
@@ -49,9 +49,9 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
         }
     }
 
-    const handleRemoveSkill = (groupId: string, skillIndex: number) => {
+    const handleremoveEntrySkill = (groupId: string, skillIndex: number) => {
         dispatch(
-            removeSkill({
+            removeEntrySkill({
                 sectionId: section.id,
                 groupId,
                 skillIndex,
@@ -61,7 +61,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
 
     const handleRemoveGroup = (groupId: string) => {
         dispatch(
-            removeSkillGroup({
+            removeEntrySkillGroup({
                 sectionId: section.id,
                 groupId,
             }),
@@ -70,7 +70,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
 
     const handleUpdate = (groupId: string, name: string) => {
         dispatch(
-            updateSkillGroup({
+            updateEntrySkillGroup({
                 sectionId: section.id,
                 groupId,
                 groupName: name
@@ -161,7 +161,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                             >
                                 <EditableText
                                     value={skill}
-                                    onChange={(value) => handleUpdateSkill(skillGroupItem.id, index, value)}
+                                    onChange={(value) => handleupdateEntrySkill(skillGroupItem.id, index, value)}
                                     onStartEdit={() => handleSkillOp(section.id, skillGroupItem.id, index)}
                                     className={cn("editable-field editable-field--skill w-max bg-transparent border-none focus:outline-none text-sm flex items-center justify-start", darkMode && "text-white")}
                                     placeholder="Your Skill"
@@ -174,7 +174,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                                             "h-4 w-4 ml-1 opacity-0 group-hover/skill:opacity-100",
                                             darkMode ? "text-gray-300 hover:text-red-400" : "text-gray-400 hover:text-red-500",
                                         )}
-                                        onClick={() => handleRemoveSkill(skillGroupItem.id, index)}
+                                        onClick={() => handleremoveEntrySkill(skillGroupItem.id, index)}
                                     >
                                         <X size={10} />
                                     </Button>

@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState } from "react"
 import { useSelector, useDispatch } from "react-redux"
-import { setActiveSection, reorderSections } from "@/lib/features/resume/resumeSlice"
+import { reorderSections, upsertActiveSection } from "@/lib/features/resume/resumeSlice"
 import ResumeHeader from "@/components/resume-header"
 import ResumeSection from "@/components/resume-section"
 import type { RootState } from "@/lib/store"
@@ -32,11 +32,12 @@ const sectionComponentMap = {
 
 export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplateProps) {
     const dispatch = useDispatch()
-    const { sections, activeSectionId } = useSelector((state: RootState) => state.resume)
+    const activeSection = useSelector((state: RootState) => state.resume.activeSection)
+    const { sections } = useSelector((state: RootState) => state.resume)
     const [draggedSection, setDraggedSection] = useState<string | null>(null)
 
     const handleHeaderClick = () => {
-        dispatch(setActiveSection({ sectionId: null, sectionType: null }))
+        dispatch(upsertActiveSection({ activeSection: null }))
     }
 
     const handleAddSectionClick = (column: "left" | "right") => {
@@ -112,9 +113,9 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
     }
 
     return (
-        <div id="resume-container" className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSectionId !== null && "resume-editor-overlay-later")} ref={resumeRef}>
+        <div id="resume-container" className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
             <div onClick={handleHeaderClick}>
-                <ResumeHeader isActive={activeSectionId === null} />
+                <ResumeHeader isActive={activeSection?.id === null} />
             </div>
 
             <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
@@ -136,13 +137,13 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
                                                 {...provided.dragHandleProps}
                                                 className={`${snapshot.isDragging ? "opacity-50" : ""}`}
                                             >
-                                                <ResumeSection section={section} isActive={section.id === activeSectionId} />
+                                                <ResumeSection section={section} isActive={section.id === activeSection?.id} />
                                             </div>
                                         )}
                                     </Draggable>
                                 ))}
                                 {provided.placeholder}
-                                {activeSectionId && (
+                                {activeSection?.id && (
                                     <div className="mt-4">
                                         <Button
                                             variant="outline"
@@ -171,13 +172,13 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
                                                 {...provided.dragHandleProps}
                                                 className={`${snapshot.isDragging ? "opacity-50" : ""}`}
                                             >
-                                                <ResumeSection section={section} isActive={section.id === activeSectionId} />
+                                                <ResumeSection section={section} isActive={section.id === activeSection?.id} />
                                             </div>
                                         )}
                                     </Draggable>
                                 ))}
                                 {provided.placeholder}
-                                {activeSectionId && (
+                                {activeSection?.id && (
                                     <div className="mt-4">
                                         <Button
                                             variant="outline"

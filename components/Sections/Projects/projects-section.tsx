@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useState, useRef, useEffect } from "react"
 import { useDispatch } from "react-redux"
-import { updateProject } from "@/lib/features/resume/resumeSlice"
+import { updateEntryProject } from "@/lib/features/resume/resumeSlice"
 import EditableText from "@/components/Shared/editable-text"
 import { cn } from "@/lib/utils"
 import { type ProjectSectionItem, type Section } from "@/lib/types"
@@ -33,7 +33,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
     const handleEntryChange = (entryId: string, field: keyof ProjectSectionItem, value: string | string[]) => {
         if (activeEntryId) {
             dispatch(
-                updateProject({
+                updateEntryProject({
                     sectionId: section.id,
                     projectId: entryId,
                     field,
