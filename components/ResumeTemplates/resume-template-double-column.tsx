@@ -14,10 +14,10 @@ import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
 import { Button } from "@/components/ui/button"
 import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
-import EducationSection from "./education-section"
-import ProjectSection from "./projects-section"
-import SkillsSection from "./skills-section"
-import LanguageSection from "./language-section"
+import EducationSection from "../Sections/Education/education-section"
+import ProjectSection from "../projects-section"
+import LanguageSection from "../Sections/Language/language-section"
+import SkillsSection from "../Sections/Skills/skills-section"
 
 interface ResumeTemplateProps {
     resumeRef: React.RefObject<HTMLDivElement | null>

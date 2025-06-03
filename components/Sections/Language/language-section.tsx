@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Settings, MoveVertical } from "lucide-react"
 import EditableText from "@/components/editable-text"
 import { cn } from "@/lib/utils"
-import LanguageSettingsPanel from "@/components/language-settings-panel"
+import LanguageSettingsPanel from "@/components/Sections/Language/SettingsPannel/language-settings-panel"
 import { proficiencyLabels, type LanguageSectionItem, type Section } from "@/lib/types"
 
 interface SectionProps {
