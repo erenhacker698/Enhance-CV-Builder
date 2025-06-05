@@ -73,11 +73,15 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement
+
+            if (target.closest('[data-entry-remove--toolbar-btn]')) return
+
             if (
                 skillSectionRef.current &&
-                !skillSectionRef.current.contains(event.target as Node)
+                !skillSectionRef.current.contains(target)
             ) {
-                dispatch(setActiveSkillData((null)))
+                dispatch(setActiveSkillData(null))
             }
         }
 
@@ -86,14 +90,14 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
     }, [])
 
     return (
-        <div className="space-y-4">
+        <div className="">
             {section.content.skills?.map((skillGroupItem: SkillSectionItem) => (
-                <div key={skillGroupItem.id}
+                <div data-skill-group-item-id={skillGroupItem.id} data-active-sectionid={activeSection?.entryId} key={skillGroupItem.id}
                     className={cn(
-                        "relative p-2 -mx-2 group/entry",
-                        isActive && "hover:bg-gray-50 rounded",
-                        darkMode && isActive && "hover:bg-slate-700 rounded",
-                        activeSection?.id === skillGroupItem.id && 'selected-resume-item'
+                        "relative rounded p-2 -mx-2 group/entry transition-all duration-300 ease-in-out",
+                        isActive && "",
+                        darkMode && isActive && "",
+                        activeSection?.entryId === skillGroupItem.id && 'selected-resume-item'
                     )}
                     onContextMenu={(e) => handleContextMenu(e, skillGroupItem.id)}
                     onClick={(e) => handleEntryToggle(e, skillGroupItem.id)}
@@ -109,31 +113,17 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                         </div>
                     )}
 
-                    {isActive && (
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            className={cn(
-                                "absolute right-0 top-0 h-6 w-6",
-                                darkMode ? "text-gray-300 hover:text-red-400" : "text-gray-400 hover:text-red-500",
-                            )}
-                            onClick={() => handleRemoveEntrySkillGroup(skillGroupItem.id)}
-                            title="Remove Skills Group"
-                        >
-                            <X size={14} />
-                        </Button>
-                    )}
-
-                    <div className="flex flex-wrap gap-2 mb-2">
+                    <div className="flex flex-wrap gap-2">
                         {skillGroupItem.skills.map((skill, index) => (
                             <div
                                 key={index}
                                 className={cn(
-                                    "px-2 py-1 flex items-center",
+                                    "relative px-2 py-1 flex items-center",
                                     isActive && "group/skill",
                                     darkMode ? "border-gray-500 text-white" : "border-gray-300",
                                     skillGroupItem.compactMode ? "border" : "border-b"
                                 )}
+                                ref={skillSectionRef}
                             >
                                 <EditableText
                                     value={skill}
@@ -147,12 +137,11 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                                         variant="ghost"
                                         size="icon"
                                         className={cn(
-                                            "h-4 w-4 ml-1 opacity-0 group-hover/skill:opacity-100",
-                                            darkMode ? "text-gray-300 hover:text-red-400" : "text-gray-400 hover:text-red-500",
+                                            "cursor-pointer w-0 h-0 opacity-0 rounded-full overflow-hidden transition-[width,height,opacity] duration-500 ease-in-out group-hover/skill:w-4 group-hover/skill:h-4 group-hover/skill:opacity-100 ml-2 bg-gray-200 text-gray-950"
                                         )}
                                         onClick={() => handleRemoveEntrySkill(skillGroupItem.id, index)}
                                     >
-                                        <X size={10} />
+                                        <X className="w-full h-full custom-padding" />
                                     </Button>
                                 )}
                             </div>

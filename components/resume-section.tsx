@@ -51,6 +51,9 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     const [showToolbar, setShowToolbar] = useState(false)
     const sectionRef = useRef<HTMLDivElement>(null)
 
+    // console.log('activeSection outside: ', activeSection)
+    // console.log('activeSkillData outside: ', activeSkillData)
+
     const handleSectionSelection = () => {
         dispatch(upsertActiveSection({
             activeSection: {
@@ -62,6 +65,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
             }
         }))
         setShowToolbar(true)
+        console.log('handleSectionSelection')
     }
 
     const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
@@ -75,6 +79,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 entryId: entryId
             }
         }))
+        console.log('handleEntryToggle')
     }
 
     const handleContextMenu = (e: React.MouseEvent, entryId?: string, groupId?: string) => {
@@ -109,24 +114,24 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         )
     }
 
-    const handleAddEntry = (sectionType: SectionTypeEnum, sectionId: string) => {
-        const entry = getDefaultEntry(sectionType)
+    const handleAddEntry = () => {
+        const entry = getDefaultEntry(section.type)
 
         if (!entry) return
 
-        switch (sectionType) {
+        switch (section.type) {
             case SectionTypeEnum.EDUCATION:
-                dispatch(addEntryEducation({ sectionId, education: entry as EducationSectionItem }))
+                dispatch(addEntryEducation({ sectionId: section.id, education: entry as EducationSectionItem }))
                 break
             case SectionTypeEnum.PROJECTS:
-                dispatch(addEntryProject({ sectionId, project: entry as ProjectSectionItem }))
+                dispatch(addEntryProject({ sectionId: section.id, project: entry as ProjectSectionItem }))
                 break
             case SectionTypeEnum.LANGUAGES:
-                dispatch(addEntryLanguage({ sectionId, language: entry as LanguageSectionItem }))
+                dispatch(addEntryLanguage({ sectionId: section.id, language: entry as LanguageSectionItem }))
                 break
             case SectionTypeEnum.SKILLS:
-                if (activeSkillData?.groupId) {
-                    dispatch(addEntrySkill({ sectionId, groupId: activeSkillData.groupId, skill: "Your Skill" }))
+                if (activeSection && activeSection.entryId) {
+                    dispatch(addEntrySkill({ sectionId: section.id, groupId: activeSection.entryId, skill: "Your Skill" }))
                 }
                 break
         }
@@ -243,8 +248,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                     <SectionToolbar
                         section={section}
                         isActive={isActive}
-                        activeEntryId={activeSection?.entryId}
-                        onAddEntry={() => handleAddEntry(section.type, section.id)}
+                        onAddEntry={() => handleAddEntry()}
                         onAddGroup={() => handleAddGroup()}
                         onDragStart={handleDragStartSection}
                         onMoveToColumn={handleMoveToColumn}

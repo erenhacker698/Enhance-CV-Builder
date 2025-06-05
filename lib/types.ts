@@ -181,15 +181,17 @@ export type VisibilityDispatchMap = {
   }) => any
 }
 
+export type ActiveSkillData = {
+  sectionId: string;
+  groupId: string;
+  skillIndex: number;
+} | null;
+
 export interface ResumeState {
   header: Header
   sections: Section[]
   activeSection: ActiveSection | null
-  activeSkillData: {
-    sectionId: string
-    groupId: string
-    skillIndex: number
-  } | null
+  activeSkillData: ActiveSkillData
   history: {
     past: Array<{
       header: Header

@@ -335,6 +335,10 @@ h6 {
   color: rgb(0, 140, 255);
 }
 
+.lucide.custom-padding {
+  padding: 1px;
+}
+
 @media screen and (max-width:767px) {
   .mobile_stickey_menu {
     position: fixed;

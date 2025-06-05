@@ -5,7 +5,7 @@ import type React from "react"
 import { useDispatch, useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
 import { Plus, Trash2, Settings, MoveVertical, ArrowRight, ArrowLeft } from "lucide-react"
-import { removeSection, removeSectionEntry, upsertActiveSection } from "@/lib/features/resume/resumeSlice"
+import { removeEntrySkill, removeSection, removeSectionEntry, setActiveSkillData, upsertActiveSection } from "@/lib/features/resume/resumeSlice"
 import { cn } from "@/lib/utils"
 import { SectionTypeEnum, type Section } from "@/lib/types"
 import { RootState } from "@/lib/store"
@@ -13,7 +13,6 @@ import { RootState } from "@/lib/store"
 interface SectionToolbarProps {
     section: Section
     isActive: boolean
-    activeEntryId: string | null | undefined
     onAddEntry: () => void
     onAddGroup?: () => void
     onShowSettingsPanel: () => void
@@ -25,7 +24,6 @@ interface SectionToolbarProps {
 export default function SectionToolbar({
     section,
     isActive,
-    activeEntryId,
     onAddEntry,
     onAddGroup,
     onShowSettingsPanel,
@@ -35,16 +33,30 @@ export default function SectionToolbar({
 }: SectionToolbarProps) {
     const dispatch = useDispatch()
     const { activeSkillData } = useSelector((state: RootState) => state.resume)
+    const activeSection = useSelector((state: RootState) => state.resume.activeSection)
 
     const handleRemoveSection = () => {
-        console.log('handleRemoveSection()')
-        console.log('section.id: ', section.id)
-        console.log('activeEntryId: ', activeEntryId)
-        if (activeEntryId) {
+        console.log('activeSection.id: ', activeSection?.id)
+        console.log('activeSection.entryId: ', activeSection?.entryId)
+        console.log('activeSkillData.skillIndex: ', activeSkillData?.skillIndex)
+        if (activeSection && activeSection.type === SectionTypeEnum.SKILLS && activeSection.entryId && activeSkillData && typeof activeSkillData.skillIndex === 'number') {
+            console.log('11111111111111111111111111111111')
+            dispatch(
+                removeEntrySkill({
+                    sectionId: activeSection.id,
+                    groupId: activeSection.entryId,
+                    skillIndex: activeSkillData.skillIndex,
+                }),
+            )
+            dispatch(
+                setActiveSkillData((null))
+            )
+        } else if (activeSection?.entryId) {
+            console.log('2222222222222222222222222222222')
             dispatch(
                 removeSectionEntry({
-                    sectionId: section.id,
-                    entryId: activeEntryId
+                    sectionId: activeSection.id,
+                    entryId: activeSection.entryId
                 }),
             )
             dispatch(
@@ -53,6 +65,7 @@ export default function SectionToolbar({
                 })
             )
         } else {
+            console.log('3333333333333333333333333333333')
             dispatch(removeSection({ sectionId: section.id }))
         }
     }
@@ -72,13 +85,12 @@ export default function SectionToolbar({
     }
 
     return (
-        <div data-activeentryid={activeEntryId} data-section-type={section.type}
-            className={cn(
-                "SectionToolbar border border-gray-200 rounded-md shadow-sm flex",
-                darkMode ? "bg-slate-700" : "bg-white",
-            )}
+        <div className={cn(
+            "SectionToolbar border border-gray-200 rounded-md shadow-sm flex",
+            darkMode ? "bg-slate-700" : "bg-white",
+        )}
         >
-            {(section.type !== SectionTypeEnum.SKILLS || typeof activeSkillData?.skillIndex === "number") && onAddEntry && (
+            {(section.type !== SectionTypeEnum.SKILLS || activeSection?.entryId) && onAddEntry && (
                 <Button
                     variant="ghost"
                     size="sm"
@@ -103,9 +115,9 @@ export default function SectionToolbar({
                     size="sm"
                     className={cn(
                         "h-8 px-3 text-white rounded-none hover:text-white cursor-pointer",
-                        typeof activeSkillData?.skillIndex === "number"
+                        activeSection?.entryId
                             ? ""
-                            : "rounded-l-md rounded-r-none border-r",
+                            : "transition-none rounded-l-md rounded-r-none border-r",
                         darkMode
                             ? "bg-purple-600 hover:bg-purple-700 border-purple-700"
                             : "bg-purple-500 hover:bg-purple-600 border-purple-600",
@@ -161,11 +173,12 @@ export default function SectionToolbar({
                     e.stopPropagation()
                     handleRemoveSection()
                 }}
+                data-entry-remove--toolbar-btn
             >
                 <Trash2 size={16} className={darkMode ? "text-white" : ""} />
             </Button>
 
-            {activeEntryId && (
+            {activeSection?.entryId && (
                 <Button
                     variant={darkMode ? "default" : "ghost"}
                     size="sm"
