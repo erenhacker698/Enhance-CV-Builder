@@ -4,7 +4,7 @@ import type React from "react"
 
 import { useEffect, useRef } from "react"
 import { useDispatch, useSelector } from "react-redux"
-import { updateEntrySkillGroup, removeEntrySkillGroup, removeEntrySkill, updateEntrySkill, setActiveSkillData, } from "@/lib/features/resume/resumeSlice"
+import { updateEntrySkillGroup, removeEntrySkillGroup, removeEntrySkill, updateEntrySkill, setActiveSkillData, upsertActiveSection, } from "@/lib/features/resume/resumeSlice"
 import { Button } from "@/components/ui/button"
 import { X } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -19,7 +19,8 @@ interface ExtendedSectionProps extends SectionProps {
 export default function SkillsSection({ section, isActive, darkMode = false, handleEntryToggle, handleContextMenu }: ExtendedSectionProps) {
     const dispatch = useDispatch()
     const activeSection = useSelector((state: RootState) => state.resume.activeSection)
-    const skillSectionRef = useRef<HTMLDivElement>(null)
+    const skillItemRef = useRef<HTMLDivElement>(null)
+    const sectionRef = useRef<HTMLDivElement>(null)
 
     const handleSetActiveSkillData = (sectionId: string, groupId: string, index: number) => {
         dispatch(
@@ -52,15 +53,6 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
         )
     }
 
-    const handleRemoveEntrySkillGroup = (groupId: string) => {
-        dispatch(
-            removeEntrySkillGroup({
-                sectionId: section.id,
-                groupId,
-            }),
-        )
-    }
-
     const handleEntryUpdate = (groupId: string, name: string) => {
         dispatch(
             updateEntrySkillGroup({
@@ -72,32 +64,34 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
     }
 
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
+        const handleClickOutside_SkillItem = (event: MouseEvent) => {
             const target = event.target as HTMLElement
 
             if (target.closest('[data-entry-remove--toolbar-btn]')) return
 
             if (
-                skillSectionRef.current &&
-                !skillSectionRef.current.contains(target)
+                skillItemRef.current &&
+                !skillItemRef.current.contains(target)
             ) {
                 dispatch(setActiveSkillData(null))
             }
         }
 
-        document.addEventListener("mousedown", handleClickOutside)
-        return () => document.removeEventListener("mousedown", handleClickOutside)
+        document.addEventListener("mousedown", handleClickOutside_SkillItem)
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside_SkillItem)
+        }
     }, [])
 
     return (
-        <div className="">
+        <div ref={sectionRef} className="Skills-Section">
             {section.content.skills?.map((skillGroupItem: SkillSectionItem) => (
                 <div data-skill-group-item-id={skillGroupItem.id} data-active-sectionid={activeSection?.entryId} key={skillGroupItem.id}
                     className={cn(
-                        "relative rounded p-2 -mx-2 group/entry transition-all duration-300 ease-in-out",
+                        "relative rounded p-2 -mx-2 group/entry",
                         isActive && "",
                         darkMode && isActive && "",
-                        activeSection?.entryId === skillGroupItem.id && 'selected-resume-item'
+                        activeSection?.entryId === skillGroupItem.id && 'p-[7px] selected-resume-item'
                     )}
                     onContextMenu={(e) => handleContextMenu(e, skillGroupItem.id)}
                     onClick={(e) => handleEntryToggle(e, skillGroupItem.id)}
@@ -123,7 +117,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                                     darkMode ? "border-gray-500 text-white" : "border-gray-300",
                                     skillGroupItem.visibility?.compactMode ? "border" : "border-b"
                                 )}
-                                ref={skillSectionRef}
+                                ref={skillItemRef}
                             >
                                 <EditableText
                                     value={skill}

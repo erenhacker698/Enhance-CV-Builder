@@ -509,11 +509,9 @@ export const resumeSlice = createSlice({
       } | null>
     ) => {
       if (action.payload) {
-        console.log('action.payload: ', JSON.stringify(action.payload))
         const { sectionId, groupId, skillIndex } = action.payload
         state.activeSkillData = { sectionId, groupId, skillIndex }
       } else {
-        console.log('action.payload is NULL')
         state.activeSkillData = null
       }
     },

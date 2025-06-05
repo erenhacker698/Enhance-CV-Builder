@@ -66,6 +66,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         }))
         setShowToolbar(true)
         console.log('handleSectionSelection')
+        console.log('activeSection?.entryId= ', activeSection?.entryId)
     }
 
     const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
@@ -103,6 +104,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         }
         setMenuPosition({ x: e.clientX, y: e.clientY })
         setShowVisibilityMenu(true)
+        console.log('handleContextMenu')
     }
 
     const handleUpdateSectionChange = (newTitle: string) => {
@@ -197,22 +199,26 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     }
 
     useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (showVisibilityMenu && sectionRef.current && !sectionRef.current.contains(event.target as Node)) {
+        if (!isActive) return
+        const handleClickOutside__Section = (event: MouseEvent) => {
+            if (sectionRef.current && !sectionRef.current.contains(event.target as Node)) {
                 setShowVisibilityMenu(false)
                 dispatch(
                     upsertActiveSection({
                         activeSection: null
                     })
                 )
+                console.log('sectionRef.current= ', sectionRef.current)
+                console.log('event.target= ', event.target)
+                // console.log('handleClickOutside__Section')
             }
         }
 
-        document.addEventListener("mousedown", handleClickOutside)
+        document.addEventListener("mousedown", handleClickOutside__Section)
         return () => {
-            document.removeEventListener("mousedown", handleClickOutside)
+            document.removeEventListener("mousedown", handleClickOutside__Section)
         }
-    }, [showVisibilityMenu])
+    }, [isActive])
 
     const renderSectionContent = () => {
         switch (section.type) {
@@ -231,9 +237,9 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
 
     return (
         <div
-            ref={sectionRef}
+            ref={isActive ? sectionRef : null}
             data-active-section-type={section.type}
-            className={cn("mb-6 relative group p-4", isActive && "ring-1 ring-gray-300 rounded-md resume-section-active", darkMode && "resume-section-active--darkmode")}
+            className={cn("mb-6 relative group p-4", isActive && "p-[15px] resume-section-active", darkMode && "resume-section-active--darkmode")}
             onClick={handleSectionSelection}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => {
