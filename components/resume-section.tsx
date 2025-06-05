@@ -145,8 +145,6 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                     id: `group-${Date.now()}`,
                     groupName: "New Group",
                     skills: ["Skill1", "Skill2"],
-                    compactMode: false,
-                    borderStyle: "bottom",
                     visibility: {
                         groupName: true,
                         compactMode: false

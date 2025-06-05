@@ -76,12 +76,9 @@ const initialState: ResumeState = {
             id: "group-1",
             groupName: "Technical Skills",
             skills: ["HTML", "CSS", "JavaScript", "React"],
-            compactMode: false,
-            borderStyle: "all",
             visibility: {
               groupName: true,
-              compactMode: false,
-            },
+              compactMode: false,            },
           },
         ],
       },
@@ -512,7 +509,7 @@ export const resumeSlice = createSlice({
       } | null>
     ) => {
       if (action.payload) {
-        console.log('action.payload: ',JSON.stringify(action.payload))
+        console.log('action.payload: ', JSON.stringify(action.payload))
         const { sectionId, groupId, skillIndex } = action.payload
         state.activeSkillData = { sectionId, groupId, skillIndex }
       } else {

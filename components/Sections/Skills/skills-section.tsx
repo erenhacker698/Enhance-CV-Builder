@@ -121,7 +121,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                                     "relative px-2 py-1 flex items-center",
                                     isActive && "group/skill",
                                     darkMode ? "border-gray-500 text-white" : "border-gray-300",
-                                    skillGroupItem.compactMode ? "border" : "border-b"
+                                    skillGroupItem.visibility?.compactMode ? "border" : "border-b"
                                 )}
                                 ref={skillSectionRef}
                             >

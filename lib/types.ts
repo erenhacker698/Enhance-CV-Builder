@@ -88,8 +88,6 @@ export interface SkillSectionItem {
   id: string
   groupName?: string
   skills: string[]
-  compactMode: boolean // If this on then no border style will apply
-  borderStyle: "all" | "bottom"
   visibility?: SkillVisibility
 }
 
