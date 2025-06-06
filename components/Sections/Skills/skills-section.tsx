@@ -101,7 +101,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                             <EditableText
                                 value={skillGroupItem.groupName ?? ''}
                                 onChange={(value) => handleEntryUpdate(skillGroupItem.id, value)}
-                                className={cn("editable-field text-custom-teal mb-2", darkMode && "text-white")}
+                                className={cn("editable-field text-custom-teal mb-2", darkMode && "!text-white")}
                                 placeholder="Group Title"
                             />
                         </div>
@@ -123,7 +123,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                                     value={skill}
                                     onChange={(value) => handleEntrySkillUpdate(skillGroupItem.id, index, value)}
                                     onStartEdit={() => handleSetActiveSkillData(section.id, skillGroupItem.id, index)}
-                                    className={cn("editable-field editable-field--skill w-max bg-transparent border-none focus:outline-none text-sm flex items-center justify-start", darkMode && "text-white")}
+                                    className={cn("editable-field editable-field--skill w-max bg-transparent border-none focus:outline-none text-sm flex items-center justify-start", darkMode && "!text-white")}
                                     placeholder="Your Skill"
                                 />
                                 {isActive && (

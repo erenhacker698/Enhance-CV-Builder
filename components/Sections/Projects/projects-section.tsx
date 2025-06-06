@@ -43,14 +43,14 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                             <EditableText
                                 value={item.projectName}
                                 onChange={(value) => handleEntryUpdate(item.id, "projectName", value)}
-                                className={cn("editable-field", darkMode && "text-white")}
+                                className={cn("editable-field", darkMode && "!text-white")}
                                 placeholder="Project Name"
                             />
                             {item.visibility?.period !== false && (
                                 <EditableText
                                     value={item.period}
                                     onChange={(value) => handleEntryUpdate(item.id, "period", value)}
-                                    className={cn("editable-field para-text-field text-right", darkMode && "text-white")}
+                                    className={cn("editable-field para-text-field text-right", darkMode && "!text-white")}
                                     placeholder="Date period"
                                 />
                             )}
@@ -61,7 +61,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                                 <EditableText
                                     value={item.location}
                                     onChange={(value) => handleEntryUpdate(item.id, "location", value)}
-                                    className={cn("editable-field para-text-field flex items-center justify-end", darkMode && "text-white")}
+                                    className={cn("editable-field para-text-field flex items-center justify-end", darkMode && "!text-white")}
                                     placeholder="Location"
                                 />
                             </div>
@@ -72,7 +72,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                                 <EditableText
                                     value={item.description}
                                     onChange={(value) => handleEntryUpdate(item.id, "description", value)}
-                                    className={cn("editable-field para-text-field !w-full text-left flex items-center justify-start", darkMode && "text-white")}
+                                    className={cn("editable-field para-text-field !w-full text-left flex items-center justify-start", darkMode && "!text-white")}
                                     multiline={true}
                                     placeholder="Short summary of your work"
                                 />
@@ -135,7 +135,7 @@ export default function ProjectSection({ section, isActive, darkMode = false, ha
                                 <EditableText
                                     value={item.link}
                                     onChange={(value) => handleEntryUpdate(item.id, "link", value)}
-                                    className={cn("editable-field para-text-field !w-full text-left", darkMode && "text-white")}
+                                    className={cn("editable-field para-text-field !w-full text-left", darkMode && "!text-white")}
                                     placeholder="Link here"
                                 />
                             </div>

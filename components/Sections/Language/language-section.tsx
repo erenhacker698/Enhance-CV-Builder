@@ -59,7 +59,7 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
                         <EditableText
                             value={language.name}
                             onChange={(value) => handleEntryUpdate(language.id, "name", value)}
-                            className={cn("editable-field", darkMode && "text-white")}
+                            className={cn("editable-field", darkMode && "!text-white")}
                             placeholder="Language"
                         />
 

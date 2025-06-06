@@ -301,7 +301,15 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 <EditableText
                     value={section.title}
                     onChange={handleUpdateSectionChange}
-                    className={cn("SectionNameItemElegant-module_sectionName", darkMode && "text-white")}
+                    className={cn(
+                        "bg-transparent border-0 shadow-none m-0 min-h-[10px] outline-none p-0 resize-none break-words",
+                        "text-[16px] leading-[19px] font-normal uppercase",
+                        darkMode ? 'text-white' : 'text-[#3e3e3e]',
+                        "w-full min-w-[2px] overflow-hidden block relative z-[1]",
+                        "border-b border-[#bdbdbd] pb-2",
+                        "whitespace-pre-wrap list-none",
+                        "font-[Rubik,Arial,Helvetica,'Noto Sans Devanagari','Noto Sans CJK SC Thin','Noto Sans SC','Noto Sans Hebrew','Noto Sans Bengali',sans-serif]"
+                    )}
                     placeholder="EDUCATION"
                 />
             </div>

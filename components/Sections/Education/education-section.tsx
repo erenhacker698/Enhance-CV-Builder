@@ -48,7 +48,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                 <EditableText
                                     value={edu.degree}
                                     onChange={(value) => handleEntryUpdate(edu.id, "degree", value)}
-                                    className={cn("editable-field", darkMode && "text-white")}
+                                    className={cn("editable-field", darkMode && "!text-white")}
                                     placeholder="Degree and Field of Study"
                                 />
 
@@ -56,7 +56,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                     <EditableText
                                         value={edu.period}
                                         onChange={(value) => handleEntryUpdate(edu.id, "period", value)}
-                                        className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && "text-white")}
+                                        className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && "!text-white")}
                                         placeholder="Date period"
                                     />
                                 )}
@@ -66,7 +66,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                 <EditableText
                                     value={edu.school}
                                     onChange={(value) => handleEntryUpdate(edu.id, "school", value)}
-                                    className={cn("font-medium editable-field education__school-name", darkMode && "text-white")}
+                                    className={cn("font-medium editable-field education__school-name", darkMode && "!text-white")}
                                     placeholder="School or University"
                                 />
 
@@ -75,7 +75,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                         <EditableText
                                             value={edu.location}
                                             onChange={(value) => handleEntryUpdate(edu.id, "location", value)}
-                                            className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && "text-white")}
+                                            className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && "!text-white")}
                                             placeholder="location"
                                         />
                                     </div>
@@ -139,7 +139,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                         <EditableText
                                             value={edu.gpa}
                                             onChange={(value) => handleEntryUpdate(edu.id, "gpa", value)}
-                                            className={cn("editable-field para-text-field", darkMode && "text-white")}
+                                            className={cn("editable-field para-text-field", darkMode && "!text-white")}
                                             placeholder="3.8 / 4.0"
                                         />
                                     </>
