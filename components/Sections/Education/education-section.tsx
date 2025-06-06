@@ -25,7 +25,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
     }
 
     return (
-        <div className="space-y-4">
+        <div className="Education-Section space-y-4">
             {section.content.educations?.map((edu: EducationSectionItem) => (
                 <div key={edu.id}
                     className={cn(
@@ -37,14 +37,14 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                     onContextMenu={(e) => handleContextMenu(e, edu.id)}
                     onClick={(e) => handleEntryToggle(e, edu.id)}
                 >
-                    <div className="flex flex-nowrap">
+                    <div className="flex items-start">
                         {edu.visibility?.logo !== false && (
                             <div className="mr-4 col-auto company-logo relative cursor-pointer overflow-hidden rounded-full education__logo-upload">
                             </div>
                         )}
 
                         <div className="col ml-0 flex-1">
-                            <div className="flex flex-align-start flex-justify-space-between flex-nowrap">
+                            <div className="flex items-start">
                                 <EditableText
                                     value={edu.degree}
                                     onChange={(value) => handleEntryUpdate(edu.id, "degree", value)}
@@ -56,13 +56,13 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                     <EditableText
                                         value={edu.period}
                                         onChange={(value) => handleEntryUpdate(edu.id, "period", value)}
-                                        className={cn("editable-field date-range-field", darkMode && "text-white")}
+                                        className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && "text-white")}
                                         placeholder="Date period"
                                     />
                                 )}
                             </div>
 
-                            <div className="flex flex-align-start flex-justify-space-between flex-nowrap">
+                            <div className="flex items-start">
                                 <EditableText
                                     value={edu.school}
                                     onChange={(value) => handleEntryUpdate(edu.id, "school", value)}
@@ -75,18 +75,18 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                         <EditableText
                                             value={edu.location}
                                             onChange={(value) => handleEntryUpdate(edu.id, "location", value)}
-                                            className={cn("editable-field location-field", darkMode && "text-white")}
+                                            className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && "text-white")}
                                             placeholder="location"
                                         />
                                     </div>
                                 )}
                             </div>
 
-                            <div className="flex flex-align-start flex-justify-space-between flex-nowrap">
-                                {edu.visibility?.bullets !== false && (
+                            {edu.visibility?.bullets !== false && (
+                                <div className="flex flex-align-start flex-justify-space-between mt-1">
                                     <ul className="list-disc pl-5 mt-1">
                                         {edu.bullets.map((bullet, index) => (
-                                            <li key={index} className={cn("text-sm", darkMode && "text-gray-300")}>
+                                            <li key={`${edu.id}-${index}`} className={cn("editable-field para-text-field !list-item !overflow-visible !list-disc", darkMode && "text-gray-300")}>
                                                 <EditableText
                                                     value={bullet}
                                                     onChange={(value) => {
@@ -94,13 +94,43 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                                         newBullets[index] = value
                                                         handleEntryUpdate(edu.id, "bullets", newBullets)
                                                     }}
-                                                    className="text-sm"
+                                                    onKeyDown={(e) => {
+                                                        const newBullets = [...edu.bullets];
+
+                                                        if (e.key === "Enter") {
+                                                            e.preventDefault();
+                                                            newBullets.splice(index + 1, 0, "");
+                                                            handleEntryUpdate(edu.id, "bullets", newBullets);
+                                                            setTimeout(() => {
+                                                                const nextInput = document.querySelector(
+                                                                    `[data-bullet-id="${edu.id}-${index + 1}"]`
+                                                                ) as HTMLInputElement;
+                                                                nextInput?.focus();
+                                                            }, 0);
+                                                        }
+
+                                                        else if (e.key === "Backspace" && bullet === "") {
+                                                            e.preventDefault();
+                                                            if (newBullets.length > 1) {
+                                                                newBullets.splice(index, 1);
+                                                                handleEntryUpdate(edu.id, "bullets", newBullets);
+                                                                setTimeout(() => {
+                                                                    const prevInput = document.querySelector(
+                                                                        `[data-bullet-id="${edu.id}-${index - 1}"]`
+                                                                    ) as HTMLInputElement;
+                                                                    prevInput?.focus();
+                                                                }, 0);
+                                                            }
+                                                        }
+                                                    }}
+                                                    className="editable-field para-text-field"
+                                                    placeholder="Bullet points here..."
                                                 />
                                             </li>
                                         ))}
                                     </ul>
-                                )}
-                            </div>
+                                </div>
+                            )}
 
                             <div className="education__gpa-element">
                                 {edu.visibility?.gpa !== false && (
@@ -109,7 +139,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                         <EditableText
                                             value={edu.gpa}
                                             onChange={(value) => handleEntryUpdate(edu.id, "gpa", value)}
-                                            className={cn("font-medium editable-field", darkMode && "text-white")}
+                                            className={cn("editable-field para-text-field", darkMode && "text-white")}
                                             placeholder="3.8 / 4.0"
                                         />
                                     </>

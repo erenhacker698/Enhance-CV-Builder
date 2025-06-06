@@ -12,6 +12,7 @@ interface EditableTextProps {
     className?: string
     multiline?: boolean
     placeholder?: string
+    onKeyDown?: (e: React.KeyboardEvent) => void
 }
 
 export default function EditableText({
@@ -21,6 +22,7 @@ export default function EditableText({
     className,
     multiline = false,
     placeholder = "Click to edit",
+    onKeyDown
 }: EditableTextProps) {
     const [isEditing, setIsEditing] = useState(false)
     const [editValue, setEditValue] = useState(value)
@@ -62,6 +64,8 @@ export default function EditableText({
             setIsEditing(false)
             setEditValue(value)
         }
+
+        onKeyDown?.(e)
     }
 
     if (isEditing) {

@@ -12,6 +12,12 @@ import {
   type ResumeState,
   type Section,
 } from "@/lib/types"
+import { getDefaultSection } from "@/lib/utils/sectionDefaults"
+
+const eduSection = getDefaultSection(SectionTypeEnum.EDUCATION, 'left', 'EDUCATION')
+const skillsSection = getDefaultSection(SectionTypeEnum.SKILLS, 'left', 'SKILLS')
+const languageSection = getDefaultSection(SectionTypeEnum.LANGUAGES, 'right', 'LANGUAGES')
+const projectsSection = getDefaultSection(SectionTypeEnum.PROJECTS, 'right', 'PROJECTS')
 
 const initialState: ResumeState = {
   header: {
@@ -38,51 +44,10 @@ const initialState: ResumeState = {
     roundPhoto: true,
   },
   sections: [
-    {
-      id: "section-education",
-      type: SectionTypeEnum.EDUCATION,
-      column: "left",
-      title: "",
-      content: {
-        educations: [
-          {
-            id: "entry-1",
-            degree: "Degree and Field of Study",
-            school: "School or University",
-            gpa: "",
-            location: "",
-            period: "",
-            bullets: [],
-            logo: "/placeholder.svg",
-            visibility: {
-              gpa: true,
-              location: true,
-              period: true,
-              bullets: true,
-              logo: true,
-            },
-          },
-        ],
-      },
-    },
-    {
-      id: "section-skills",
-      type: SectionTypeEnum.SKILLS,
-      column: "right",
-      title: "SKILLS",
-      content: {
-        skills: [
-          {
-            id: "group-1",
-            groupName: "Technical Skills",
-            skills: ["HTML", "CSS", "JavaScript", "React"],
-            visibility: {
-              groupName: true,
-              compactMode: false,            },
-          },
-        ],
-      },
-    },
+    eduSection!,
+    skillsSection!,
+    projectsSection!,
+    languageSection!
   ],
   activeSection: null,
   activeSkillData: null,

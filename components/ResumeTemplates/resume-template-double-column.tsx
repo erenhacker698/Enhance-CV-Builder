@@ -119,11 +119,11 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
             </div>
 
             <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                <div className="flex flex-col md:flex-row gap-6 mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
                     {/* Left Column */}
                     <Droppable droppableId="left-column">
                         {(provided) => (
-                            <div className="flex-1" ref={provided.innerRef} {...provided.droppableProps}>
+                            <div className="left-column-side" ref={provided.innerRef} {...provided.droppableProps}>
                                 {leftSections.map((section: Section, index) => (
                                     <Draggable
                                         key={section.id}
@@ -162,7 +162,7 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
                     {/* Right Column */}
                     <Droppable droppableId="right-column">
                         {(provided) => (
-                            <div className="flex-1" ref={provided.innerRef} {...provided.droppableProps}>
+                            <div className="right-column-side" ref={provided.innerRef} {...provided.droppableProps}>
                                 {rightSections.map((section: Section, index) => (
                                     <Draggable key={section.id} draggableId={section.id} index={index}>
                                         {(provided, snapshot) => (

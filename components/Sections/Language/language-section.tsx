@@ -16,22 +16,6 @@ import { RootState } from "@/lib/store"
 export default function LanguageSection({ section, isActive, darkMode = false, handleEntryToggle, handleContextMenu }: SectionProps) {
     const dispatch = useDispatch()
     const activeSection = useSelector((state: RootState) => state.resume.activeSection)
-    const sectionRef = useRef<HTMLDivElement>(null)
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (sectionRef.current && !sectionRef.current.contains(event.target as Node)) {
-                dispatch(
-                    upsertActiveSection({
-                        activeSection: null
-                    })
-                )
-            }
-        }
-
-        document.addEventListener("mousedown", handleClickOutside)
-        return () => document.removeEventListener("mousedown", handleClickOutside)
-    }, [])
 
     const handleEntryUpdate = (langId: string, field: string, value: string | number) => {
         dispatch(
@@ -57,15 +41,15 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
     }
 
     return (
-        <div ref={sectionRef} className="space-y-1">
+        <div className="Language-Section space-y-1">
             {section.content.languages?.map((language: LanguageSectionItem) => (
                 <div
                     key={language.id}
                     className={cn(
                         "relative p-2 -mx-2 group/entry border border-transparent",
-                        isActive && "hover:bg-gray-50 hover:border-gray-200 rounded-md",
-                        darkMode && isActive && "hover:bg-slate-700 rounded",
-                        activeSection?.id === language.id && 'selected-resume-item'
+                        isActive && "hover:bg-gray-50 hover:border-gray-200",
+                        darkMode && isActive && "hover:bg-slate-700",
+                        activeSection?.entryId === language.id && 'p-[7px] selected-resume-item'
                     )}
                     onContextMenu={(e) => handleContextMenu(e, language.id)}
                     onClick={(e) => handleEntryToggle(e, language.id)}

@@ -7,13 +7,13 @@ export const getDefaultEntry = (sectionType: SectionTypeEnum) => {
         case SectionTypeEnum.EDUCATION:
             return {
                 id: `edu-${timestamp}`,
-                school: "",
-                degree: "",
-                location: "",
-                gpa: "",
-                logo: "",
-                period: "",
-                bullets: [],
+                school: "School or University",
+                degree: "Degree and Field of Study",
+                location: "City, Country",
+                gpa: "3.8 / 4.0",
+                logo: "/placeholder.svg",
+                period: "2018 – 2022",
+                bullets: ["Graduated with honors", "Member of Coding Club"],
                 visibility: {
                     bullets: true,
                     gpa: true,
@@ -26,12 +26,12 @@ export const getDefaultEntry = (sectionType: SectionTypeEnum) => {
         case SectionTypeEnum.PROJECTS:
             return {
                 id: `project-${timestamp}`,
-                projectName: "",
-                description: "",
-                link: "",
-                period: "",
-                location: "",
-                bullets: [],
+                projectName: "Awesome Project",
+                description: "Built a full-stack application using React and Node.js.",
+                link: "https://github.com/yourusername/project",
+                period: "Jan 2023 – Mar 2023",
+                location: "Remote",
+                bullets: ["Implemented real-time chat using WebSockets", "Integrated payment gateway"],
                 visibility: {
                     bullets: true,
                     description: true,
@@ -44,9 +44,9 @@ export const getDefaultEntry = (sectionType: SectionTypeEnum) => {
         case SectionTypeEnum.LANGUAGES:
             return {
                 id: `lang-${timestamp}`,
-                name: "Language",
-                level: "Beginner",
-                proficiency: 1,
+                name: "English",
+                level: "Fluent",
+                proficiency: 5,
                 visibility: {
                     proficiency: true,
                     slider: true,
@@ -57,9 +57,13 @@ export const getDefaultEntry = (sectionType: SectionTypeEnum) => {
             return {
                 id: `group-${timestamp}`,
                 groupName: "Technical Skills",
-                skills: ["HTML", "CSS", "JavaScript", "React"],
+                skills: ["HTML", "CSS", "JavaScript", "React", "Node.js"],
                 borderStyle: "all",
                 compactMode: true,
+                visibility: {
+                    groupName: true,
+                    compactMode: true,
+                },
             }
 
         default:
@@ -68,7 +72,7 @@ export const getDefaultEntry = (sectionType: SectionTypeEnum) => {
 }
 
 export const getDefaultSection = (sectionType: SectionTypeEnum, column: "left" | "right", title: string): Section | null => {
-    const sectionId = `section-${Date.now()}`
+    const sectionId = `section-${Date.now()}-${Math.floor(Math.random() * 1000)}`
     const entry = getDefaultEntry(sectionType)
     if (!entry) return null
 
