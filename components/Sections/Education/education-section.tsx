@@ -26,19 +26,21 @@ export default function EducationSection({ section, isActive, darkMode = false, 
 
     return (
         <div className="Education-Section space-y-4">
-            {section.content.educations?.map((edu: EducationSectionItem) => (
-                <div key={edu.id}
+            {section.content.educations?.map((item: EducationSectionItem) => (
+                <div key={item.id}
                     className={cn(
-                        "relative p-2 -mx-2 group/entry",
-                        isActive && "hover:bg-gray-50 rounded",
-                        darkMode && isActive && "hover:bg-slate-700 rounded",
-                        activeSection?.entryId === edu.id && 'selected-resume-item'
+                        "resume-item-holder p-2 -mx-2 group/entry",
+                        activeSection?.entryId === item.id
+                            ? (darkMode && section.column === 'right'
+                                ? 'selected-resume-item--dark p-[7px]'
+                                : 'selected-resume-item p-[7px]')
+                            : ''
                     )}
-                    onContextMenu={(e) => handleContextMenu(e, edu.id)}
-                    onClick={(e) => handleEntryToggle(e, edu.id)}
+                    onContextMenu={(e) => handleContextMenu(e, item.id)}
+                    onClick={(e) => handleEntryToggle(e, item.id)}
                 >
                     <div className="flex items-start">
-                        {edu.visibility?.logo !== false && (
+                        {item.visibility?.logo !== false && (
                             <div className="mr-4 col-auto company-logo relative cursor-pointer overflow-hidden rounded-full education__logo-upload">
                             </div>
                         )}
@@ -46,17 +48,17 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                         <div className="col ml-0 flex-1">
                             <div className="flex items-start">
                                 <EditableText
-                                    value={edu.degree}
-                                    onChange={(value) => handleEntryUpdate(edu.id, "degree", value)}
-                                    className={cn("editable-field", darkMode && "!text-white")}
+                                    value={item.degree}
+                                    onChange={(value) => handleEntryUpdate(item.id, "degree", value)}
+                                    className={cn("editable-field", darkMode && section.column === 'right' && "!text-white")}
                                     placeholder="Degree and Field of Study"
                                 />
 
-                                {edu.visibility?.period !== false && (
+                                {item.visibility?.period !== false && (
                                     <EditableText
-                                        value={edu.period}
-                                        onChange={(value) => handleEntryUpdate(edu.id, "period", value)}
-                                        className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && "!text-white")}
+                                        value={item.period}
+                                        onChange={(value) => handleEntryUpdate(item.id, "period", value)}
+                                        className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && section.column === 'right' && "!text-white")}
                                         placeholder="Date period"
                                     />
                                 )}
@@ -64,46 +66,44 @@ export default function EducationSection({ section, isActive, darkMode = false, 
 
                             <div className="flex items-start">
                                 <EditableText
-                                    value={edu.school}
-                                    onChange={(value) => handleEntryUpdate(edu.id, "school", value)}
-                                    className={cn("font-medium editable-field education__school-name", darkMode && "!text-white")}
+                                    value={item.school}
+                                    onChange={(value) => handleEntryUpdate(item.id, "school", value)}
+                                    className={cn("font-medium editable-field education__school-name", darkMode && section.column === 'right' && "!text-white")}
                                     placeholder="School or University"
                                 />
 
-                                {edu.visibility?.location !== false && (
-                                    <div className="flex items-end">
-                                        <EditableText
-                                            value={edu.location}
-                                            onChange={(value) => handleEntryUpdate(edu.id, "location", value)}
-                                            className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && "!text-white")}
-                                            placeholder="location"
-                                        />
-                                    </div>
+                                {item.visibility?.location !== false && (
+                                    <EditableText
+                                        value={item.location}
+                                        onChange={(value) => handleEntryUpdate(item.id, "location", value)}
+                                        className={cn("editable-field para-text-field text-right flex items-center justify-end", darkMode && section.column === 'right' && "!text-white")}
+                                        placeholder="location"
+                                    />
                                 )}
                             </div>
 
-                            {edu.visibility?.bullets !== false && (
+                            {item.visibility?.bullets !== false && (
                                 <div className="flex flex-align-start flex-justify-space-between mt-1">
                                     <ul className="list-disc pl-5 mt-1">
-                                        {edu.bullets.map((bullet, index) => (
-                                            <li key={`${edu.id}-${index}`} className={cn("editable-field para-text-field !list-item !overflow-visible !list-disc", darkMode && "text-gray-300")}>
+                                        {item.bullets.map((bullet, index) => (
+                                            <li key={`${item.id}-${index}`} className={cn("editable-field para-text-field !list-item !overflow-visible !list-disc", darkMode && "text-gray-300")}>
                                                 <EditableText
                                                     value={bullet}
                                                     onChange={(value) => {
-                                                        const newBullets = [...edu.bullets]
+                                                        const newBullets = [...item.bullets]
                                                         newBullets[index] = value
-                                                        handleEntryUpdate(edu.id, "bullets", newBullets)
+                                                        handleEntryUpdate(item.id, "bullets", newBullets)
                                                     }}
                                                     onKeyDown={(e) => {
-                                                        const newBullets = [...edu.bullets];
+                                                        const newBullets = [...item.bullets];
 
                                                         if (e.key === "Enter") {
                                                             e.preventDefault();
                                                             newBullets.splice(index + 1, 0, "");
-                                                            handleEntryUpdate(edu.id, "bullets", newBullets);
+                                                            handleEntryUpdate(item.id, "bullets", newBullets);
                                                             setTimeout(() => {
                                                                 const nextInput = document.querySelector(
-                                                                    `[data-bullet-id="${edu.id}-${index + 1}"]`
+                                                                    `[data-bullet-id="${item.id}-${index + 1}"]`
                                                                 ) as HTMLInputElement;
                                                                 nextInput?.focus();
                                                             }, 0);
@@ -113,17 +113,17 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                                             e.preventDefault();
                                                             if (newBullets.length > 1) {
                                                                 newBullets.splice(index, 1);
-                                                                handleEntryUpdate(edu.id, "bullets", newBullets);
+                                                                handleEntryUpdate(item.id, "bullets", newBullets);
                                                                 setTimeout(() => {
                                                                     const prevInput = document.querySelector(
-                                                                        `[data-bullet-id="${edu.id}-${index - 1}"]`
+                                                                        `[data-bullet-id="${item.id}-${index - 1}"]`
                                                                     ) as HTMLInputElement;
                                                                     prevInput?.focus();
                                                                 }, 0);
                                                             }
                                                         }
                                                     }}
-                                                    className="editable-field para-text-field"
+                                                    className={cn("editable-field para-text-field", darkMode && section.column === 'right' && "!text-white")}
                                                     placeholder="Bullet points here..."
                                                 />
                                             </li>
@@ -133,13 +133,13 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                             )}
 
                             <div className="education__gpa-element">
-                                {edu.visibility?.gpa !== false && (
+                                {item.visibility?.gpa !== false && (
                                     <>
-                                        <span className="education__gpa-label">gpa</span>
+                                        <span className={cn("education__gpa-label", darkMode && section.column === 'right' && "!text-white")}>gpa</span>
                                         <EditableText
-                                            value={edu.gpa}
-                                            onChange={(value) => handleEntryUpdate(edu.id, "gpa", value)}
-                                            className={cn("editable-field para-text-field", darkMode && "!text-white")}
+                                            value={item.gpa}
+                                            onChange={(value) => handleEntryUpdate(item.id, "gpa", value)}
+                                            className={cn("editable-field para-text-field", darkMode && section.column === 'right' && "!text-white")}
                                             placeholder="3.8 / 4.0"
                                         />
                                     </>

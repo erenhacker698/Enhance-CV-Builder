@@ -88,20 +88,23 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
             {section.content.skills?.map((skillGroupItem: SkillSectionItem) => (
                 <div data-skill-group-item-id={skillGroupItem.id} data-active-sectionid={activeSection?.entryId} key={skillGroupItem.id}
                     className={cn(
-                        "relative rounded p-2 -mx-2 group/entry",
-                        isActive && "",
-                        darkMode && isActive && "",
-                        activeSection?.entryId === skillGroupItem.id && 'p-[7px] selected-resume-item'
+                        "resume-item-holder p-2 -mx-2 group/entry",
+                        activeSection?.entryId === skillGroupItem.id
+                            ? (darkMode && section.column === 'right'
+                                ? 'selected-resume-item--dark p-[7px]'
+                                : 'selected-resume-item p-[7px]')
+                            : ''
+
                     )}
                     onContextMenu={(e) => handleContextMenu(e, skillGroupItem.id)}
                     onClick={(e) => handleEntryToggle(e, skillGroupItem.id)}
                 >
                     {skillGroupItem.visibility?.groupName && (
-                        <div className="flex items-center justify-start">
+                        <div className="flex items-center justify-start mb-4">
                             <EditableText
                                 value={skillGroupItem.groupName ?? ''}
                                 onChange={(value) => handleEntryUpdate(skillGroupItem.id, value)}
-                                className={cn("editable-field text-custom-teal mb-2", darkMode && "!text-white")}
+                                className={cn("editable-field text-custom-teal", darkMode && section.column === 'right' && "!text-white")}
                                 placeholder="Group Title"
                             />
                         </div>
@@ -114,7 +117,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                                 className={cn(
                                     "relative px-2 py-1 flex items-center",
                                     isActive && "group/skill",
-                                    darkMode ? "border-gray-500 text-white" : "border-gray-300",
+                                    darkMode && section.column === 'right' ? "border-gray-500 text-white" : "border-gray-300",
                                     skillGroupItem.visibility?.compactMode ? "border" : "border-b"
                                 )}
                                 ref={skillItemRef}
@@ -123,7 +126,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                                     value={skill}
                                     onChange={(value) => handleEntrySkillUpdate(skillGroupItem.id, index, value)}
                                     onStartEdit={() => handleSetActiveSkillData(section.id, skillGroupItem.id, index)}
-                                    className={cn("editable-field editable-field--skill w-max bg-transparent border-none focus:outline-none text-sm flex items-center justify-start", darkMode && "!text-white")}
+                                    className={cn("editable-field editable-field--skill w-max bg-transparent border-none focus:outline-none text-sm flex items-center justify-start", darkMode && section.column === 'right' && "!text-white")}
                                     placeholder="Your Skill"
                                 />
                                 {isActive && (
@@ -131,7 +134,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
                                         variant="ghost"
                                         size="icon"
                                         className={cn(
-                                            "cursor-pointer w-0 h-0 opacity-0 rounded-full overflow-hidden transition-[width,height,opacity] duration-500 ease-in-out group-hover/skill:w-4 group-hover/skill:h-4 group-hover/skill:opacity-100 ml-2 bg-gray-200 text-gray-950"
+                                            "cursor-pointer w-0 h-0 opacity-0 rounded-full overflow-hidden transition-[width,height,opacity] duration-500 ease-in-out group-hover/skill:w-4 group-hover/skill:h-4 group-hover/skill:opacity-100 ml-2 bg-gray-200 text-gray-950", darkMode && section.column === 'right' && "!text-white"
                                         )}
                                         onClick={() => handleRemoveEntrySkill(skillGroupItem.id, index)}
                                     >

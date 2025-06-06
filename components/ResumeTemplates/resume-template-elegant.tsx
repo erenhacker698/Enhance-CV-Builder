@@ -7,7 +7,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { reorderSections, upsertActiveSection } from "@/lib/features/resume/resumeSlice"
 import ResumeSection from "@/components/resume-section"
 import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
+import { Camera, Plus, User } from "lucide-react"
 import type { RootState } from "@/lib/store"
 import type { Section } from "@/lib/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
@@ -28,6 +28,17 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
 
     const handleHeaderClick = () => {
         dispatch(upsertActiveSection({ activeSection: null }))
+    }
+
+    const handleAddSectionClick = (column: "left" | "right") => {
+        dispatch(setAddSectionModal({ isOpen: true, column }))
+    }
+
+    const handlePhotoClick = () => {
+        if (activeSection?.id === null) {
+            const event = new CustomEvent("openPhotoUpload", {})
+            window.dispatchEvent(event)
+        }
     }
 
     const leftSections = sections.filter((section) => section.column === "left")
@@ -97,149 +108,90 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
         }
     }
 
-    const handleAddSectionClick = (column: "left" | "right") => {
-        dispatch(setAddSectionModal({ isOpen: true, column }))
-    }
-
-    const handlePhotoClick = () => {
-        if (activeSection?.id === null) {
-            const event = new CustomEvent("openPhotoUpload", {})
-            window.dispatchEvent(event)
-        }
-    }
-
     return (
-        <div id="resume-container" className={cn("w-full mx-auto bg-white p-0 min-h-[842px] flex flex-col md:flex-row", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
-            <div className="w-[65%] p-8">
-                {/* Header - Name and title only */}
-                <div onClick={handleHeaderClick}>
-                    <ResumeHeader isActive={activeSection?.id === null} hidePhoto={true} />
-                </div>
+        <div id="resume-container" className={cn("resume-container resume-page-wrapper h-full", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_340px] gap-8">
+                <div className="left-column-side">
+                    {/* Header - Name and title only */}
+                    <div onClick={handleHeaderClick}>
+                        <ResumeHeader isActive={activeSection?.id === null} hidePhoto={true} />
+                    </div>
 
-                <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                    <Droppable droppableId="left-column">
-                        {(provided) => (
-                            <div className="mt-6" ref={provided.innerRef} {...provided.droppableProps}>
-                                {leftSections.map((section: Section, index) => (
-                                    <Draggable
-                                        key={section.id}
-                                        draggableId={section.id}
-                                        index={index}
-                                    >
-                                        {(provided, snapshot) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                className={`${snapshot.isDragging ? "opacity-50" : ""}`}
-                                            >
-                                                <ResumeSection section={section} isActive={section.id === activeSection?.id} />
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-
-                                {activeSection?.id && (
-                                    <div className="mt-4">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="w-auto flex mx-auto border-dashed border-gray-300"
-                                            onClick={() => handleAddSectionClick("left")}
+                    <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                        <Droppable droppableId="left-column">
+                            {(provided) => (
+                                <div className="mt-6" ref={provided.innerRef} {...provided.droppableProps}>
+                                    {leftSections.map((section: Section, index) => (
+                                        <Draggable
+                                            key={section.id}
+                                            draggableId={section.id}
+                                            index={index}
                                         >
-                                            <Plus size={16} className="mr-2" /> Add Section
-                                        </Button>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
-            </div>
-
-            <div className="w-[35%] bg-slate-800 text-white p-8 pt-14">
-                {/* Profile photo in sidebar */}
-                {header.visibility.photo && (
-                    <div className="flex justify-center mb-8" onClick={handleHeaderClick}>
-                        <div
-                            className={`w-32 h-32 ${header.roundPhoto ? "rounded-full" : "rounded-md"
-                                } overflow-hidden bg-gray-200 cursor-pointer`}
-                            onClick={handlePhotoClick}
-                        >
-                            {header.photoUrl ? (
-                                <img src={header.photoUrl || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                        <circle
-                                            cx="12"
-                                            cy="7"
-                                            r="4"
-                                            stroke="currentColor"
-                                            strokeWidth="2"
-                                            strokeLinecap="round"
-                                            strokeLinejoin="round"
-                                        />
-                                    </svg>
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    className={`${snapshot.isDragging ? "opacity-50" : ""}`}
+                                                >
+                                                    <ResumeSection section={section} isActive={section.id === activeSection?.id} darkMode={true} />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
                                 </div>
                             )}
-                        </div>
-                    </div>
-                )}
+                        </Droppable>
+                    </DragDropContext>
+                </div>
 
-                <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                    <Droppable droppableId="right-column">
-                        {(provided) => (
-                            <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-6">
-                                {rightSections.map((section: Section, index) => (
-                                    <Draggable key={section.id} draggableId={section.id} index={index}>
-                                        {(provided, snapshot) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                className={`${snapshot.isDragging ? "opacity-50" : ""}`}
-                                            >
-                                                <div className="mb-6">
-                                                    <h2 className="text-xl font-bold uppercase mb-4 border-b border-slate-600 pb-2">
-                                                        {section.title}
-                                                    </h2>
-                                                    <ResumeSection
-                                                        section={{ ...section, title: "" }}
-                                                        isActive={section.id === activeSection?.id}
-                                                        darkMode={true}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
+                <div className="hidden md:flex w-[380px] h-full absolute top-0 right-0 z-[0] bg-[#22405c]"></div>
 
-                                {activeSection?.id && (
-                                    <div className="mt-4">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="w-auto flex mx-auto border-dashed border-slate-600 text-white hover:bg-slate-700"
-                                            onClick={() => handleAddSectionClick("right")}
-                                        >
-                                            <Plus size={16} className="mr-2" /> Add Section
-                                        </Button>
+                <div className="right-column-side text-white relative z-[1] pl-8">
+                    {/* Profile photo in sidebar */}
+                    {header.visibility.photo && (
+                        <div className="flex justify-center mb-8" onClick={handleHeaderClick}>
+                            <div
+                                className={`w-32 h-32 ${header.roundPhoto ? "rounded-full" : "rounded-md"
+                                    } overflow-hidden bg-gray-200 cursor-pointer`}
+                                onClick={handlePhotoClick}
+                            >
+                                {header.photoUrl ? (
+                                    <img src={header.photoUrl || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                        <User className="w-12 h-12" />
                                     </div>
                                 )}
                             </div>
-                        )}
-                    </Droppable>
-                </DragDropContext>
+                        </div>
+                    )}
+
+                    <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                        <Droppable droppableId="right-column">
+                            {(provided) => (
+                                <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-6">
+                                    {rightSections.map((section: Section, index) => (
+                                        <Draggable key={section.id} draggableId={section.id} index={index}>
+                                            {(provided, snapshot) => (
+                                                <div
+                                                    ref={provided.innerRef}
+                                                    {...provided.draggableProps}
+                                                    {...provided.dragHandleProps}
+                                                    className={`${snapshot.isDragging ? "opacity-50" : ""}`}
+                                                >
+                                                    <ResumeSection section={section} isActive={section.id === activeSection?.id} darkMode={true} />
+                                                </div>
+                                            )}
+                                        </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                </div>
+                            )}
+                        </Droppable>
+                    </DragDropContext>
+                </div>
             </div>
         </div>
     )

@@ -42,45 +42,47 @@ export default function LanguageSection({ section, isActive, darkMode = false, h
 
     return (
         <div className="Language-Section space-y-1">
-            {section.content.languages?.map((language: LanguageSectionItem) => (
+            {section.content.languages?.map((item: LanguageSectionItem) => (
                 <div
-                    key={language.id}
+                    key={item.id}
                     className={cn(
-                        "relative p-2 -mx-2 group/entry border border-transparent",
-                        isActive && "hover:bg-gray-50 hover:border-gray-200",
-                        darkMode && isActive && "hover:bg-slate-700",
-                        activeSection?.entryId === language.id && 'p-[7px] selected-resume-item'
+                        "resume-item-holder p-2 -mx-2 group/entry",
+                        activeSection?.entryId === item.id
+                            ? (darkMode && section.column === 'right'
+                                ? 'selected-resume-item--dark p-[7px]'
+                                : 'selected-resume-item p-[7px]')
+                            : ''
                     )}
-                    onContextMenu={(e) => handleContextMenu(e, language.id)}
-                    onClick={(e) => handleEntryToggle(e, language.id)}
+                    onContextMenu={(e) => handleContextMenu(e, item.id)}
+                    onClick={(e) => handleEntryToggle(e, item.id)}
                 >
 
                     <div className="flex items-center justify-between">
                         <EditableText
-                            value={language.name}
-                            onChange={(value) => handleEntryUpdate(language.id, "name", value)}
-                            className={cn("editable-field", darkMode && "!text-white")}
+                            value={item.name}
+                            onChange={(value) => handleEntryUpdate(item.id, "name", value)}
+                            className={cn("editable-field", darkMode && section.column === 'right' && "!text-white")}
                             placeholder="Language"
                         />
 
                         <div className="flex items-center justify-end gap-2">
-                            {language.visibility?.proficiency !== false && (
+                            {item.visibility?.proficiency !== false && (
                                 <EditableText
-                                    value={language.level}
-                                    onChange={(value) => handleEntryUpdate(language.id, "level", value)}
-                                    className="text-sm"
+                                    value={item.level}
+                                    onChange={(value) => handleEntryUpdate(item.id, "level", value)}
+                                    className={cn("text-sm", darkMode && section.column === 'right' && "!text-white")}
                                 />
                             )}
-                            {language.visibility?.slider !== false && (
+                            {item.visibility?.slider !== false && (
                                 <div className="flex items-center">
                                     {[1, 2, 3, 4, 5].map((rating) => (
                                         <div
                                             key={rating}
                                             className={cn(
                                                 "w-4 h-4 rounded-full mx-0.5 cursor-pointer",
-                                                rating <= language.proficiency ? "bg-teal-500" : "bg-gray-200",
+                                                rating <= item.proficiency ? "bg-teal-500" : "bg-gray-200",
                                             )}
-                                            onClick={() => handleEntryUpdate(language.id, "proficiency", rating)}
+                                            onClick={() => handleEntryUpdate(item.id, "proficiency", rating)}
                                         ></div>
                                     ))}
                                 </div>

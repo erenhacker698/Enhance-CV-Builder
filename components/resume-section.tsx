@@ -238,8 +238,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     return (
         <div
             ref={isActive ? sectionRef : null}
-            data-active-section-type={section.type}
-            className={cn("mb-6 relative group p-4", isActive && "p-[15px] resume-section-active", darkMode && "resume-section-active--darkmode")}
+            className={cn("mb-2 relative group p-4", isActive && "p-[15px] resume-section-active !bg-white", darkMode && section.column === 'right' && isActive && "!bg-[#ffffff1f]")}
             onClick={handleSectionSelection}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => {
@@ -297,20 +296,20 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 </div>
             )}
 
-            <div className={cn("mb-2", darkMode ? "" : "")}>
+            <div className={cn("mb-2")}>
                 <EditableText
                     value={section.title}
                     onChange={handleUpdateSectionChange}
                     className={cn(
                         "bg-transparent border-0 shadow-none m-0 min-h-[10px] outline-none p-0 resize-none break-words",
                         "text-[16px] leading-[19px] font-normal uppercase",
-                        darkMode ? 'text-white' : 'text-[#3e3e3e]',
+                        darkMode && section.column === 'right' ? 'text-white' : 'text-[#3e3e3e]',
                         "w-full min-w-[2px] overflow-hidden block relative z-[1]",
                         "border-b border-[#bdbdbd] pb-2",
                         "whitespace-pre-wrap list-none",
                         "font-[Rubik,Arial,Helvetica,'Noto Sans Devanagari','Noto Sans CJK SC Thin','Noto Sans SC','Noto Sans Hebrew','Noto Sans Bengali',sans-serif]"
                     )}
-                    placeholder="EDUCATION"
+                    placeholder="You Title"
                 />
             </div>
 

@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils"
 export default function ResumeBuilder() {
   const dispatch = useDispatch()
   const { template } = useSelector((state: RootState) => state.settings)
+  const activeSection = useSelector((state: RootState) => state.resume.activeSection)
   const resumeRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>
 
   const handleAddSectionClick = (column: "left" | "right") => {
@@ -51,12 +52,15 @@ export default function ResumeBuilder() {
   }
 
   return (
-    <div className="flex flex-col md:flex-row gap-4">
+    <div className="flex flex-col md:flex-row gap-3 md:gap-8">
       <Sidebar resumeRef={resumeRef} />
 
-      <div className={cn("flex-1 bg-white shadow-md overflow-hidden relative")}>
-        {renderTemplate()}
+      <div className="resume-editor-wrapper flex flex-row flex-wrap items-center justify-center relative z-[1] w-full md:w-[890px]">
+        <div className={cn("resume-renderer-page browser-resume-page browserResumePage relative h-full", activeSection?.id && 'resume-editor-overlay')}>
+          {renderTemplate()}
+        </div>
       </div>
+
     </div>
   )
 }

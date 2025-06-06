@@ -9,7 +9,7 @@ import TemplatesModal from "@/components/Common/Dialogs/templates-modal"
 export default function Home() {
   return (
     <Provider store={store}>
-      <div className="min-h-screen bg-gray-100">
+      <div className="min-h-screen bg-[#fafbfd]">
         <Header />
         <main className="container mx-auto py-6 px-4">
           <ResumeBuilder />

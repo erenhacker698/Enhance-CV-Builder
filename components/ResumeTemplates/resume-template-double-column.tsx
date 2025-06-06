@@ -23,13 +23,6 @@ interface ResumeTemplateProps {
     resumeRef: React.RefObject<HTMLDivElement | null>
 }
 
-const sectionComponentMap = {
-    education: EducationSection,
-    projects: ProjectSection,
-    skills: SkillsSection,
-    languages: LanguageSection,
-};
-
 export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplateProps) {
     const dispatch = useDispatch()
     const activeSection = useSelector((state: RootState) => state.resume.activeSection)
@@ -113,7 +106,7 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
     }
 
     return (
-        <div id="resume-container" className={cn("w-full mx-auto bg-white p-2 md:p-9 min-h-[842px]", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
+        <div id="resume-container" className={cn("resume-container resume-page-wrapper", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
             <div onClick={handleHeaderClick}>
                 <ResumeHeader isActive={activeSection?.id === null} />
             </div>
@@ -143,18 +136,6 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
                                     </Draggable>
                                 ))}
                                 {provided.placeholder}
-                                {activeSection?.id && (
-                                    <div className="mt-4">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="w-auto flex mx-auto border-dashed border-gray-300"
-                                            onClick={() => handleAddSectionClick("left")}
-                                        >
-                                            <Plus size={16} className="mr-2" /> Add Section
-                                        </Button>
-                                    </div>
-                                )}
                             </div>
                         )}
                     </Droppable>
@@ -178,18 +159,6 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
                                     </Draggable>
                                 ))}
                                 {provided.placeholder}
-                                {activeSection?.id && (
-                                    <div className="mt-4">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            className="w-auto flex mx-auto border-dashed border-gray-300"
-                                            onClick={() => handleAddSectionClick("right")}
-                                        >
-                                            <Plus size={16} className="mr-2" /> Add Section
-                                        </Button>
-                                    </div>
-                                )}
                             </div>
                         )}
                     </Droppable>
