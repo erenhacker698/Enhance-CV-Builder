@@ -51,21 +51,19 @@ export default function TemplatesModal({ }: TemplatesModalProps) {
 
     return (
         <Dialog open={showTemplatesModal} onOpenChange={(open) => dispatch(setTemplatesModal(open))}>
-            <DialogContent className="max-w-4xl max-h-[95vh] p-0 overflow-auto">
-                <DialogHeader className="p-6 pb-2">
-                    <div className="flex justify-between items-center">
-                        <DialogTitle className="text-2xl font-bold">Choose a template</DialogTitle>
-                    </div>
-                    <p className="text-gray-600">Select a template to change the look of your resume</p>
+            <DialogContent className="w-[98%] max-w-md sm:max-w-2xl lg:max-w-3/4 max-h-[90vh] p-0 overflow-auto scrollbar-none drop-shadow-2xl border-none shadow-none">
+                <DialogHeader className="p-4 sm:p-6 lg:p-7 xl:p-10 !pb-1">
+                    <DialogTitle className="font-normal text-center text-lg md:text-xl lg:text-2xl xl:text-3xl">Choose a template</DialogTitle>
+                    <p className="text-gray-600 text-center text-sm md:text-base">Select a template to change the look of your resume</p>
                 </DialogHeader>
 
-                <div className="grid grid-cols-3 gap-6 p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 sm:p-6 lg:p-7 xl:p-10 !pt-1">
                     {templates.map((template) => (
                         <div
                             key={template.id}
                             className={`border rounded-md overflow-hidden cursor-pointer transition-colors ${selectedTemplate === template.id
-                                    ? "border-teal-500 ring-1 ring-teal-500"
-                                    : "border-gray-200 hover:border-teal-500"
+                                ? "border-teal-500 ring-1 ring-teal-500"
+                                : "border-gray-200 hover:border-teal-500"
                                 }`}
                             onClick={() => handleSelectTemplate(template.id)}
                         >
@@ -86,7 +84,7 @@ export default function TemplatesModal({ }: TemplatesModalProps) {
                 </div>
 
                 <div className="flex justify-end p-4 border-t border-gray-200">
-                    <Button variant="outline" onClick={() => dispatch(setTemplatesModal(false))} className="mr-2">
+                    <Button variant="outline" onClick={() => dispatch(setTemplatesModal(false))} className="mr-2 text-base py-2.5 px-3.5 cursor-pointer rounded-sm font-rubik font-medium transition-all duration-300 ease-in-out">
                         Cancel
                     </Button>
                     <Button
@@ -94,7 +92,7 @@ export default function TemplatesModal({ }: TemplatesModalProps) {
                             dispatch(setTemplate({ template: selectedTemplate }))
                             dispatch(setTemplatesModal(false))
                         }}
-                        className="bg-teal-500 hover:bg-teal-600"
+                        className="text-base py-2.5 px-3.5 text-white bg-[#2dc08d] hover:bg-[#57cda4] border-none cursor-pointer rounded-sm font-rubik font-medium transition-all duration-300 ease-in-out"
                     >
                         Apply Template
                     </Button>

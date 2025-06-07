@@ -6,6 +6,9 @@
 @theme {
   --font-inter: var(--font-inter), sans-serif;
   --font-fira: var(--font-fira), monospace;
+  --font-rubik: var(--font-rubik), monospace;
+  --shadow-resize-panel: 0 2px 20px 0 rgba(0, 0, 0, .1);
+  --bg-btn-teal: #2dc08d;
 }
 
 @theme inline {
@@ -128,9 +131,7 @@
 }
 
 body {
-  --reach-dialog: 1;
-  /* important for modals from Radix or Reach UI */
-  font-family: Rubik, Arial, Helvetica, "Noto Sans Devanagari", "Noto Sans CJK SC Thin", "Noto Sans SC", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
+  font-family: 'Rubik', Helvetica, "Noto Sans Devanagari", "Noto Sans CJK SC Thin", "Noto Sans SC", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
   font-family: var(--font-inter), sans-serif;
 }
 
@@ -139,17 +140,35 @@ pre {
   font-family: var(--font-fira), monospace;
 }
 
+.h1,
+.h2,
+.h3,
+.h4,
+.h5,
+.h6,
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-fira), monospace;
+  color: #2d3639;
+  font-family: var(--font-rubik), var(--font-fira), monospace;
+  font-style: normal;
 }
 
-.max-w-4xl {
-  max-width: 56rem;
+/* globals.css */
+.scrollbar-none {
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+
+  /* Chrome, Safari, Opera */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
 
 .section-blocks-layout-wrapper {
@@ -170,13 +189,11 @@ h6 {
 
 .main-navbar {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1);
-  z-index: 1000;
 }
 
 .browser-resume-page {
   box-shadow: 0 0 2px 0 rgba(83, 83, 83, .5);
   margin-bottom: 40px;
-  padding: 36px 36px 0px;
   background-color: #fff;
   height: 1330px;
   page-break-after: always;
@@ -398,7 +415,7 @@ h6 {
     left: 0%;
     right: 0%;
     bottom: 0%;
-    z-index: 20;
+    z-index: 10;
     transition: visibility .15s ease-in, opacity .15s ease-in, transform .15s ease-in;
     box-shadow: 0 -3px 6px #0000001a;
   }

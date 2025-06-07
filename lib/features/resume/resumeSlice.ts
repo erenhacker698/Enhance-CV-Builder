@@ -14,10 +14,10 @@ import {
 } from "@/lib/types"
 import { getDefaultSection } from "@/lib/utils/sectionDefaults"
 
-const eduSection = getDefaultSection(SectionTypeEnum.EDUCATION, 'left', 'EDUCATION')
-const skillsSection = getDefaultSection(SectionTypeEnum.SKILLS, 'left', 'SKILLS')
-const languageSection = getDefaultSection(SectionTypeEnum.LANGUAGES, 'right', 'LANGUAGES')
-const projectsSection = getDefaultSection(SectionTypeEnum.PROJECTS, 'right', 'PROJECTS')
+// const eduSection = getDefaultSection(SectionTypeEnum.EDUCATION, 'left', 'EDUCATION', true)
+// const skillsSection = getDefaultSection(SectionTypeEnum.SKILLS, 'left', 'SKILLS', true)
+// const languageSection = getDefaultSection(SectionTypeEnum.LANGUAGES, 'right', 'LANGUAGES', true)
+// const projectsSection = getDefaultSection(SectionTypeEnum.PROJECTS, 'right', 'PROJECTS', true)
 
 const initialState: ResumeState = {
   header: {
@@ -44,10 +44,101 @@ const initialState: ResumeState = {
     roundPhoto: true,
   },
   sections: [
-    eduSection!,
-    skillsSection!,
-    projectsSection!,
-    languageSection!
+    {
+      id: "section-education",
+      type: SectionTypeEnum.EDUCATION,
+      column: "left",
+      title: "EDUCATION",
+      content: {
+        educations: [
+          {
+            id: "edu-1",
+            school: "School or University",
+            degree: "Degree and Field of Study",
+            location: "City, Country",
+            gpa: "3.8 / 4.0",
+            logo: "/placeholder.svg",
+            period: "2018 – 2022",
+            bullets: ["Graduated with honors", "Member of Coding Club"],
+            visibility: {
+              bullets: true,
+              gpa: true,
+              location: true,
+              logo: true,
+              period: true,
+            },
+          },
+        ],
+      },
+    },
+    {
+      id: "section-skills",
+      type: SectionTypeEnum.SKILLS,
+      column: "left",
+      title: "SKILLS",
+      content: {
+        skills: [
+          {
+            id: "group-1",
+            groupName: "Technical Skills",
+            skills: ["HTML", "CSS", "JavaScript", "React", "Node.js"],
+            visibility: {
+              groupName: true,
+              compactMode: true,
+            },
+          },
+        ],
+      },
+    },
+    {
+      id: "section-projects",
+      type: SectionTypeEnum.PROJECTS,
+      column: "right",
+      title: "PROJECTS",
+      content: {
+        projects: [
+          {
+            id: "project-1",
+            projectName: "Awesome Project",
+            description: "Built a full-stack application using React and Node.js.",
+            link: "https://github.com/yourusername/project",
+            period: "Jan 2023 – Mar 2023",
+            location: "Remote",
+            bullets: [
+              "Implemented real-time chat using WebSockets",
+              "Integrated payment gateway",
+            ],
+            visibility: {
+              bullets: true,
+              description: true,
+              link: true,
+              location: true,
+              period: true,
+            },
+          },
+        ],
+      },
+    },
+    {
+      id: "section-languages",
+      type: SectionTypeEnum.LANGUAGES,
+      column: "right",
+      title: "LANGUAGES",
+      content: {
+        languages: [
+          {
+            id: "lang-1",
+            name: "English",
+            level: "Fluent",
+            proficiency: 5,
+            visibility: {
+              proficiency: true,
+              slider: true,
+            },
+          },
+        ],
+      },
+    },
   ],
   activeSection: null,
   activeSkillData: null,

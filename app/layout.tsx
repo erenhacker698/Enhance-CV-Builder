@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { inter, firaCode } from '../lib/fonts'
+import { inter, firaCode, rubik } from '../lib/fonts'
 import { baseMetadata, jsonLdSchema } from "@/lib/metadata";
 
 export const metadata: Metadata = baseMetadata;
@@ -21,10 +21,10 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${firaCode.variable} antialiased`}
-      >
+        className={`${inter.variable} ${firaCode.variable} ${rubik.variable} antialiased`}
+        style={{ marginRight: '0% !important' }}>
         {children}
       </body>
-    </html>
+    </html >
   );
 }

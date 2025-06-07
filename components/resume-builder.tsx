@@ -56,7 +56,7 @@ export default function ResumeBuilder() {
       <Sidebar resumeRef={resumeRef} />
 
       <div className="resume-editor-wrapper flex flex-row flex-wrap items-center justify-center relative z-[1] w-full md:w-[890px]">
-        <div className={cn("resume-renderer-page browser-resume-page browserResumePage relative h-full", activeSection?.id && 'resume-editor-overlay')}>
+        <div className={cn("resume-renderer-page browser-resume-page browserResumePage relative h-full pt-4 px-4 pb-0 lg:pt-9 lg:px-9", activeSection?.id && 'resume-editor-overlay')}>
           {renderTemplate()}
         </div>
       </div>

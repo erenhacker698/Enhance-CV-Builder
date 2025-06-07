@@ -46,7 +46,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                         )}
 
                         <div className="col ml-0 flex-1">
-                            <div className="flex items-start">
+                            <div className="flex flex-col lg:flex-row items-start">
                                 <EditableText
                                     value={item.degree}
                                     onChange={(value) => handleEntryUpdate(item.id, "degree", value)}
@@ -64,7 +64,7 @@ export default function EducationSection({ section, isActive, darkMode = false, 
                                 )}
                             </div>
 
-                            <div className="flex items-start">
+                            <div className="flex flex-col lg:flex-row items-start">
                                 <EditableText
                                     value={item.school}
                                     onChange={(value) => handleEntryUpdate(item.id, "school", value)}

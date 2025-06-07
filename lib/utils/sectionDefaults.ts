@@ -71,8 +71,11 @@ export const getDefaultEntry = (sectionType: SectionTypeEnum) => {
     }
 }
 
-export const getDefaultSection = (sectionType: SectionTypeEnum, column: "left" | "right", title: string): Section | null => {
-    const sectionId = `section-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+export const getDefaultSection = (sectionType: SectionTypeEnum, column: "left" | "right", title: string, inSSR?: boolean): Section | null => {
+    const sectionId = inSSR
+        ? `section-${sectionType.toLowerCase()}`
+        : `section-${Date.now()}-${Math.floor(Math.random() * 1000)}`
+
     const entry = getDefaultEntry(sectionType)
     if (!entry) return null
 

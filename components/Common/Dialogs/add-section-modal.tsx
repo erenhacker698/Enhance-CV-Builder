@@ -108,20 +108,18 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
 
     return (
         <Dialog open={showAddSectionModal} onOpenChange={(open) => dispatch(setAddSectionModal({ isOpen: open }))}>
-            <DialogContent className="max-w-4xl max-h-[95vh] p-0 overflow-auto">
-                <DialogHeader className="p-6 pb-2">
-                    <div className="flex justify-between items-center">
-                        <DialogTitle className="text-2xl font-bold">Add a new section</DialogTitle>
-                    </div>
-                    <p className="text-gray-600">Click on a section to add it to your resume</p>
+            <DialogContent className="w-[98%] max-w-md sm:max-w-2xl lg:max-w-3/4 max-h-[90vh] p-0 overflow-auto scrollbar-none drop-shadow-2xl border-none shadow-none">
+                <DialogHeader className="p-4 sm:p-6 lg:p-7 xl:p-10 !pb-1">
+                    <DialogTitle className="font-normal text-center text-lg md:text-xl lg:text-2xl xl:text-3xl">Add a new section</DialogTitle>
+                    <p className="text-gray-600 text-center text-sm md:text-base">Click on a section to add it to your resume</p>
                 </DialogHeader>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 sm:p-6 lg:p-7 xl:p-10 !pt-1">
                     {sectionTypes.map((section) => (
                         <div
                             key={section.title}
                             className={cn(
-                                "border rounded-md overflow-hidden cursor-pointer hover:border-teal-500 transition-colors h-[280px] relative",
+                                "border rounded-md overflow-hidden cursor-pointer hover:border-teal-500 transition-colors h-[180px] relative",
                                 selectedType === section.title ? "border-teal-500 ring-1 ring-teal-500" : "border-gray-200",
                             )}
                             onClick={() => {
@@ -130,7 +128,7 @@ export default function AddSectionModal({ }: AddSectionModalProps) {
                             }}
                         >
                             <div className="p-4 h-full">{section.preview}</div>
-                            <div className="absolute bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 text-center">
+                            <div className="mt-auto bg-white border-t border-gray-200 p-2 text-center">
                                 {section.title}
                             </div>
                         </div>

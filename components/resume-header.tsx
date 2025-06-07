@@ -128,7 +128,7 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
         >
-            <div className="p-4 flex justify-between items-start">
+            <div className="p-4 flex flex-col-reverse lg:flex-row justify-between gap-3 lg:gap-0 items-start">
                 <div className="flex-1">
                     <div className={cn("font-bold text-3xl", header.uppercaseName && "uppercase")}>
                         <EditableText
