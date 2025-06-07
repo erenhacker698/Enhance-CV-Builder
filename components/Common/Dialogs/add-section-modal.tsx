@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils"
 import { SectionTypeEnum, type Section } from "@/lib/types"
 import type { RootState } from "@/lib/store"
 import { getDefaultSection } from "@/lib/utils/sectionDefaults"
+import { Award } from "lucide-react"
 
 type AddSectionModalProps = {}
 
@@ -83,6 +84,25 @@ const sectionTypes = [
                         <li>Project description point 1</li>
                         <li>Project description point 2</li>
                     </ul>
+                </div>
+            </div>
+        ),
+    },
+    {
+        title: "Achievements",
+        type: SectionTypeEnum.ACHIEVEMENTS,
+        preview: (
+            <div className="">
+                <div className="uppercase font-bold border-b border-gray-800 mb-2">ACHIEVEMENTS</div>
+                <div className="flex items-start">
+                    <div className="bg-teal-100 rounded-full p-2 mr-3 text-teal-500 flex-shrink-0">
+                        <Award size={16} />
+                    </div>
+
+                    <div className="flex-1">
+                        <p className="font-medium">Won First Prize at Hackathon</p>
+                        <p className="text-xs text-gray-600 pt-1">Secured first place among 200+ teams in a national-level coding event.</p>
+                    </div>
                 </div>
             </div>
         ),

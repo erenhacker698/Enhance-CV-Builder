@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import {
+  AchievementSectionItem,
   ActiveSection,
   EducationContentVisibility,
   EducationSectionItem,
@@ -12,12 +13,6 @@ import {
   type ResumeState,
   type Section,
 } from "@/lib/types"
-import { getDefaultSection } from "@/lib/utils/sectionDefaults"
-
-// const eduSection = getDefaultSection(SectionTypeEnum.EDUCATION, 'left', 'EDUCATION', true)
-// const skillsSection = getDefaultSection(SectionTypeEnum.SKILLS, 'left', 'SKILLS', true)
-// const languageSection = getDefaultSection(SectionTypeEnum.LANGUAGES, 'right', 'LANGUAGES', true)
-// const projectsSection = getDefaultSection(SectionTypeEnum.PROJECTS, 'right', 'PROJECTS', true)
 
 const initialState: ResumeState = {
   header: {
@@ -139,6 +134,26 @@ const initialState: ResumeState = {
         ],
       },
     },
+    {
+      id: `achievement-${Date.now()}`,
+      type: SectionTypeEnum.ACHIEVEMENTS,
+      column: "right",
+      title: "ACHIEVEMENTS",
+      content: {
+        achievements: [
+          {
+            id: 'achievements-1',
+            title: "Winner - CodeSprint 2024",
+            description: "Secured 1st place in a national-level coding competition among 5000+ participants.",
+            icon: "award",
+            visibility: {
+              description: true,
+              icon: true,
+            },
+          }
+        ]
+      }
+    }
   ],
   activeSection: null,
   activeSkillData: null,
@@ -714,6 +729,78 @@ export const resumeSlice = createSlice({
         }
       }
     },
+
+    // Achievements actions
+    addAchievement: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        achievement: AchievementSectionItem
+      }>
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section) {
+        if (!section.content.achievements) {
+          section.content.achievements = []
+        }
+        section.content.achievements.push(action.payload.achievement)
+      }
+    },
+
+    updateAchievement: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        achievementId: string
+        field: keyof AchievementSectionItem
+        value: string
+      }>
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section?.content.achievements) {
+        const achievement = section.content.achievements.find((a) => a.id === action.payload.achievementId)
+        if (achievement) {
+          (achievement as any)[action.payload.field] = action.payload.value
+        }
+      }
+    },
+
+    removeAchievement: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        achievementId: string
+      }>
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section?.content.achievements) {
+        section.content.achievements = section.content.achievements.filter(
+          (a) => a.id !== action.payload.achievementId
+        )
+      }
+    },
+
+    toggleEntryVisibility_Achievement: (
+      state,
+      action: PayloadAction<{
+        sectionId: string
+        entryId: string
+        field: string
+        value: boolean
+      }>
+    ) => {
+      saveToHistory(state)
+      const section = state.sections.find((s) => s.id === action.payload.sectionId)
+      if (section?.content.achievements) {
+        const achievement = section.content.achievements.find((a) => a.id === action.payload.entryId)
+        if (achievement?.visibility) {
+          (achievement.visibility as any)[action.payload.field] = action.payload.value
+        }
+      }
+    }
   },
 })
 
@@ -751,6 +838,10 @@ export const {
   updateEntryLanguage,
   removeEntryLanguage,
   toggleEntryVisibility_Language,
+  addAchievement,
+  updateAchievement,
+  removeAchievement,
+  toggleEntryVisibility_Achievement,
   undo,
   redo,
 } = resumeSlice.actions

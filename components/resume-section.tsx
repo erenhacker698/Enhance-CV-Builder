@@ -17,8 +17,10 @@ import {
     toggleEntryVisibility_SkillsContent,
     addEntrySkillGroup,
     upsertActiveSection,
+    toggleEntryVisibility_Achievement,
+    addAchievement,
 } from "@/lib/features/resume/resumeSlice"
-import { EducationContentVisibility, EducationSectionItem, LanguageContentVisibility, LanguageSectionItem, ProjectContentVisibility, ProjectSectionItem, type Section, SectionTypeEnum, SkillVisibility, VisibilityDispatchMap } from "@/lib/types"
+import { AchievementContentVisibility, AchievementSectionItem, EducationContentVisibility, EducationSectionItem, LanguageContentVisibility, LanguageSectionItem, ProjectContentVisibility, ProjectSectionItem, type Section, SectionTypeEnum, SkillVisibility, VisibilityDispatchMap } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import EditableText from "@/components/Shared/editable-text"
 import SectionToolbar from "@/components/Common/Sections/section-toolbar"
@@ -32,6 +34,8 @@ import ProjectsSettingsPanel from "./Sections/Projects/SettingsPannel/projects-s
 import LanguageSettingsPanel from "./Sections/Language/SettingsPannel/language-settings-panel"
 import { getDefaultEntry } from "@/lib/utils/sectionDefaults"
 import { RootState } from "@/lib/store"
+import AchievementsSection from "./Sections/Achievements/achievements-section"
+import AchievementsSettingsPanel from "./Sections/Achievements/SettingsPannel/achievements-settings-panel"
 
 interface ResumeSectionProps {
     section: Section
@@ -129,6 +133,9 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                     dispatch(addEntrySkill({ sectionId: section.id, groupId: activeSection.entryId, skill: "Your Skill" }))
                 }
                 break
+            case SectionTypeEnum.ACHIEVEMENTS:
+                dispatch(addAchievement({ sectionId: section.id, achievement: entry as AchievementSectionItem }))
+                break
         }
     }
 
@@ -154,10 +161,11 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         [SectionTypeEnum.PROJECTS]: toggleEntryVisibility_Project,
         [SectionTypeEnum.LANGUAGES]: toggleEntryVisibility_Language,
         [SectionTypeEnum.SKILLS]: toggleEntryVisibility_SkillsContent,
+        [SectionTypeEnum.ACHIEVEMENTS]: toggleEntryVisibility_Achievement,
     }
 
     const handleToggleVisibility = (
-        field: keyof EducationContentVisibility | keyof ProjectContentVisibility | keyof LanguageContentVisibility | keyof SkillVisibility,
+        field: keyof EducationContentVisibility | keyof ProjectContentVisibility | keyof LanguageContentVisibility | keyof SkillVisibility | keyof AchievementContentVisibility,
         value: boolean
     ) => {
         if (activeSection?.entryId && section.type in visibilityDispatchMap) {
@@ -220,6 +228,8 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 return <LanguageSection section={section} isActive={isActive} darkMode={darkMode} handleEntryToggle={handleEntryToggle} handleContextMenu={handleContextMenu} />
             case SectionTypeEnum.SKILLS:
                 return <SkillsSection section={section} isActive={isActive} darkMode={darkMode} handleEntryToggle={handleEntryToggle} handleContextMenu={handleContextMenu} />
+            case SectionTypeEnum.ACHIEVEMENTS:
+                return <AchievementsSection section={section} isActive={isActive} darkMode={darkMode} handleEntryToggle={handleEntryToggle} handleContextMenu={handleContextMenu} />
             default:
                 return null
         }
@@ -277,6 +287,14 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                             {section.type === SectionTypeEnum.SKILLS && (
                                 <SkillsSettingsPanel
                                     skill={section.content.skills?.find((e) => e.id === activeSection.entryId) || null}
+                                    onToggleVisibility={handleToggleVisibility}
+                                    onClose={() => setShowVisibilityMenu(false)}
+                                />
+                            )}
+
+                            {section.type === SectionTypeEnum.ACHIEVEMENTS && (
+                                <AchievementsSettingsPanel
+                                    achievement={section.content.achievements?.find((e) => e.id === activeSection.entryId) || null}
                                     onToggleVisibility={handleToggleVisibility}
                                     onClose={() => setShowVisibilityMenu(false)}
                                 />

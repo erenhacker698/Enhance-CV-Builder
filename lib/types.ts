@@ -96,18 +96,32 @@ export interface SkillVisibility {
   compactMode: boolean
 }
 
+export interface AchievementSectionItem {
+  id: string
+  title: string
+  description: string
+  icon: string // e.g., "info", "award", etc.
+  visibility?: AchievementContentVisibility
+}
+
+export interface AchievementContentVisibility {
+  description: boolean
+  icon: boolean
+}
+
 export enum SectionTypeEnum {
   EDUCATION = "educations",
   PROJECTS = "projects",
   SKILLS = "skills",
   LANGUAGES = "languages",
+  ACHIEVEMENTS = "achievements"
 }
 
 export const proficiencyLabels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Proficient", "Native"]
 
-export type SectionType = SectionTypeEnum.EDUCATION | SectionTypeEnum.PROJECTS | SectionTypeEnum.LANGUAGES | SectionTypeEnum.SKILLS
+export type SectionType = SectionTypeEnum.EDUCATION | SectionTypeEnum.PROJECTS | SectionTypeEnum.LANGUAGES | SectionTypeEnum.SKILLS | SectionTypeEnum.ACHIEVEMENTS
 
-export type SectionContent = EducationSectionItem | ProjectSectionItem | LanguageSectionItem | SkillSectionItem
+export type SectionContent = EducationSectionItem | ProjectSectionItem | LanguageSectionItem | SkillSectionItem | AchievementSectionItem
 
 export interface ActiveSection {
   id: string;
@@ -135,6 +149,7 @@ export interface Section {
     projects?: ProjectSectionItem[];
     languages?: LanguageSectionItem[];
     skills?: SkillSectionItem[];
+    achievements?: AchievementSectionItem[]
   }
 }
 
@@ -143,6 +158,7 @@ export type SectionContentMap = {
   projects: ProjectSectionItem[];
   skills: SkillSectionItem[];
   languages: LanguageSectionItem[];
+  achievements: AchievementSectionItem[]
 };
 
 export type VisibilityActionPayload = {
@@ -175,6 +191,12 @@ export type VisibilityDispatchMap = {
     sectionId: string
     entryId: string
     field: keyof SkillVisibility
+    value: boolean
+  }) => any
+  [SectionTypeEnum.ACHIEVEMENTS]: (payload: {
+    sectionId: string
+    entryId: string
+    field: keyof AchievementContentVisibility
     value: boolean
   }) => any
 }

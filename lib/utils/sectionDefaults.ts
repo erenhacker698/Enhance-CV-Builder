@@ -1,4 +1,4 @@
-import { SectionTypeEnum, Section, EducationSectionItem, ProjectSectionItem, LanguageSectionItem, SkillSectionItem } from "@/lib/types"
+import { SectionTypeEnum, Section, EducationSectionItem, ProjectSectionItem, LanguageSectionItem, SkillSectionItem, AchievementSectionItem } from "@/lib/types"
 
 export const getDefaultEntry = (sectionType: SectionTypeEnum) => {
     const timestamp = Date.now()
@@ -66,6 +66,19 @@ export const getDefaultEntry = (sectionType: SectionTypeEnum) => {
                 },
             }
 
+        case SectionTypeEnum.ACHIEVEMENTS:
+            return {
+                id: `achievement-${timestamp}`,
+                title: "Winner - CodeSprint 2024",
+                description: "Secured 1st place in a national-level coding competition among 5000+ participants.",
+                icon: "award",
+                visibility: {
+                    title: true,
+                    description: true,
+                    icon: true,
+                },
+            }
+
         default:
             return null
     }
@@ -122,6 +135,17 @@ export const getDefaultSection = (sectionType: SectionTypeEnum, column: "left" |
                 content: {
                     skills: [entry as SkillSectionItem],
                 },
+            }
+
+        case SectionTypeEnum.ACHIEVEMENTS:
+            return {
+                id: sectionId,
+                type: SectionTypeEnum.ACHIEVEMENTS,
+                column,
+                title,
+                content: {
+                    achievements: [entry as AchievementSectionItem]
+                }
             }
 
         default:
