@@ -51,9 +51,6 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
     const [showToolbar, setShowToolbar] = useState(false)
     const sectionRef = useRef<HTMLDivElement>(null)
 
-    // console.log('activeSection outside: ', activeSection)
-    // console.log('activeSkillData outside: ', activeSkillData)
-
     const handleSectionSelection = () => {
         dispatch(upsertActiveSection({
             activeSection: {
@@ -65,8 +62,6 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
             }
         }))
         setShowToolbar(true)
-        console.log('handleSectionSelection')
-        console.log('activeSection?.entryId= ', activeSection?.entryId)
     }
 
     const handleEntryToggle = (e: React.MouseEvent, entryId: string) => {
@@ -80,7 +75,6 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 entryId: entryId
             }
         }))
-        console.log('handleEntryToggle')
     }
 
     const handleContextMenu = (e: React.MouseEvent, entryId?: string, groupId?: string) => {
@@ -104,7 +98,6 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         }
         setMenuPosition({ x: e.clientX, y: e.clientY })
         setShowVisibilityMenu(true)
-        console.log('handleContextMenu')
     }
 
     const handleUpdateSectionChange = (newTitle: string) => {
@@ -208,9 +201,6 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                         activeSection: null
                     })
                 )
-                console.log('sectionRef.current= ', sectionRef.current)
-                console.log('event.target= ', event.target)
-                // console.log('handleClickOutside__Section')
             }
         }
 

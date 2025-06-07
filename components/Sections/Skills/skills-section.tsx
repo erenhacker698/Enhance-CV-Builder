@@ -86,7 +86,7 @@ export default function SkillsSection({ section, isActive, darkMode = false, han
     return (
         <div ref={sectionRef} className="Skills-Section">
             {section.content.skills?.map((skillGroupItem: SkillSectionItem) => (
-                <div data-skill-group-item-id={skillGroupItem.id} data-active-sectionid={activeSection?.entryId} key={skillGroupItem.id}
+                <div key={skillGroupItem.id}
                     className={cn(
                         "resume-item-holder p-2 -mx-2 group/entry",
                         activeSection?.entryId === skillGroupItem.id

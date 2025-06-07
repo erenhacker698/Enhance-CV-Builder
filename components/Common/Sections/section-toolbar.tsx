@@ -36,11 +36,7 @@ export default function SectionToolbar({
     const activeSection = useSelector((state: RootState) => state.resume.activeSection)
 
     const handleRemoveSection = () => {
-        console.log('activeSection.id: ', activeSection?.id)
-        console.log('activeSection.entryId: ', activeSection?.entryId)
-        console.log('activeSkillData.skillIndex: ', activeSkillData?.skillIndex)
         if (activeSection && activeSection.type === SectionTypeEnum.SKILLS && activeSection.entryId && activeSkillData && typeof activeSkillData.skillIndex === 'number') {
-            console.log('11111111111111111111111111111111')
             dispatch(
                 removeEntrySkill({
                     sectionId: activeSection.id,
@@ -52,7 +48,6 @@ export default function SectionToolbar({
                 setActiveSkillData((null))
             )
         } else if (activeSection?.entryId) {
-            console.log('2222222222222222222222222222222')
             dispatch(
                 removeSectionEntry({
                     sectionId: activeSection.id,
@@ -65,7 +60,6 @@ export default function SectionToolbar({
                 })
             )
         } else {
-            console.log('3333333333333333333333333333333')
             dispatch(removeSection({ sectionId: section.id }))
         }
     }
