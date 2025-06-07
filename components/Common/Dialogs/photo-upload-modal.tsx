@@ -89,7 +89,7 @@ export default function PhotoUploadModal({
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-md">
                 <DialogHeader>
-                    <DialogTitle className="text-center">Upload photo:</DialogTitle>
+                    <DialogTitle className="font-normal text-center text-lg md:text-xl lg:text-2xl xl:text-3xl">Upload photo:</DialogTitle>
                 </DialogHeader>
 
                 <div className="flex flex-col items-center justify-center py-6">
@@ -117,7 +117,7 @@ export default function PhotoUploadModal({
                         <Button
                             variant="outline"
                             onClick={handleUploadClick}
-                            className="w-24"
+                            className="w-24 text-base py-2.5 px-3.5 cursor-pointer rounded-sm font-rubik font-medium transition-all duration-300 ease-in-out"
                         >
                             Upload
                         </Button>
@@ -125,7 +125,7 @@ export default function PhotoUploadModal({
                         <Button
                             onClick={handleSave}
                             disabled={!previewUrl}
-                            className="w-24 bg-teal-500 hover:bg-teal-600"
+                            className="w-24 text-base py-2.5 px-3.5 text-white bg-[#2dc08d] hover:bg-[#57cda4] border-none cursor-pointer rounded-sm font-rubik font-medium transition-all duration-300 ease-in-out"
                         >
                             Save
                         </Button>
