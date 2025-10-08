@@ -27,6 +27,20 @@ An interactive and feature-rich resume builder that empowers users to craft prof
 
 ---
 
+## 🆕 Recently Added Enhancements
+
+- Automatic multi-page pagination for the double-column template (new pages are created when content overflows)
+- Page-aware drag-and-drop across columns and pages, preserving section order intuitively
+- New sections:
+   - Volunteering – with visibility toggles (period, description)
+   - My Time – pie chart with legend selection and settings-based editing
+   - Industry Expertise – progress bars per field/industry
+- Industry Expertise styling options: solid, striped, dashed, diagonal, and two‑color gradients
+- Single, styled progress slider that doubles as the visual bar (no extra numeric label)
+- Settings panels improvements: anchored color swatches, hex input, and two-color gradient picker
+- Settings button interaction fix so the panel opens immediately without losing selection
+- Cleaner date visuals (removed calendar icons for a more minimal layout)
+
 ## 🚀 Getting Started
 
 ### Prerequisites
