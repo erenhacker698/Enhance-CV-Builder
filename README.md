@@ -13,12 +13,14 @@ An interactive and feature-rich resume builder that empowers users to craft prof
 - **Real-Time Editing** – Instantly preview changes as you type
 - **Customizable Sections** – Add, remove, or tweak sections such as:
 
-  - Education
-  - Work Experience
-  - Skills
-  - Languages
-  - Achievements
-  - Custom Sections
+   - Education
+   - Projects
+   - Languages
+   - Skills
+   - Achievements
+   - Volunteering
+   - My Time
+   - Industry Expertise
 
 - **PDF Export** – Download your resume as a polished PDF
 - **Responsive Design** – Fully functional on desktop and tablet
@@ -26,6 +28,17 @@ An interactive and feature-rich resume builder that empowers users to craft prof
 - **Photo Upload** – Option to add a professional headshot
 
 ---
+
+## 📦 Available Sections
+
+- Education – School, degree, location, GPA, period; toggles for visibility
+- Projects – Name, description, link, period/location; visibility controls
+- Languages – Name, level, optional proficiency slider
+- Skills – Grouped skills with compact/border options and group name toggle
+- Achievements – Title and description with icon support
+- Volunteering – Role, organization, period, description; toggles for period/description
+- My Time – Time allocation pie chart with legend selection; settings-based editing for label, percentage, color
+- Industry Expertise – Per-industry progress bars with styles (solid, striped, dashed, diagonal, gradient) and color/gradient customization
 
 ## 🆕 Recently Added Enhancements
 
