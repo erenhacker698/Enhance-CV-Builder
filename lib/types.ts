@@ -114,12 +114,49 @@ export enum SectionTypeEnum {
   PROJECTS = "projects",
   SKILLS = "skills",
   LANGUAGES = "languages",
-  ACHIEVEMENTS = "achievements"
+  ACHIEVEMENTS = "achievements",
+  VOLUNTEERING = "volunteering",
+  MY_TIME = "my_time",
+  INDUSTRY_EXPERTISE = "industry_expertise",
 }
 
-export const proficiencyLabels = ["Beginner", "Elementary", "Intermediate", "Advanced", "Proficient", "Native"]
+export interface VolunteeringItem {
+  id: string
+  role: string
+  organization: string
+  period: string
+  description: string
+  visibility?: {
+    period: boolean
+    description: boolean
+  }
+}
 
-export type SectionType = SectionTypeEnum.EDUCATION | SectionTypeEnum.PROJECTS | SectionTypeEnum.LANGUAGES | SectionTypeEnum.SKILLS | SectionTypeEnum.ACHIEVEMENTS
+export interface MyTimeItem {
+  id: string
+  label: string
+  value: number
+  color?: string
+}
+
+export interface IndustryExpertiseItem {
+  id: string
+  name: string // Field or Industry
+  percent: number // 0-100
+  color?: string
+  style?: "solid" | "striped" | "dashed" | "diagonal" | "gradient"
+  gradientTo?: string // used when style = 'gradient'
+}
+
+export type SectionType =
+  | SectionTypeEnum.EDUCATION
+  | SectionTypeEnum.PROJECTS
+  | SectionTypeEnum.LANGUAGES
+  | SectionTypeEnum.SKILLS
+  | SectionTypeEnum.ACHIEVEMENTS
+  | SectionTypeEnum.VOLUNTEERING
+  | SectionTypeEnum.MY_TIME
+  | SectionTypeEnum.INDUSTRY_EXPERTISE
 
 export type SectionContent = EducationSectionItem | ProjectSectionItem | LanguageSectionItem | SkillSectionItem | AchievementSectionItem
 
@@ -149,7 +186,10 @@ export interface Section {
     projects?: ProjectSectionItem[];
     languages?: LanguageSectionItem[];
     skills?: SkillSectionItem[];
-    achievements?: AchievementSectionItem[]
+    achievements?: AchievementSectionItem[];
+    volunteering?: VolunteeringItem[];
+    my_time?: MyTimeItem[];
+    industry_expertise?: IndustryExpertiseItem[];
   }
 }
 
@@ -158,7 +198,10 @@ export type SectionContentMap = {
   projects: ProjectSectionItem[];
   skills: SkillSectionItem[];
   languages: LanguageSectionItem[];
-  achievements: AchievementSectionItem[]
+  achievements: AchievementSectionItem[];
+  volunteering: VolunteeringItem[];
+  my_time: MyTimeItem[];
+  industry_expertise: IndustryExpertiseItem[];
 };
 
 export type VisibilityActionPayload = {

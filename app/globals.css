@@ -430,3 +430,53 @@ h6 {
     column-gap: 12px;
   }
 }
+
+/* Resume pagination styles */
+.resume-page-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.pages-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.resume-page {
+    page-break-after: always;
+    break-after: page;
+}
+
+.resume-page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+}
+
+/* Ensure sections don't break across pages in print */
+.resume-section {
+    page-break-inside: avoid;
+    break-inside: avoid;
+}
+
+/* Print styles */
+@media print {
+    .resume-page {
+        margin: 0;
+        box-shadow: none;
+        page-break-after: always;
+        break-after: page;
+    }
+    
+    .resume-page:last-child {
+        page-break-after: auto;
+        break-after: auto;
+    }
+    
+    .pages-container {
+        gap: 0;
+    }
+}

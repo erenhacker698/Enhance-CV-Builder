@@ -177,7 +177,10 @@ export default function SectionToolbar({
                     variant={darkMode ? "default" : "ghost"}
                     size="sm"
                     className={cn("h-8 w-8 rounded-r-md cursor-pointer", darkMode ? "bg-slate-700 hover:bg-slate-600" : "hover:bg-gray-100")}
-                    onClick={onShowSettingsPanel}
+                    onClick={(e) => {
+                        e.stopPropagation()
+                        onShowSettingsPanel()
+                    }}
                 >
                     <Settings size={16} className={darkMode ? "text-white" : ""} />
                 </Button>

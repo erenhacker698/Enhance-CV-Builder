@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useLayoutEffect, useRef, useMemo } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { reorderSections, upsertActiveSection } from "@/lib/features/resume/resumeSlice"
 import ResumeHeader from "@/components/resume-header"
@@ -10,158 +10,182 @@ import ResumeSection from "@/components/resume-section"
 import type { RootState } from "@/lib/store"
 import type { Section } from "@/lib/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
-import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
-import EducationSection from "../Sections/Education/education-section"
-import ProjectSection from "../Sections/Projects/projects-section"
-import LanguageSection from "../Sections/Language/language-section"
-import SkillsSection from "../Sections/Skills/skills-section"
 
 interface ResumeTemplateProps {
-    resumeRef: React.RefObject<HTMLDivElement | null>
+    resumeRef: React.RefObject<HTMLDivElement>
 }
 
 export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplateProps) {
     const dispatch = useDispatch()
     const activeSection = useSelector((state: RootState) => state.resume.activeSection)
     const { sections } = useSelector((state: RootState) => state.resume)
-    const [draggedSection, setDraggedSection] = useState<string | null>(null)
+
+    const [pages, setPages] = useState<Array<{ left: Section[]; right: Section[] }>>([{ left: [], right: [] }])
+    const measureContainerRef = useRef<HTMLDivElement>(null)
+    const measureHeaderRef = useRef<HTMLDivElement>(null)
+    const sectionMeasureRefs = useRef<Record<string, HTMLDivElement | null>>({})
+
+    const leftSections = useMemo(() => sections.filter((s) => s.column === "left"), [sections])
+    const rightSections = useMemo(() => sections.filter((s) => s.column === "right"), [sections])
+
+    const normalizeDroppable = (id: string) => (id.startsWith("left-column") ? "left-column" : "right-column")
+    const parsePageIndex = (id: string) => {
+        const match = id.match(/-p(\d+)$/)
+        return match ? parseInt(match[1], 10) : 0
+    }
 
     const handleHeaderClick = () => {
         dispatch(upsertActiveSection({ activeSection: null }))
     }
 
-    const handleAddSectionClick = (column: "left" | "right") => {
-        dispatch(setAddSectionModal({ isOpen: true, column }))
-    }
+    useLayoutEffect(() => {
+        const timer = setTimeout(() => {
+            if (!measureContainerRef.current || !measureHeaderRef.current) return
 
-    const leftSections = sections.filter((section) => section.column === "left")
-    const rightSections = sections.filter((section) => section.column === "right")
+            const PAGE_HEIGHT = 1123 // A4 height at 96 DPI
+            const PADDING = 36 * 2 // 36px top & bottom
+            const HEADER_HEIGHT = measureHeaderRef.current.offsetHeight
+            const HEADER_MARGIN = 24 // mt-6
+            const SECTION_GAP = 24 // space-y-6
 
-    const handleDragStart = (result: any) => {
-        setDraggedSection(result.draggableId)
-    }
+            const availableHeight = PAGE_HEIGHT - PADDING - HEADER_HEIGHT - HEADER_MARGIN
+
+            const heights: Record<string, number> = {}
+            sections.forEach((s) => {
+                const el = sectionMeasureRefs.current[s.id]
+                if (el) heights[s.id] = el.offsetHeight
+            })
+
+            const paginate = (sectionList: Section[]) => {
+                if (!sectionList.length) return [[]]
+                const pages: Section[][] = []
+                let currentPage: Section[] = []
+                let currentHeight = 0
+
+                sectionList.forEach((section) => {
+                    const sectionHeight = heights[section.id] ?? 100
+                    const gap = currentPage.length > 0 ? SECTION_GAP : 0
+
+                    if (currentHeight + gap + sectionHeight > availableHeight && currentPage.length > 0) {
+                        pages.push(currentPage)
+                        currentPage = [section]
+                        currentHeight = sectionHeight
+                    } else {
+                        currentPage.push(section)
+                        currentHeight += gap + sectionHeight
+                    }
+                })
+                if (currentPage.length > 0) pages.push(currentPage)
+                return pages
+            }
+
+            const leftPages = paginate(leftSections)
+            const rightPages = paginate(rightSections)
+            const pageCount = Math.max(leftPages.length, rightPages.length, 1)
+
+            const newPages = Array.from({ length: pageCount }, (_, i) => ({
+                left: leftPages[i] || [],
+                right: rightPages[i] || [],
+            }))
+            setPages(newPages)
+        }, 100)
+
+        return () => clearTimeout(timer)
+    }, [sections, leftSections, rightSections])
 
     const handleDragEnd = (result: any) => {
-        setDraggedSection(null)
-
         if (!result.destination) return
 
-        const sourceDroppableId = result.source.droppableId
-        const destinationDroppableId = result.destination.droppableId
+        const sourceCol = normalizeDroppable(result.source.droppableId)
+        const destCol = normalizeDroppable(result.destination.droppableId)
+        const movedId = result.draggableId
 
-        if (sourceDroppableId === destinationDroppableId) {
-            const isLeftColumn = sourceDroppableId === "left-column"
-            const columnSections = isLeftColumn ? [...leftSections] : [...rightSections]
+        const left = [...leftSections]
+        const right = [...rightSections]
 
-            const [movedSection] = columnSections.splice(result.source.index, 1)
-            columnSections.splice(result.destination.index, 0, movedSection)
+        const sourceList = sourceCol === "left-column" ? left : right
+        const destList = destCol === "left-column" ? left : right
 
-            const newSections = sections.filter((s) => s.column !== (isLeftColumn ? "left" : "right")).concat(columnSections)
+        const movedIndex = sourceList.findIndex((s) => s.id === movedId)
+        if (movedIndex === -1) return
 
-            dispatch(reorderSections({ sections: newSections }))
+        const [movedSection] = sourceList.splice(movedIndex, 1)
+
+        const destPageIndex = parsePageIndex(result.destination.droppableId)
+        const destPageItems = pages[destPageIndex]?.[destCol === "left-column" ? "left" : "right"] ?? []
+        
+        let insertIndex: number
+        if (result.destination.index >= destPageItems.length) {
+            const lastId = destPageItems[destPageItems.length - 1]?.id
+            insertIndex = lastId ? destList.findIndex((s) => s.id === lastId) + 1 : destList.length
+        } else {
+            const targetId = destPageItems[result.destination.index].id
+            insertIndex = destList.findIndex((s) => s.id === targetId)
         }
 
-        else {
-
-            const sourceList = sourceDroppableId === "left-column" ? [...leftSections] : [...rightSections]
-            const destList = destinationDroppableId === "left-column" ? [...leftSections] : [...rightSections]
-
-            const movedSectionIndex = result.source.index
-            const movedSection = sourceList[movedSectionIndex]
-
-            if (!movedSection) return
-
-            const newColumn = destinationDroppableId === "left-column" ? "left" : "right"
-            const updatedSection: Section = {
-                ...movedSection,
-                column: newColumn,
-            }
-
-            sourceList.splice(movedSectionIndex, 1)
-
-            const destListCopy = [...destList]
-            destListCopy.splice(result.destination.index, 0, updatedSection)
-
-            let newSections: Section[] = []
-
-            if (sourceDroppableId === "left-column" && destinationDroppableId === "right-column") {
-                newSections = [
-                    ...sections.filter((s) => s.column !== "left" && s.column !== "right"),
-                    ...sourceList,
-                    ...destListCopy,
-                ]
-            } else {
-                newSections = [
-                    ...sections.filter((s) => s.column !== "left" && s.column !== "right"),
-                    ...destListCopy,
-                    ...sourceList,
-                ]
-            }
-
-            dispatch(reorderSections({ sections: newSections }))
+        if (sourceCol !== destCol) {
+            movedSection.column = destCol === "left-column" ? "left" : "right"
         }
+
+        destList.splice(insertIndex, 0, movedSection)
+
+        const newSections = [...sections.filter(s => s.column !== 'left' && s.column !== 'right'), ...left, ...right]
+        dispatch(reorderSections({ sections: newSections }))
     }
 
     return (
-        <div id="resume-container" className={cn("resume-container resume-page-wrapper", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
-            <div onClick={handleHeaderClick}>
-                <ResumeHeader isActive={activeSection?.id === null} />
+        <div className="resume-page-container" ref={resumeRef}>
+            <div
+                ref={measureContainerRef}
+                className="fixed -left-[10000px] top-0 pointer-events-none invisible bg-white"
+                style={{ width: '794px', padding: '36px' }}
+                aria-hidden
+            >
+                <div ref={measureHeaderRef}><ResumeHeader isActive={false} /></div>
+                <div className="grid grid-cols-2 gap-6 mt-6">
+                    <div className="space-y-6">
+                        {leftSections.map(s => <div key={s.id} ref={el => sectionMeasureRefs.current[s.id] = el}><ResumeSection section={s} isActive={false} /></div>)}
+                    </div>
+                    <div className="space-y-6">
+                        {rightSections.map(s => <div key={s.id} ref={el => sectionMeasureRefs.current[s.id] = el}><ResumeSection section={s} isActive={false} /></div>)}
+                    </div>
+                </div>
             </div>
 
-            <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-                    {/* Left Column */}
-                    <Droppable droppableId="left-column">
-                        {(provided) => (
-                            <div className="left-column-side" ref={provided.innerRef} {...provided.droppableProps}>
-                                {leftSections.map((section: Section, index) => (
-                                    <Draggable
-                                        key={section.id}
-                                        draggableId={section.id}
-                                        index={index}
-                                    >
-                                        {(provided, snapshot) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                className={`${snapshot.isDragging ? "opacity-50" : ""}`}
-                                            >
-                                                <ResumeSection section={section} isActive={section.id === activeSection?.id} />
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
+            <DragDropContext onDragEnd={handleDragEnd}>
+                <div className="pages-container space-y-8">
+                    {pages.map((page, pageIndex) => (
+                        <div key={`page-${pageIndex}`} className="resume-page bg-white relative mx-auto shadow-lg" style={{ width: '794px', height: '1123px', padding: '36px' }}>
+                            {pageIndex === 0 && <div onClick={handleHeaderClick}><ResumeHeader isActive={activeSection?.id === null} /></div>}
+                            <div className={cn("grid grid-cols-2 gap-6", pageIndex === 0 && "mt-6")}>
+                                <Droppable droppableId={`left-column-p${pageIndex}`}>
+                                    {(provided) => (
+                                        <div className="space-y-6" ref={provided.innerRef} {...provided.droppableProps}>
+                                            {page.left.map((section, index) => (
+                                                <Draggable key={section.id} draggableId={section.id} index={index}>
+                                                    {(p) => <div ref={p.innerRef} {...p.draggableProps} {...p.dragHandleProps}><ResumeSection section={section} isActive={section.id === activeSection?.id} /></div>}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
+                                <Droppable droppableId={`right-column-p${pageIndex}`}>
+                                    {(provided) => (
+                                        <div className="space-y-6" ref={provided.innerRef} {...provided.droppableProps}>
+                                            {page.right.map((section, index) => (
+                                                <Draggable key={section.id} draggableId={section.id} index={index}>
+                                                    {(p) => <div ref={p.innerRef} {...p.draggableProps} {...p.dragHandleProps}><ResumeSection section={section} isActive={section.id === activeSection?.id} /></div>}
+                                                </Draggable>
+                                            ))}
+                                            {provided.placeholder}
+                                        </div>
+                                    )}
+                                </Droppable>
                             </div>
-                        )}
-                    </Droppable>
-
-                    {/* Right Column */}
-                    <Droppable droppableId="right-column">
-                        {(provided) => (
-                            <div className="right-column-side" ref={provided.innerRef} {...provided.droppableProps}>
-                                {rightSections.map((section: Section, index) => (
-                                    <Draggable key={section.id} draggableId={section.id} index={index}>
-                                        {(provided, snapshot) => (
-                                            <div
-                                                ref={provided.innerRef}
-                                                {...provided.draggableProps}
-                                                {...provided.dragHandleProps}
-                                                className={`${snapshot.isDragging ? "opacity-50" : ""}`}
-                                            >
-                                                <ResumeSection section={section} isActive={section.id === activeSection?.id} />
-                                            </div>
-                                        )}
-                                    </Draggable>
-                                ))}
-                                {provided.placeholder}
-                            </div>
-                        )}
-                    </Droppable>
+                        </div>
+                    ))}
                 </div>
             </DragDropContext>
         </div>

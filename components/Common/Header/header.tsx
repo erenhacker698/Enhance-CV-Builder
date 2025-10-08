@@ -18,7 +18,7 @@ export default function Header() {
         </div>
 
         <div className="flex items-center space-x-2">
-          <Link href="https://github.com/coderomm/Enhance-CV" target="_blank" className={buttonVariants({ variant: "outline" })}><Github/> Github</Link>
+          <Link href="https://github.com/r00tmebaby/Enhance-CV-Builder" target="_blank" className={buttonVariants({ variant: "outline" })}><Github/> Github</Link>
         </div>
       </div>
     </header>

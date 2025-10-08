@@ -38,8 +38,8 @@ An interactive and feature-rich resume builder that empowers users to craft prof
 
 ```bash
 # Clone the repository
-git clone https://github.com/coderomm/Enhance-CV.git
-cd resume-builder
+git clone https://github.com/r00tmebaby/Enhance-CV-Builder.git
+cd Enhance-CV-Builder
 
 # Install dependencies
 npm install
@@ -134,7 +134,7 @@ A dedicated module:
 ## 📁 Project Structure
 
 ```
-resume-builder/
+Enhance-CV-Builder/
 ├── app/                  # Next.js app directory
 ├── components/           # React components
 │   ├── ui/               # shadcn UI components
@@ -193,6 +193,6 @@ Licensed under the [MIT License](./LICENSE).
 
 ---
 
-Built with ❤️ by **\[Om Sharma]**
+Built with ❤️ by **r00tmebaby**
 
 ---

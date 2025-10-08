@@ -15,6 +15,24 @@ type AddSectionModalProps = {}
 
 const sectionTypes = [
     {
+        title: "Industry Expertise",
+        type: SectionTypeEnum.INDUSTRY_EXPERTISE,
+        preview: (
+            <div>
+                <div className="uppercase font-bold border-b border-gray-800 mb-2">INDUSTRY EXPERTISE</div>
+                <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                        <div className="text-xs flex-1">Field or Industry</div>
+                        <div className="h-1 bg-gray-200 rounded w-24 relative">
+                            <div className="h-1 bg-teal-500 rounded" style={{ width: '60%' }} />
+                        </div>
+                        <div className="text-xs w-8 text-right">60%</div>
+                    </div>
+                </div>
+            </div>
+        ),
+    },
+    {
         title: "Skills",
         type: SectionTypeEnum.SKILLS,
         preview: (
@@ -102,6 +120,36 @@ const sectionTypes = [
                     <div className="flex-1">
                         <p className="font-medium">Won First Prize at Hackathon</p>
                         <p className="text-xs text-gray-600 pt-1">Secured first place among 200+ teams in a national-level coding event.</p>
+                    </div>
+                </div>
+            </div>
+        ),
+    },
+    {
+        title: "Volunteering",
+        type: SectionTypeEnum.VOLUNTEERING,
+        preview: (
+            <div>
+                <div className="uppercase font-bold border-b border-gray-800 mb-2">VOLUNTEERING</div>
+                <div className="font-medium">Executive Member</div>
+                <div className="text-xs text-teal-600">AIESEC</div>
+                <div className="text-xs text-gray-500">09/2014 – Present</div>
+                <div className="text-xs text-gray-600 mt-1">AIESEC is an international NGO focused on youth leadership.</div>
+            </div>
+        ),
+    },
+    {
+        title: "My time",
+        type: SectionTypeEnum.MY_TIME,
+        preview: (
+            <div>
+                <div className="uppercase font-bold border-b border-gray-800 mb-2">MY TIME</div>
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gray-200" />
+                    <div className="text-xs">
+                        <div>A — Designing</div>
+                        <div>B — Drawing</div>
+                        <div>C — Brainstorming</div>
                     </div>
                 </div>
             </div>

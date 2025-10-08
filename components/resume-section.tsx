@@ -19,6 +19,7 @@ import {
     upsertActiveSection,
     toggleEntryVisibility_Achievement,
     addAchievement,
+    updateSectionContent,
 } from "@/lib/features/resume/resumeSlice"
 import { AchievementContentVisibility, AchievementSectionItem, EducationContentVisibility, EducationSectionItem, LanguageContentVisibility, LanguageSectionItem, ProjectContentVisibility, ProjectSectionItem, type Section, SectionTypeEnum, SkillVisibility, VisibilityDispatchMap } from "@/lib/types"
 import { cn } from "@/lib/utils"
@@ -32,10 +33,16 @@ import ProjectsSection from "./Sections/Projects/projects-section"
 import EducationSettingsPanel from "./Sections/Education/SettingsPannel/education-settings-panel"
 import ProjectsSettingsPanel from "./Sections/Projects/SettingsPannel/projects-settings-panel"
 import LanguageSettingsPanel from "./Sections/Language/SettingsPannel/language-settings-panel"
+import MyTimeSection from "@/components/Sections/MyTime/my-time-section"
+import VolunteeringSection from "@/components/Sections/Volunteering/volunteering-section"
+import MyTimeSettingsPanel from "@/components/Sections/MyTime/SettingsPannel/my-time-settings-panel"
+import VolunteeringSettingsPanel from "@/components/Sections/Volunteering/SettingsPannel/volunteering-settings-panel"
 import { getDefaultEntry } from "@/lib/utils/sectionDefaults"
 import { RootState } from "@/lib/store"
 import AchievementsSection from "./Sections/Achievements/achievements-section"
 import AchievementsSettingsPanel from "./Sections/Achievements/SettingsPannel/achievements-settings-panel"
+import IndustryExpertiseSection from "@/components/Sections/IndustryExpertise/industry-expertise-section"
+import IndustryExpertiseSettingsPanel from "@/components/Sections/IndustryExpertise/SettingsPannel/industry-expertise-settings-panel"
 
 interface ResumeSectionProps {
     section: Section
@@ -115,7 +122,6 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
 
     const handleAddEntry = () => {
         const entry = getDefaultEntry(section.type)
-
         if (!entry) return
 
         switch (section.type) {
@@ -136,6 +142,22 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
             case SectionTypeEnum.ACHIEVEMENTS:
                 dispatch(addAchievement({ sectionId: section.id, achievement: entry as AchievementSectionItem }))
                 break
+            case SectionTypeEnum.VOLUNTEERING: {
+                const list = section.content.volunteering ?? []
+                dispatch(updateSectionContent({
+                    sectionId: section.id,
+                    content: { ...section.content, volunteering: [...list, entry] }
+                }))
+                break
+            }
+            case SectionTypeEnum.MY_TIME: {
+                const list = section.content.my_time ?? []
+                dispatch(updateSectionContent({
+                    sectionId: section.id,
+                    content: { ...section.content, my_time: [...list, entry] }
+                }))
+                break
+            }
         }
     }
 
@@ -184,6 +206,24 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
         }
     }
 
+    const handleMyTimeChange = (entryId: string, patch: Partial<MyTimeItem>) => {
+        const list = section.content.my_time ?? []
+        const next = list.map((i) => (i.id === entryId ? { ...i, ...patch } : i))
+        dispatch(updateSectionContent({ sectionId: section.id, content: { ...section.content, my_time: next } }))
+    }
+
+    const handleRemoveMyTime = (entryId: string) => {
+        const list = section.content.my_time ?? []
+        const next = list.filter((i) => i.id !== entryId)
+        dispatch(updateSectionContent({ sectionId: section.id, content: { ...section.content, my_time: next } }))
+    }
+
+    const handleToggleVolunteeringVisibility = (entryId: string, field: keyof NonNullable<VolunteeringItem['visibility']>, value: boolean) => {
+        const list = section.content.volunteering ?? []
+        const next = list.map((i) => i.id === entryId ? { ...i, visibility: { ...(i.visibility || {}), [field]: value } } : i)
+        dispatch(updateSectionContent({ sectionId: section.id, content: { ...section.content, volunteering: next } }))
+    }
+
     const handleDragStartSection = () => {
         if (onDragStart) {
             onDragStart(section.id)
@@ -230,6 +270,12 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 return <SkillsSection section={section} isActive={isActive} darkMode={darkMode} handleEntryToggle={handleEntryToggle} handleContextMenu={handleContextMenu} />
             case SectionTypeEnum.ACHIEVEMENTS:
                 return <AchievementsSection section={section} isActive={isActive} darkMode={darkMode} handleEntryToggle={handleEntryToggle} handleContextMenu={handleContextMenu} />
+            case SectionTypeEnum.VOLUNTEERING:
+                return <VolunteeringSection section={section} isActive={isActive} darkMode={darkMode} handleEntryToggle={handleEntryToggle} handleContextMenu={handleContextMenu} />
+            case SectionTypeEnum.MY_TIME:
+                return <MyTimeSection section={section} isActive={isActive} darkMode={darkMode} handleEntryToggle={handleEntryToggle} handleContextMenu={handleContextMenu} />
+            case SectionTypeEnum.INDUSTRY_EXPERTISE:
+                return <IndustryExpertiseSection section={section} isActive={isActive} darkMode={darkMode} handleEntryToggle={handleEntryToggle} handleContextMenu={handleContextMenu} />
             default:
                 return null
         }
@@ -296,6 +342,34 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                                 <AchievementsSettingsPanel
                                     achievement={section.content.achievements?.find((e) => e.id === activeSection.entryId) || null}
                                     onToggleVisibility={handleToggleVisibility}
+                                    onClose={() => setShowVisibilityMenu(false)}
+                                />
+                            )}
+                            {section.type === SectionTypeEnum.INDUSTRY_EXPERTISE && (
+                                <IndustryExpertiseSettingsPanel
+                                    item={section.content.industry_expertise?.find((e) => e.id === activeSection.entryId) || null}
+                                    onChange={(patch) => {
+                                        const list = section.content.industry_expertise ?? []
+                                        const next = list.map((i) => i.id === activeSection!.entryId ? { ...i, ...patch } : i)
+                                        dispatch(updateSectionContent({ sectionId: section.id, content: { ...section.content, industry_expertise: next } }))
+                                    }}
+                                    onClose={() => setShowVisibilityMenu(false)}
+                                />
+                            )}
+
+                            {section.type === SectionTypeEnum.MY_TIME && (
+                                <MyTimeSettingsPanel
+                                    item={section.content.my_time?.find((e) => e.id === activeSection.entryId) || null}
+                                    onChange={(patch) => handleMyTimeChange(activeSection.entryId!, patch)}
+                                    onDelete={() => handleRemoveMyTime(activeSection.entryId!)}
+                                    onClose={() => setShowVisibilityMenu(false)}
+                                />
+                            )}
+
+                            {section.type === SectionTypeEnum.VOLUNTEERING && (
+                                <VolunteeringSettingsPanel
+                                    item={section.content.volunteering?.find((e) => e.id === activeSection.entryId) || null}
+                                    onToggleVisibility={(field, value) => handleToggleVolunteeringVisibility(activeSection.entryId!, field, value)}
                                     onClose={() => setShowVisibilityMenu(false)}
                                 />
                             )}
