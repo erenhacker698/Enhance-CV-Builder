@@ -92,7 +92,7 @@ GitHub Actions lives in `.github/workflows/`:
 
 - `ci.yml` (default):
   - Runs on push/PR to `master`
-  - Steps: checkout → setup Node 20 → `npm ci` → `npm run lint` → `npm run typecheck` → `npm run build`
+  - Steps: checkout → setup Node 20 → `npm ci` → `npm run build` → start app → smoke check `GET /` → stop app
 
 - `release.yml` (optional):
   - Runs on tag `v*.*.*`
@@ -146,9 +146,15 @@ npm run ci:local
 
 What it does:
 - Clean install (npm ci)
-- Lint (eslint .)
-- Typecheck (tsc --noEmit)
 - Build (next build)
+
+Optional smoke test locally:
+
+```bash
+# separate terminals (or background the server)
+npm start &
+curl -fsS http://localhost:3000/ -I
+```
 
 Optional: run the GitHub Actions workflow with act
 

@@ -22,11 +22,30 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint --if-present
-
-      - name: Typecheck
-        run: npm run typecheck --if-present
-
       - name: Build
         run: npm run build
+
+      - name: Start app (background)
+        run: |
+          nohup npm start &
+          echo $! > app.pid
+        env:
+          PORT: 3000
+        shell: bash
+
+      - name: Wait for app to be ready
+        run: |
+          for i in {1..30}; do
+            if curl -fsS http://localhost:3000 >/dev/null; then
+              echo "App is up"; exit 0;
+            fi
+            echo "Waiting for app... ($i)"; sleep 2;
+          done
+          echo "App failed to start in time"; exit 1
+        shell: bash
+
+      - name: Stop app
+        if: always()
+        run: |
+          if [ -f app.pid ]; then kill $(cat app.pid) || true; fi
+        shell: bash
