@@ -49,7 +49,7 @@ Per-template defaults: Elegant uses tighter margins/spacing and 70% font-size on
 
 ### Requirements
 
-- Node.js 20+
+- Node.js 20.9+ (matches CI runner; avoids ESLint engine warnings)
 - npm 10+
 
 ### Install & Run
@@ -92,7 +92,7 @@ GitHub Actions lives in `.github/workflows/`:
 
 - `ci.yml` (default):
   - Runs on push/PR to `master`
-  - Steps: checkout → setup Node 20 → `npm ci` → `npm run typecheck` → `npm run build`
+  - Steps: checkout → setup Node 20 → `npm ci` → `npm run lint` → `npm run typecheck` → `npm run build`
 
 - `release.yml` (optional):
   - Runs on tag `v*.*.*`
@@ -146,6 +146,7 @@ npm run ci:local
 
 What it does:
 - Clean install (npm ci)
+- Lint (eslint .)
 - Typecheck (tsc --noEmit)
 - Build (next build)
 
