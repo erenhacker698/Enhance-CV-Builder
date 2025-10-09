@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { Button, buttonVariants } from "@/components/ui/button"
 import Image from "next/image"
-import Logo from '@/public/Logo.svg'
+import Logo from '@/public/logo.png'
 import { Github } from "lucide-react"
 import { useSelector } from "react-redux"
 import type { RootState } from "@/lib/store"
@@ -14,7 +14,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link href="/" className="" style={{ color: primaryColor }}>
-            <Image src={Logo} alt="Enhance CV Logo" />
+            <Image src={Logo} className="w-10 h-10" alt="Enhance CV Logo" />
           </Link>
 
           <Button asChild variant="ghost" className="cursor-pointer">
