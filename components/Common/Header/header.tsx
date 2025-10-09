@@ -13,7 +13,7 @@ export default function Header() {
       <div className="container mx-auto px-4 py-2 flex items-center justify-between">
         <div className="flex items-center space-x-4">
           <Link href="/" className="" style={{ color: primaryColor }}>
-            <Image src="/Logo.svg" width={120} height={32} alt="App logo" />
+            <Image src="/logo.png" alt="Logo" width={40} height={40} />
           </Link>
 
           <Button asChild variant="ghost" className="cursor-pointer">

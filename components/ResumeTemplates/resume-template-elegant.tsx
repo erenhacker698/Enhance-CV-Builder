@@ -14,6 +14,7 @@ import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import ResumeHeader from "@/components/resume-header"
 import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
 import { cn, resolveFontFamily, getPageBackgroundStyle, getOverlayStyle } from "@/lib/utils"
+import { getTemplateDefaults } from "@/lib/features/settings/templateDefaults"
 import { setOverlayPosition } from "@/lib/features/settings/settingsSlice"
 
 interface ResumeTemplateProps {
@@ -29,12 +30,18 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
     const [draggedSection, setDraggedSection] = useState<string | null>(null)
 
     // Elegant-specific defaults and layout tweaks
+    const tpl = getTemplateDefaults("elegant")
     const DEFAULT_GLOBAL_MARGINS = 36
     const DEFAULT_GLOBAL_SPACING = 24
-    // If user hasn't changed from global defaults, prefer Elegant defaults; otherwise respect user values
-    const effectivePageMargins = pageMargins === DEFAULT_GLOBAL_MARGINS ? 12 : pageMargins
-    const effectiveSectionSpacing = sectionSpacing === DEFAULT_GLOBAL_SPACING ? 22 : sectionSpacing
-    const rightColumnFontSizeRem = Math.max(0.3, fontSize * 0.7) // 70% of main, clamped to avoid too small
+    // If user hasn't changed from global defaults, prefer template defaults; otherwise respect user values
+    const effectivePageMargins = pageMargins === DEFAULT_GLOBAL_MARGINS ? tpl.pageMargins : pageMargins
+    const effectiveSectionSpacing = sectionSpacing === DEFAULT_GLOBAL_SPACING ? tpl.sectionSpacing : sectionSpacing
+    const effectiveFontSizeRem = (.9) * fontSize
+    const effectiveLineHeight = (.8) * lineHeight
+    const sidebarWidth = 220
+    const sidebarBg = "#5a163fff"
+    const sidebarText = "#12801fff" 
+    const rightColumnFontSizeRem = Math.max(0.3, fontSize * 0.72) // 70% of main, clamped
 
     const handleHeaderClick = () => {
         dispatch(upsertActiveSection({ activeSection: null }))
@@ -120,8 +127,8 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
 
     return (
         <div id="resume-container" className={cn("resume-container resume-page-wrapper h-full", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
-            <div style={{ transform: `scale(${editorZoom})`, transformOrigin: 'top center', width: '794px', margin: '0 auto', padding: `${effectivePageMargins}px`, fontSize: `${fontSize}rem`, lineHeight: lineHeight, fontFamily: resolveFontFamily(fontFamily), ['--resume-heading-color' as any]: headingColor, ...getPageBackgroundStyle(pageBackgroundColor, pageBackgroundPattern, pageBackgroundMode, pageBackgroundGradientTo, pageBackgroundGradientAngle) }}>
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-3">
+            <div style={{ transform: `scale(${editorZoom})`, transformOrigin: 'top center', width: '794px', margin: '0 auto', padding: `${effectivePageMargins}px`, fontSize: `${effectiveFontSizeRem}rem`, lineHeight: effectiveLineHeight, fontFamily: resolveFontFamily(fontFamily), ['--resume-heading-color' as any]: headingColor, ...getPageBackgroundStyle(pageBackgroundColor, pageBackgroundPattern, pageBackgroundMode, pageBackgroundGradientTo, pageBackgroundGradientAngle) }}>
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_var(--tpl-sidebar-w)] gap-3" style={{ ['--tpl-sidebar-w' as any]: `${sidebarWidth}px` }}>
                 <div className="left-column-side">
                     {/* Header - Name and title only */}
                     <div onClick={handleHeaderClick}>
@@ -145,7 +152,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                                                     {...provided.dragHandleProps}
                                                     className={`${snapshot.isDragging ? "opacity-50" : ""}`}
                                                 >
-                                                    <ResumeSection section={section} isActive={section.id === activeSection?.id} darkMode={true} />
+                                                    <ResumeSection section={section} isActive={section.id === activeSection?.id} />
                                                 </div>
                                             )}
                                         </Draggable>
@@ -157,7 +164,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                     </DragDropContext>
                 </div>
 
-                <div className="right-column-side text-white relative z-[1] bg-[#22405c] w-[220px] px-3 py-3 flex flex-col items-center" style={{ fontSize: `${rightColumnFontSizeRem}rem` }}>
+                <div className="right-column-side relative z-[1] px-3 py-3 flex flex-col items-center" style={{ fontSize: `${rightColumnFontSizeRem}rem`, backgroundColor: sidebarBg, color: sidebarText, ['--resume-heading-color' as any]: '#ffffff' }}>
                     {/* Profile photo in sidebar */}
                     {header.visibility.photo && (
                         <div className="mb-4" onClick={handleHeaderClick}>
@@ -169,7 +176,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                                 {header.photoUrl ? (
                                     <img src={header.photoUrl || "/placeholder.svg"} alt="Profile" className="w-full h-full object-cover" />
                                 ) : (
-                                    <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                    <div className="w-full h-full flex items-center justify-center">
                                         <User className="w-12 h-12" />
                                     </div>
                                 )}

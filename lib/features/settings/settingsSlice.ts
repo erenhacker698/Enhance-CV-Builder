@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit"
 import type { SettingsState } from "@/lib/types"
+import { getTemplateDefaults } from "./templateDefaults"
 
 const initialState: SettingsState = {
     branding: true,
@@ -13,7 +14,6 @@ const initialState: SettingsState = {
     lineHeight: 1.4,
     primaryColor: "#14b8a6", // teal-500
     headingColor: "#3e3e3e",
-    leftSidebarBgColor: "#22405c",
     pageBackgroundColor: "#ffffff",
     pageBackgroundMode: 'solid',
     pageBackgroundPattern: "none",
@@ -44,7 +44,6 @@ export const settingsSlice = createSlice({
             state.lineHeight = 1.4
             state.primaryColor = "#14b8a6"
             state.headingColor = "#3e3e3e"
-            state.leftSidebarBgColor = "#22405c"
             state.pageMargins = 36
             state.sectionSpacing = 24
             state.pageBackgroundColor = "#ffffff"
@@ -58,9 +57,6 @@ export const settingsSlice = createSlice({
             state.overlayScale = 1
             state.overlayX = 85
             state.overlayY = 15
-        },
-        setLeftSidebarBgColor: (state, action: PayloadAction<string>) => {
-            state.leftSidebarBgColor = action.payload
         },
         hydrateSettings: (state, action: PayloadAction<Partial<SettingsState>>) => {
             const incoming = action.payload
@@ -97,6 +93,15 @@ export const settingsSlice = createSlice({
 
         setTemplate: (state, action: PayloadAction<{ template: string }>) => {
             state.template = action.payload.template
+            // Apply per-template defaults as baseline (without changing user's explicit overrides later)
+            const tpl = getTemplateDefaults(action.payload.template as any)
+            if (tpl) {
+                // Only set baseline if current values equal previous global defaults
+                if (state.pageMargins === 36) state.pageMargins = tpl.pageMargins
+                if (state.sectionSpacing === 24) state.sectionSpacing = tpl.sectionSpacing
+                state.headingColor = tpl.headingColor
+                // Keep font multipliers; users can still change them via UI
+            }
         },
 
         setEditorZoom: (state, action: PayloadAction<number>) => {
@@ -226,7 +231,6 @@ export const {
     setOverlayPositioning,
     setCurrentCvId,
     setShowHistoryModal,
-    setLeftSidebarBgColor,
     hydrateSettings,
     resetDesignToDefaults,
 } = settingsSlice.actions
