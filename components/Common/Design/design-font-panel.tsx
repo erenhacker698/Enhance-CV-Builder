@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import type { RootState } from "@/lib/store"
 import { clearAllSectionBackgrounds } from "@/lib/features/resume/resumeSlice"
-import { setFontFamily, setFontSize, setLineHeight, setPageMargins, setPrimaryColor, setSectionSpacing, setPageBackgroundColor, setPageBackgroundPattern, setHeadingColor, setPageBackgroundMode, setPageBackgroundGradientTo, setPageBackgroundGradientAngle, setOverlayEnabled, setOverlayImage, setOverlayOpacity, setOverlayScale, setOverlayPositioning, resetDesignToDefaults } from "@/lib/features/settings/settingsSlice"
+import { setFontFamily, setFontSize, setLineHeight, setPageMargins, setPrimaryColor, setSectionSpacing, setPageBackgroundColor, setPageBackgroundPattern, setHeadingColor, setPageBackgroundMode, setPageBackgroundGradientTo, setPageBackgroundGradientAngle, setOverlayEnabled, setOverlayImage, setOverlayOpacity, setOverlayScale, setOverlayPositioning, resetDesignToDefaults, setLeftSidebarBgColor } from "@/lib/features/settings/settingsSlice"
 
 export default function DesignFontPanel() {
   const dispatch = useDispatch()
   const panelRef = useRef<HTMLDivElement>(null)
-  const { pageMargins, sectionSpacing, fontFamily, fontSize, lineHeight, primaryColor, headingColor, pageBackgroundColor, pageBackgroundPattern, pageBackgroundMode, pageBackgroundGradientTo, pageBackgroundGradientAngle, overlayEnabled, overlayImage, overlayOpacity, overlayScale } = useSelector((s: RootState) => s.settings)
+  const { template, leftSidebarBgColor, pageMargins, sectionSpacing, fontFamily, fontSize, lineHeight, primaryColor, headingColor, pageBackgroundColor, pageBackgroundPattern, pageBackgroundMode, pageBackgroundGradientTo, pageBackgroundGradientAngle, overlayEnabled, overlayImage, overlayOpacity, overlayScale } = useSelector((s: RootState) => s.settings)
   const [patterns, setPatterns] = useState<{ name: string; path: string }[]>([])
   const [loadingPatterns, setLoadingPatterns] = useState(false)
   const [overlayPickerOpen, setOverlayPickerOpen] = useState(false)
@@ -106,6 +106,20 @@ export default function DesignFontPanel() {
           <input type="color" value={headingColor} onChange={(e) => dispatch(setHeadingColor(e.target.value))} className="ml-auto h-6 w-10" />
         </div>
       </div>
+
+      {/* Template-specific settings */}
+      {template === 'left-sidebar' && (
+        <div className="bg-gray-50 p-2 rounded border border-gray-200">
+          <span className="text-sm font-medium">Left Sidebar Background</span>
+          <div className="flex items-center gap-2 mt-2">
+            {['#22405c','#0f172a','#1f2937','#334155','#0369a1','#3b82f6','#111827','#0b1726'].map(c => (
+              <button key={c} aria-label={c} className="w-6 h-6 rounded border" style={{ backgroundColor: c }} onClick={() => dispatch(setLeftSidebarBgColor(c))} />
+            ))}
+            <input type="color" value={leftSidebarBgColor || '#22405c'} onChange={(e) => dispatch(setLeftSidebarBgColor(e.target.value))} className="ml-auto h-6 w-10" />
+          </div>
+          <p className="text-[11px] text-gray-500 mt-1">Applies only to the Left Sidebar template.</p>
+        </div>
+      )}
   <hr className="my-2 border-gray-200" />
 
   {/* Page Background (collapsible) */}
