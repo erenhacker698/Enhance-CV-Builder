@@ -4,6 +4,8 @@
 
 An interactive, multi-template resume builder with a 3-pane editor (left menu, center canvas, right design panel), cross-page drag-and-drop, and PDF export.
 
+![Enhance-CV-Preview](/media/preview.png)
+
 ---
 
 ## ✨ Highlights
