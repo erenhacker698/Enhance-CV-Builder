@@ -13,6 +13,7 @@ import { updateAchievement } from "@/lib/features/resume/resumeSlice"
 export default function AchievementsSection({ section, isActive, darkMode = false, handleEntryToggle, handleContextMenu }: SectionProps) {
     const dispatch = useDispatch()
     const activeSection = useSelector((state: RootState) => state.resume.activeSection)
+    const { primaryColor } = useSelector((state: RootState) => state.settings)
 
     const handleEntryUpdate = (entryId: string, field: keyof AchievementSectionItem, value: string) => {
         dispatch(
@@ -52,13 +53,11 @@ export default function AchievementsSection({ section, isActive, darkMode = fals
                     onClick={(e) => handleEntryToggle(e, achievement.id)}
                 >
                     <div className="flex items-start">
-                        {
-                            achievement.visibility?.icon !== false && (
-                                <div className="bg-teal-100 rounded-full p-2 mr-3 text-teal-500 flex-shrink-0">
-                                    {renderIcon(achievement.icon)}
-                                </div>
-                            )
-                        }
+                        {achievement.visibility?.icon !== false && (
+                            <div className="rounded-full p-2 mr-3 flex-shrink-0" style={{ backgroundColor: `${primaryColor}22`, color: primaryColor }}>
+                                {renderIcon(achievement.icon)}
+                            </div>
+                        )}
 
                         <div className="flex-1">
                             <EditableText

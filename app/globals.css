@@ -254,14 +254,14 @@ h6 {
   min-width: 2px;
   overflow: hidden;
   font-weight: 400;
-  color: #3e3e3e;
+  color: var(--resume-heading-color, #3e3e3e);
   text-transform: uppercase;
   border-bottom: 1px solid #bdbdbd;
   padding-bottom: 8px;
   white-space: pre-wrap;
   font-family: Rubik, Arial, Helvetica, "Noto Sans Devanagari", "Noto Sans CJK SC Thin", "Noto Sans SC", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
-  font-size: 16px;
-  line-height: 19px;
+  font-size: 1em;
+  line-height: inherit;
 }
 
 .education__logo-upload {
@@ -300,8 +300,8 @@ h6 {
   z-index: 1;
   white-space: pre-wrap;
   font-family: Rubik, Arial, Helvetica, "Noto Sans Devanagari", "Noto Sans CJK SC Thin", "Noto Sans SC", "Noto Sans Hebrew", "Noto Sans Bengali", sans-serif;
-  font-size: 15px;
-  line-height: 18px;
+  font-size: 1em;
+  line-height: inherit;
   display: flex;
   align-items: center;
   clear: both;
@@ -328,17 +328,17 @@ h6 {
 } */
 
 .education__school-name {
-  color: rgb(0, 140, 255);
-  font-size: 14px;
-  line-height: 17px;
+  color: inherit;
+  font-size: 0.95em;
+  line-height: inherit;
 }
 
 .para-text-field {
-  font-size: 12px;
-  line-height: normal;
+  font-size: 0.875em;
+  line-height: inherit;
   cursor: pointer;
   margin: 0;
-  color: #3e3e3e;
+  color: inherit;
   position: relative;
   width: auto;
   flex-shrink: 0;
@@ -391,6 +391,11 @@ h6 {
 .selected-resume-item--dark {
   background: #ffffff1f;
   background: transparent;
+}
+
+/* Section title color binding to settings */
+.resume-section-title {
+  color: var(--resume-heading-color, #3e3e3e);
 }
 
 .text-custom-teal {
@@ -446,6 +451,13 @@ h6 {
     align-items: center;
 }
 
+/* Editor containers should never create their own scrollbars */
+.resume-editor-wrapper,
+.resume-page-container,
+.pages-container {
+  overflow: visible !important;
+}
+
 .resume-page {
     page-break-after: always;
     break-after: page;
@@ -479,4 +491,16 @@ h6 {
     .pages-container {
         gap: 0;
     }
+}
+
+/* Prevent layout shift when scrollbars appear/disappear (e.g., on modal open). */
+html {
+  /* Reserve scrollbar space on the inline (vertical) axis to keep layout stable */
+  scrollbar-gutter: stable;
+}
+
+/* Fallback for browsers that don't support scrollbar-gutter */
+body {
+  overflow-y: scroll; /* Always reserve vertical scrollbar width */
+  overflow-x: hidden; /* Prevent horizontal page scroll */
 }

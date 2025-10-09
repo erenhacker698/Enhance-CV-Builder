@@ -1,225 +1,144 @@
-# Modern Resume Builder
+#
+#
+#
+#
+#
+#
+#
+#
+#
+# Enhance CV Builder
 
-An interactive and feature-rich resume builder that empowers users to craft professional resumes with ease. Offers a variety of templates, customizable sections, drag-and-drop functionality, and real-time editing.
+[![CI](https://github.com/r00tmebaby/Enhance-CV-Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/r00tmebaby/Enhance-CV-Builder/actions/workflows/ci.yml)
 
-<!-- ![Resume Builder Screenshot](https://placeholder.svg?height=400&width=800) -->
-
----
-
-## ✨ Features
-
-- **Multiple Templates** – Choose from elegant, double-column, timeline, and other modern templates
-- **Drag-and-Drop Interface** – Intuitively rearrange resume sections
-- **Real-Time Editing** – Instantly preview changes as you type
-- **Customizable Sections** – Add, remove, or tweak sections such as:
-
-   - Education
-   - Projects
-   - Languages
-   - Skills
-   - Achievements
-   - Volunteering
-   - My Time
-   - Industry Expertise
-
-- **PDF Export** – Download your resume as a polished PDF
-- **Responsive Design** – Fully functional on desktop and tablet
-- **Undo/Redo** – Maintain full edit history with undo/redo support
-- **Photo Upload** – Option to add a professional headshot
+An interactive, multi-template resume builder with a 3-pane editor (left menu, center canvas, right design panel), cross-page drag-and-drop, and PDF export.
 
 ---
 
-## 📦 Available Sections
+## ✨ Highlights
 
-- Education – School, degree, location, GPA, period; toggles for visibility
-- Projects – Name, description, link, period/location; visibility controls
-- Languages – Name, level, optional proficiency slider
-- Skills – Grouped skills with compact/border options and group name toggle
-- Achievements – Title and description with icon support
-- Volunteering – Role, organization, period, description; toggles for period/description
-- My Time – Time allocation pie chart with legend selection; settings-based editing for label, percentage, color
-- Industry Expertise – Per-industry progress bars with styles (solid, striped, dashed, diagonal, gradient) and color/gradient customization
+- 3-pane layout: left actions menu, center resume canvas, right Design & Font panel (always visible)
+- Single page scrollbar (no nested scrolling) for smooth multi-page editing
+- Templates: Elegant, Double Column, Left Sidebar (with pagination where applicable)
+- Page Background modes: Solid, Pattern, Gradient (per-page styling via settings)
+- Image Overlay: add/position PNG/SVG, control opacity and scale
+- Cross-page drag-and-drop with pagination for multi-page templates
+- Per-section visibility, background clean-up, and compact design controls
+- PDF export (html2canvas-pro + jsPDF)
+- History snapshots (undo/redo) and Documents view
 
-## 🆕 Recently Added Enhancements
+---
 
-- Automatic multi-page pagination for the double-column template (new pages are created when content overflows)
-- Page-aware drag-and-drop across columns and pages, preserving section order intuitively
-- New sections:
-   - Volunteering – with visibility toggles (period, description)
-   - My Time – pie chart with legend selection and settings-based editing
-   - Industry Expertise – progress bars per field/industry
-- Industry Expertise styling options: solid, striped, dashed, diagonal, and two‑color gradients
-- Single, styled progress slider that doubles as the visual bar (no extra numeric label)
-- Settings panels improvements: anchored color swatches, hex input, and two-color gradient picker
-- Settings button interaction fix so the panel opens immediately without losing selection
-- Cleaner date visuals (removed calendar icons for a more minimal layout)
+## 🧩 Templates
+
+Source files live in `components/ResumeTemplates/`:
+
+- `resume-template-double-column.tsx` (paginated, two columns)
+- `resume-template-elegant.tsx` (left content + styled right sidebar)
+- `resume-template-left-sidebar.tsx` (paginated variant with left sidebar)
+- `resume-template-modern.tsx`, `resume-template-standard.tsx` (available, easy to enable)
+
+Selection: via Templates modal (`components/Common/Dialogs/templates-modal.tsx`), stored in Redux `settingsSlice.template`. Renderer switch is in `components/resume-builder.tsx`.
+
+Per-template defaults: Elegant uses tighter margins/spacing and 70% font-size on its right column by default (without changing global settings).
+
+---
+
+## 🎛 Design & Font panel
+
+- Grouped controls with separators and collapsible sections
+- Page Background (accordion): Solid/Pattern/Gradient with color(s) + angle
+- Image Overlay (accordion): enable, choose pattern (dialog), opacity, scale, drag-to-position
+- Layout controls (always visible): Page Margins, Section Spacing
+- Typography: Font family, size, line-height
+
+---
 
 ## 🚀 Getting Started
 
-### Prerequisites
+### Requirements
 
-- Node.js v16.x or higher
-- npm or Yarn
+- Node.js 20+
+- npm 10+
 
-### Installation
+### Install & Run
 
 ```bash
-# Clone the repository
+# Clone
 git clone https://github.com/r00tmebaby/Enhance-CV-Builder.git
 cd Enhance-CV-Builder
 
-# Install dependencies
-npm install
-# or
-yarn install
+# Install
+npm ci
 
-# Start the development server
+# Dev server
 npm run dev
-# or
-yarn dev
+
+# Typecheck & lint (optional)
+npm run typecheck
+npm run lint
+
+# Build
+npm run build
 ```
 
-Visit `http://localhost:3000` in your browser to get started.
+Open http://localhost:3000
 
 ---
 
-## 🧑‍💻 Usage Guide
+## � Usage tips
 
-### Creating a New Resume
-
-1. A sample resume is preloaded when you open the app
-2. Click on any section to begin editing
-3. Use the sidebar to add sections, switch templates, or download your resume
-
-### Editing Content
-
-- Click directly on text to edit
-- Use the floating toolbar to add entries or tweak settings
-- Right-click entries for additional options like visibility controls
-
-### Rearranging Sections
-
-1. Click **"Rearrange"** in the sidebar
-2. Drag and drop to reorder
-3. Click **"Continue Editing"** to apply changes
-
-### Changing Templates
-
-1. Open the **"Templates"** tab in the sidebar
-2. Preview available templates
-3. Click **"Apply Template"** to use the selected one
-
-### Exporting Your Resume
-
-1. Click **"Download"** in the sidebar
-2. The resume will be exported as a PDF
-3. Filename is auto-generated using your name (e.g., `john_doe_resume.pdf`)
+- Edit text inline; use section toolbars for quick actions
+- Use “Rearrange” (left menu) for bulk DnD; page-aware DnD also works inline
+- Switch templates in Templates modal; previews are under `public/templates/`
+- Export via “Export as PDF” in the left menu
 
 ---
 
-## ⚙️ Architecture Overview
+## 🛠️ CI/CD Workflows
 
-Built with a modern React architecture powered by Next.js and Redux.
+GitHub Actions lives in `.github/workflows/`:
 
-### 🧩 Core Components
+- `ci.yml` (default):
+  - Runs on push/PR to `master`
+  - Steps: checkout → setup Node 20 → `npm ci` → `npm run lint` → `npm run typecheck` → `npm run build`
 
-- **ResumeBuilder** – Central app logic and layout
-- **Sidebar** – Tools for resume management and actions
-- **ResumeTemplates** – Elegant, double-column, and timeline template components
-- **ResumeSection** – Dynamically renders different resume sections
-- **EditableText** – Inline content editor for seamless text updates
+- `release.yml` (optional):
+  - Runs on tag `v*.*.*`
+  - Creates a draft GitHub Release
 
-### 🗂 State Management (Redux)
-
-- `resumeSlice` – Manages resume data and sections
-- `settingsSlice` – Handles template choice and UI settings
-- `uiSlice` – Controls modals, loading, and general UI state
-
-### 📄 PDF Export Flow
-
-A dedicated module:
-
-1. Captures the resume DOM
-2. Processes it for accurate rendering
-3. Generates a downloadable PDF
-
----
-
-## 🛠 Tech Stack
-
-- **Next.js** – Fullstack React framework
-- **TypeScript** – Type-safe development
-- **Redux Toolkit** – Scalable state management
-- **Tailwind CSS** – Utility-first CSS styling
-- **shadcn/ui** – Beautiful component library
-- **hello-pangea/dnd** – For drag-and-drop functionality
-- **html2canvas** & **jsPDF** – For PDF generation
-- **Framer Motion** – Smooth animations and transitions
+Badges and workflow names can be adjusted as you prefer.
 
 ---
 
 ## 📁 Project Structure
 
 ```
-Enhance-CV-Builder/
-├── app/                  # Next.js app directory
-├── components/           # React components
-│   ├── ui/               # shadcn UI components
-│   ├── resume-*.tsx      # Resume-specific components
-│   └── ...
-├── lib/                  # Utilities and Redux store
-│   ├── features/         # Redux slices
-│   ├── pdf-export.ts     # PDF generation module
-│   ├── store.ts          # Redux store config
-│   └── types.ts          # Type definitions
-├── public/               # Static assets
-│   └── templates/        # Template thumbnails
-└── ...
+app/                     # Next.js App Router
+components/              # UI + templates + dialogs
+  Common/                # Shared UI (dialogs, panels)
+  ResumeTemplates/       # Template implementations
+  Sections/              # Resume sections
+lib/                     # Store, slices, utils
+public/                  # Static assets (templates thumbnails, patterns)
+.github/workflows/       # CI/CD
 ```
 
 ---
 
 ## 🤝 Contributing
 
-We welcome contributions!
+1) Fork → 2) Branch → 3) Commit → 4) Push → 5) PR
 
-1. Fork the repository
-2. Create your feature branch
-
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-
-3. Commit your changes
-
-   ```bash
-   git commit -m "Add amazing feature"
-   ```
-
-4. Push your branch
-
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-
-5. Open a Pull Request
+Suggested commit style: Conventional Commits (e.g., `feat:`, `fix:`, `docs:`)
 
 ---
 
 ## 📄 License
 
-Licensed under the [MIT License](./LICENSE).
-
----
-
-## 🙏 Acknowledgments
-
-- [shadcn/ui](https://ui.shadcn.com/) for components
-- [hello-pangea/dnd](https://github.com/hello-pangea/dnd) for drag-and-drop
-- [html2canvas](https://html2canvas.hertzen.com/) & [jsPDF](https://parall.ax/products/jspdf) for PDF export
+MIT — see [LICENSE](./LICENSE)
 
 ---
 
 Built with ❤️ by **r00tmebaby**
-
----
+3. Generates a downloadable PDF

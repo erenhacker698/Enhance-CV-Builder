@@ -165,9 +165,14 @@ const initialState: ResumeState = {
 
 // Helper function to save current state to history
 const saveToHistory = (state: ResumeState) => {
+  // Defensive: ensure history structure exists
+  if (!state.history || !Array.isArray((state.history as any).past) || !Array.isArray((state.history as any).future)) {
+    state.history = { past: [], future: [] }
+  }
   const currentState = {
     header: JSON.parse(JSON.stringify(state.header)),
     sections: JSON.parse(JSON.stringify(state.sections)),
+    createdAt: Date.now(),
   }
 
   state.history.past.push(currentState)
@@ -185,6 +190,37 @@ export const resumeSlice = createSlice({
   name: "resume",
   initialState,
   reducers: {
+    // Hydrate header from a source (e.g., localStorage) without recording a history step
+    setHeader: (state, action: PayloadAction<ResumeState["header"]>) => {
+      state.header = action.payload as any
+    },
+    setHistory: (state, action: PayloadAction<{ past: any[]; future: any[] }>) => {
+      const past = Array.isArray(action.payload?.past) ? action.payload.past : []
+      const future = Array.isArray(action.payload?.future) ? action.payload.future : []
+      // Clamp to a sensible max
+      state.history = {
+        past: past.slice(-50),
+        future: future.slice(-50),
+      }
+    },
+    setSectionBackground: (
+      state,
+      action: PayloadAction<{ sectionId: string; color: string | null }>
+    ) => {
+      const sec = state.sections.find(s => s.id === action.payload.sectionId)
+      if (sec) sec.backgroundColor = action.payload.color
+    },
+    clearAllSectionBackgrounds: (state) => {
+      state.sections = state.sections.map((s) => ({ ...s, backgroundColor: null }))
+    },
+    hydrateFromSnapshot: (state, action: PayloadAction<{ header: any; sections: any[] }>) => {
+      // Replace current resume data and reset undo/redo history
+      state.header = action.payload.header
+      state.sections = action.payload.sections
+      state.history = { past: [], future: [] }
+      state.activeSection = null
+      state.activeSkillData = null
+    },
     // Undo/Redo actions
     undo: (state) => {
       const previous = state.history.past.pop()
@@ -193,6 +229,7 @@ export const resumeSlice = createSlice({
         const currentState = {
           header: JSON.parse(JSON.stringify(state.header)),
           sections: JSON.parse(JSON.stringify(state.sections)),
+          createdAt: Date.now(),
         }
         state.history.future.push(currentState)
 
@@ -209,6 +246,7 @@ export const resumeSlice = createSlice({
         const currentState = {
           header: JSON.parse(JSON.stringify(state.header)),
           sections: JSON.parse(JSON.stringify(state.sections)),
+          createdAt: Date.now(),
         }
         state.history.past.push(currentState)
 
@@ -805,6 +843,8 @@ export const resumeSlice = createSlice({
 })
 
 export const {
+  setHeader,
+  setHistory,
   updateHeaderField,
   toggleHeaderFieldVisibility,
   toggleUppercaseName,
@@ -842,6 +882,9 @@ export const {
   updateAchievement,
   removeAchievement,
   toggleEntryVisibility_Achievement,
+  setSectionBackground,
+  clearAllSectionBackgrounds,
+  hydrateFromSnapshot,
   undo,
   redo,
 } = resumeSlice.actions

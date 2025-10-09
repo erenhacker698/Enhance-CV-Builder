@@ -84,6 +84,15 @@ export interface LanguageContentVisibility {
   slider: boolean
 }
 
+// Labels for language proficiency (1-5)
+export const proficiencyLabels = [
+  "Beginner",
+  "Elementary",
+  "Intermediate",
+  "Upper Intermediate",
+  "Advanced",
+]
+
 export interface SkillSectionItem {
   id: string
   groupName?: string
@@ -181,6 +190,7 @@ export interface Section {
   type: SectionType
   column: "left" | "right"
   title: string
+  backgroundColor?: string | null
   content: {
     educations?: EducationSectionItem[];
     projects?: ProjectSectionItem[];
@@ -273,9 +283,31 @@ export interface SettingsState {
   fontSize: number
   fontFamily: string
   template: string
+  editorZoom: number
+  pageMargins: number
+  sectionSpacing: number
+  lineHeight: number
+  primaryColor: string
+  headingColor: string
+  pageBackgroundColor: string
+  pageBackgroundMode: 'solid' | 'pattern' | 'gradient'
+  pageBackgroundPattern: "none" | "dots" | "diagonal-stripes" | "grid" | "crosshatch"
+  pageBackgroundGradientTo?: string
+  pageBackgroundGradientAngle?: number
+  // Image overlay pattern settings
+  overlayEnabled?: boolean
+  overlayImage?: string | null
+  overlayOpacity?: number // 0..1
+  overlayScale?: number // multiplier e.g. 1 = 100%
+  overlayX?: number // percent 0..100 from left
+  overlayY?: number // percent 0..100 from top
+  overlayPositioning?: boolean // enable drag to position in editor
+  showDesignPanel: boolean
   showTemplatesModal: boolean
   showAddSectionModal: boolean
   addSectionColumn: "left" | "right"
+  currentCvId: string | null
+  showHistoryModal: boolean
 }
 
 export interface RootState {

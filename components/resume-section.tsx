@@ -21,7 +21,7 @@ import {
     addAchievement,
     updateSectionContent,
 } from "@/lib/features/resume/resumeSlice"
-import { AchievementContentVisibility, AchievementSectionItem, EducationContentVisibility, EducationSectionItem, LanguageContentVisibility, LanguageSectionItem, ProjectContentVisibility, ProjectSectionItem, type Section, SectionTypeEnum, SkillVisibility, VisibilityDispatchMap } from "@/lib/types"
+import { AchievementContentVisibility, AchievementSectionItem, EducationContentVisibility, EducationSectionItem, LanguageContentVisibility, LanguageSectionItem, ProjectContentVisibility, ProjectSectionItem, type Section, SectionTypeEnum, SkillVisibility, VisibilityDispatchMap, type MyTimeItem, type VolunteeringItem } from "@/lib/types"
 import { cn } from "@/lib/utils"
 import EditableText from "@/components/Shared/editable-text"
 import SectionToolbar from "@/components/Common/Sections/section-toolbar"
@@ -146,7 +146,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 const list = section.content.volunteering ?? []
                 dispatch(updateSectionContent({
                     sectionId: section.id,
-                    content: { ...section.content, volunteering: [...list, entry] }
+                    content: { ...section.content, volunteering: [...list, entry as VolunteeringItem] }
                 }))
                 break
             }
@@ -154,7 +154,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 const list = section.content.my_time ?? []
                 dispatch(updateSectionContent({
                     sectionId: section.id,
-                    content: { ...section.content, my_time: [...list, entry] }
+                    content: { ...section.content, my_time: [...list, entry as MyTimeItem] }
                 }))
                 break
             }
@@ -220,7 +220,12 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
 
     const handleToggleVolunteeringVisibility = (entryId: string, field: keyof NonNullable<VolunteeringItem['visibility']>, value: boolean) => {
         const list = section.content.volunteering ?? []
-        const next = list.map((i) => i.id === entryId ? { ...i, visibility: { ...(i.visibility || {}), [field]: value } } : i)
+        const next: VolunteeringItem[] = list.map((i) => {
+            if (i.id !== entryId) return i
+            const prevVis = i.visibility ?? { period: true, description: true }
+            const newVis: NonNullable<VolunteeringItem['visibility']> = { ...prevVis, [field]: value }
+            return { ...i, visibility: newVis }
+        })
         dispatch(updateSectionContent({ sectionId: section.id, content: { ...section.content, volunteering: next } }))
     }
 
@@ -291,6 +296,7 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 setIsHovered(false)
                 if (!isActive) setShowToolbar(false)
             }}
+            style={section.backgroundColor ? { backgroundColor: section.backgroundColor } : undefined}
         >
             {(isActive) && (
                 <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 z-3">
@@ -378,14 +384,14 @@ export default function ResumeSection({ section, isActive, onDragStart, darkMode
                 </div>
             )}
 
-            <div className={cn("mb-2")}>
+            <div className={cn("mb-2")}>            
                 <EditableText
                     value={section.title}
                     onChange={handleUpdateSectionChange}
                     className={cn(
                         "bg-transparent border-0 shadow-none m-0 min-h-[10px] outline-none p-0 resize-none break-words",
-                        "text-[16px] leading-[19px] font-normal uppercase",
-                        darkMode && section.column === 'right' ? 'text-white' : 'text-[#3e3e3e]',
+                        "font-normal uppercase resume-section-title",
+                        darkMode && section.column === 'right' ? 'text-white' : '',
                         "w-full min-w-[2px] overflow-hidden block relative z-[1]",
                         "border-b border-[#bdbdbd] pb-2",
                         "whitespace-pre-wrap list-none",

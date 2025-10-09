@@ -8,6 +8,7 @@ import {
     uploadProfilePhoto,
     toggleUppercaseName,
     togglePhotoStyle,
+    setHeader,
 } from "@/lib/features/resume/resumeSlice"
 import { Camera, Link, LocateIcon, Mail, MapPin, Phone, Settings, Shield } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -27,46 +28,26 @@ const STORAGE_KEY = 'resume_header_data'
 export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHeaderProps) {
     const dispatch = useDispatch()
     const header = useSelector((state: RootState) => state.resume.header)
+    const { primaryColor, currentCvId } = useSelector((state: RootState) => state.settings)
     const [isHovered, setIsHovered] = useState(false)
     const [showSettings, setShowSettings] = useState(false)
     const [showPhotoUpload, setShowPhotoUpload] = useState(false)
     const settingsRef = useRef<HTMLDivElement>(null)
 
-    // Load data from localStorage on mount
+    // Load data from localStorage on mount (only for unsaved sessions), without creating history steps
     useEffect(() => {
-        const loadHeaderData = () => {
-            try {
-                const savedData = localStorage.getItem(STORAGE_KEY)
-                if (savedData) {
-                    const parsedData = JSON.parse(savedData)
-
-                    // Restore header fields
-                    Object.keys(parsedData).forEach(field => {
-                        if (field === 'visibility') {
-                            Object.keys(parsedData.visibility).forEach(visField => {
-                                dispatch(toggleHeaderFieldVisibility({
-                                    field: visField,
-                                    value: parsedData.visibility[visField]
-                                }))
-                            })
-                        } else if (field === 'uppercaseName') {
-                            dispatch(toggleUppercaseName({ value: parsedData.uppercaseName }))
-                        } else if (field === 'roundPhoto') {
-                            dispatch(togglePhotoStyle({ value: parsedData.roundPhoto }))
-                        } else if (field === 'photoUrl') {
-                            dispatch(uploadProfilePhoto({ photoUrl: parsedData.photoUrl }))
-                        } else {
-                            dispatch(updateHeaderField({ field, value: parsedData[field] }))
-                        }
-                    })
-                }
-            } catch (error) {
-                console.error('Error loading header data from localStorage:', error)
-            }
+        try {
+            if (currentCvId) return // when a document is open, do not override from localStorage
+            const savedData = localStorage.getItem(STORAGE_KEY)
+            if (!savedData) return
+            const parsedData = JSON.parse(savedData)
+            // Merge onto current header to keep defaults, then hydrate without logging history
+            const merged = { ...header, ...parsedData, visibility: { ...header.visibility, ...(parsedData?.visibility || {}) } }
+            dispatch(setHeader(merged))
+        } catch (error) {
+            console.error('Error loading header data from localStorage:', error)
         }
-
-        loadHeaderData()
-    }, [dispatch])
+    }, [dispatch, currentCvId])
 
     // Save to localStorage whenever header state changes
     useEffect(() => {
@@ -140,7 +121,7 @@ export default function ResumeHeader({ isActive, hidePhoto = false }: ResumeHead
                     </div>
 
                     {header.visibility.title && (
-                        <div className="text-teal-500 text-xl mt-1">
+                        <div className="text-xl mt-1" style={{ color: primaryColor }}>
                             <EditableText
                                 value={header.title}
                                 onChange={(value) => handleFieldChange("title", value)}

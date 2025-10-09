@@ -13,7 +13,8 @@ import type { Section } from "@/lib/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import ResumeHeader from "@/components/resume-header"
 import { setAddSectionModal } from "@/lib/features/settings/settingsSlice"
-import { cn } from "@/lib/utils"
+import { cn, resolveFontFamily, getPageBackgroundStyle, getOverlayStyle } from "@/lib/utils"
+import { setOverlayPosition } from "@/lib/features/settings/settingsSlice"
 
 interface ResumeTemplateProps {
     resumeRef: React.RefObject<HTMLDivElement | null>
@@ -23,8 +24,17 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
     const dispatch = useDispatch()
     const activeSection = useSelector((state: RootState) => state.resume.activeSection)
     const { sections } = useSelector((state: RootState) => state.resume)
+    const { editorZoom, pageMargins, sectionSpacing, fontSize, lineHeight, fontFamily, pageBackgroundColor, pageBackgroundPattern, pageBackgroundMode, pageBackgroundGradientTo, pageBackgroundGradientAngle, overlayEnabled, overlayImage, overlayOpacity, overlayScale, overlayX, overlayY, overlayPositioning, headingColor } = useSelector((state: RootState) => state.settings)
     const { header } = useSelector((state: RootState) => state.resume)
     const [draggedSection, setDraggedSection] = useState<string | null>(null)
+
+    // Elegant-specific defaults and layout tweaks
+    const DEFAULT_GLOBAL_MARGINS = 36
+    const DEFAULT_GLOBAL_SPACING = 24
+    // If user hasn't changed from global defaults, prefer Elegant defaults; otherwise respect user values
+    const effectivePageMargins = pageMargins === DEFAULT_GLOBAL_MARGINS ? 12 : pageMargins
+    const effectiveSectionSpacing = sectionSpacing === DEFAULT_GLOBAL_SPACING ? 22 : sectionSpacing
+    const rightColumnFontSizeRem = Math.max(0.3, fontSize * 0.7) // 70% of main, clamped to avoid too small
 
     const handleHeaderClick = () => {
         dispatch(upsertActiveSection({ activeSection: null }))
@@ -110,7 +120,8 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
 
     return (
         <div id="resume-container" className={cn("resume-container resume-page-wrapper h-full", activeSection?.id !== null && "resume-editor-overlay-later")} ref={resumeRef}>
-            <div className="grid grid-cols-1 md:grid-cols-[1fr_340px] gap-8">
+            <div style={{ transform: `scale(${editorZoom})`, transformOrigin: 'top center', width: '794px', margin: '0 auto', padding: `${effectivePageMargins}px`, fontSize: `${fontSize}rem`, lineHeight: lineHeight, fontFamily: resolveFontFamily(fontFamily), ['--resume-heading-color' as any]: headingColor, ...getPageBackgroundStyle(pageBackgroundColor, pageBackgroundPattern, pageBackgroundMode, pageBackgroundGradientTo, pageBackgroundGradientAngle) }}>
+            <div className="grid grid-cols-1 md:grid-cols-[1fr_220px] gap-3">
                 <div className="left-column-side">
                     {/* Header - Name and title only */}
                     <div onClick={handleHeaderClick}>
@@ -120,7 +131,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                     <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                         <Droppable droppableId="left-column">
                             {(provided) => (
-                                <div className="mt-6" ref={provided.innerRef} {...provided.droppableProps}>
+                                <div className="mt-2" ref={provided.innerRef} {...provided.droppableProps} style={{ display: 'grid', rowGap: `${effectiveSectionSpacing}px` }}>
                                     {leftSections.map((section: Section, index) => (
                                         <Draggable
                                             key={section.id}
@@ -146,12 +157,10 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                     </DragDropContext>
                 </div>
 
-                <div className="hidden md:flex w-[380px] h-full absolute top-0 right-0 z-[0] bg-[#22405c]"></div>
-
-                <div className="right-column-side text-white relative z-[1] pl-8">
+                <div className="right-column-side text-white relative z-[1] bg-[#22405c] w-[220px] px-3 py-3 flex flex-col items-center" style={{ fontSize: `${rightColumnFontSizeRem}rem` }}>
                     {/* Profile photo in sidebar */}
                     {header.visibility.photo && (
-                        <div className="flex justify-center mb-8" onClick={handleHeaderClick}>
+                        <div className="mb-4" onClick={handleHeaderClick}>
                             <div
                                 className={`w-32 h-32 ${header.roundPhoto ? "rounded-full" : "rounded-md"
                                     } overflow-hidden bg-gray-200 cursor-pointer`}
@@ -171,7 +180,7 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                     <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
                         <Droppable droppableId="right-column">
                             {(provided) => (
-                                <div ref={provided.innerRef} {...provided.droppableProps} className="space-y-6">
+                                <div ref={provided.innerRef} {...provided.droppableProps} style={{ display: 'grid', rowGap: `${effectiveSectionSpacing}px`, width: '100%' }}>
                                     {rightSections.map((section: Section, index) => (
                                         <Draggable key={section.id} draggableId={section.id} index={index}>
                                             {(provided, snapshot) => (
@@ -193,6 +202,29 @@ export default function ResumeTemplateElegant({ resumeRef }: ResumeTemplateProps
                     </DragDropContext>
                 </div>
             </div>
+            </div>
+                        {overlayEnabled && overlayImage && (
+                            <div
+                                aria-label="overlay-pattern"
+                                onMouseDown={(e) => {
+                                    if (!overlayPositioning) return
+                                    const pageEl = (e.currentTarget.parentElement as HTMLElement)
+                                    const rect = pageEl.getBoundingClientRect()
+                                    const move = (evt: MouseEvent) => {
+                                        const nx = ((evt.clientX - rect.left) / rect.width) * 100
+                                        const ny = ((evt.clientY - rect.top) / rect.height) * 100
+                                        dispatch(setOverlayPosition({ x: nx, y: ny }))
+                                    }
+                                    const up = () => {
+                                        window.removeEventListener('mousemove', move)
+                                        window.removeEventListener('mouseup', up)
+                                    }
+                                    window.addEventListener('mousemove', move)
+                                    window.addEventListener('mouseup', up)
+                                }}
+                                style={{ ...(getOverlayStyle({ enabled: overlayEnabled, image: overlayImage, opacity: overlayOpacity, scale: overlayScale, x: overlayX, y: overlayY }) as any), pointerEvents: overlayPositioning ? 'auto' : 'none', cursor: overlayPositioning ? 'move' : 'default' }}
+                            />
+                        )}
         </div>
     )
 }

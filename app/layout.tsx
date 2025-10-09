@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { inter, firaCode, rubik } from '../lib/fonts'
+import { inter, firaCode, rubik, arimo, lato, raleway, bitter, exo2, chivo, tinos, montserrat, oswald, volkhov, gelasio } from '../lib/fonts'
 import { baseMetadata, jsonLdSchema } from "@/lib/metadata";
 
 export const metadata: Metadata = baseMetadata;
@@ -21,8 +21,8 @@ export default function RootLayout({
         />
       </head>
       <body
-        className={`${inter.variable} ${firaCode.variable} ${rubik.variable} antialiased`}
-        style={{ marginRight: '0% !important' }}>
+        className={`${inter.variable} ${firaCode.variable} ${rubik.variable} ${arimo.variable} ${lato.variable} ${raleway.variable} ${bitter.variable} ${exo2.variable} ${chivo.variable} ${tinos.variable} ${montserrat.variable} ${oswald.variable} ${volkhov.variable} ${gelasio.variable} antialiased bg-[#fafbfd]`}
+        style={{ marginRight: '0%' }}>
         {children}
       </body>
     </html >

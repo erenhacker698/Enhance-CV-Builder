@@ -1,8 +1,7 @@
 "use client"
 
 import type React from "react"
-
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useSelector } from "react-redux"
 import { Button } from "@/components/ui/button"
 import { Download, Loader2 } from "lucide-react"
@@ -11,124 +10,100 @@ import jsPDF from "jspdf"
 import type { RootState } from "@/lib/store"
 
 interface PDFExportButtonProps {
-    resumeRef: React.RefObject<HTMLDivElement>
+    resumeRef: React.RefObject<HTMLDivElement | null>
 }
-
-// This is from where I resolved the v4 tailwind related error:
-// Error: Attempting to parse an unsupported color function "oklch"
-// Ref: https://github.com/niklasvh/html2canvas/issues/2700
 
 export default function PDFExportButton({ resumeRef }: PDFExportButtonProps) {
     const [isExporting, setIsExporting] = useState(false)
     const { header } = useSelector((state: RootState) => state.resume)
 
-    const handleExport = async () => {
+    const capturePages = async (): Promise<{ dataUrl: string; width: number; height: number }[]> => {
+        const container = resumeRef.current
+        if (!container) return []
+
+        const pages = Array.from(container.querySelectorAll('.resume-page')) as HTMLElement[]
+        const results: { dataUrl: string; width: number; height: number }[] = []
+
+        if (pages.length > 0) {
+            for (const page of pages) {
+                const clone = page.cloneNode(true) as HTMLElement
+                clone.style.width = '794px'
+                clone.style.height = '1123px'
+                clone.style.position = 'absolute'
+                clone.style.top = '-9999px'
+                clone.style.left = '-9999px'
+                const buttons = clone.querySelectorAll('button')
+                buttons.forEach((b) => b.remove())
+                document.body.appendChild(clone)
+                const canvas = await html2canvas(clone, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' })
+                document.body.removeChild(clone)
+                results.push({ dataUrl: canvas.toDataURL('image/png'), width: canvas.width, height: canvas.height })
+            }
+            return results
+        }
+
+        const clone = container.cloneNode(true) as HTMLElement
+        clone.style.width = '794px'
+        clone.style.position = 'absolute'
+        clone.style.top = '-9999px'
+        clone.style.left = '-9999px'
+        const buttons = clone.querySelectorAll('button')
+        buttons.forEach((b) => b.remove())
+        document.body.appendChild(clone)
+        const canvas = await html2canvas(clone, { scale: 2, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' })
+        document.body.removeChild(clone)
+        const pageHeightPx = Math.round((1123 / 794) * canvas.width)
+        const totalPages = Math.ceil(canvas.height / pageHeightPx)
+        for (let i = 0; i < totalPages; i++) {
+            const sliceCanvas = document.createElement('canvas')
+            const sliceHeight = Math.min(pageHeightPx, canvas.height - i * pageHeightPx)
+            sliceCanvas.width = canvas.width
+            sliceCanvas.height = sliceHeight
+            const ctx = sliceCanvas.getContext('2d')!
+            ctx.drawImage(canvas, 0, i * pageHeightPx, canvas.width, sliceHeight, 0, 0, canvas.width, sliceHeight)
+            results.push({ dataUrl: sliceCanvas.toDataURL('image/png'), width: sliceCanvas.width, height: sliceCanvas.height })
+        }
+        return results
+    }
+
+    const handleExportPDF = async () => {
         if (!resumeRef.current) return
-
         setIsExporting(true)
-
         try {
-            // Create a clone of the resume element to modify for PDF export
-            const resumeElement = resumeRef.current
-            const clone = resumeElement.cloneNode(true) as HTMLElement
-
-            // Apply some styling for better PDF output
-            clone.style.width = "794px" // A4 width in pixels at 96 DPI
-            clone.style.height = "1123px" // A4 height in pixels at 96 DPI
-            clone.style.padding = "40px"
-            clone.style.position = "absolute"
-            clone.style.top = "-9999px"
-            clone.style.left = "-9999px"
-
-
-            // Remove any buttons or interactive elements
-            const buttons = clone.querySelectorAll("button")
-            buttons.forEach((button) => button.remove())
-
-            // Remove any hover effects or unnecessary styling
-            const hoverElements = clone.querySelectorAll(".group, .hover\\:bg-gray-50")
-            hoverElements.forEach((el) => {
-                if (el instanceof HTMLElement) {
-                    el.classList.remove("group", "hover:bg-gray-50")
-                }
+            const captures = await capturePages()
+            if (!captures.length) return
+            const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' })
+            const imgWidth = 210
+            captures.forEach((c, i) => {
+                const imgHeight = (c.height * imgWidth) / c.width
+                if (i > 0) pdf.addPage()
+                pdf.addImage(c.dataUrl, 'PNG', 0, 0, imgWidth, imgHeight)
             })
-
-            // Convert problematic color functions to simple RGB
-            // This is a workaround for the "oklch" color function issue
-            const elementsWithColor = clone.querySelectorAll("*")
-            elementsWithColor.forEach((el) => {
-                if (el instanceof HTMLElement) {
-                    // Replace any oklch colors with a safe fallback
-                    if (el.style.color && el.style.color.includes("oklch")) {
-                        el.style.color = "#000000"
-                    }
-                    if (el.style.backgroundColor && el.style.backgroundColor.includes("oklch")) {
-                        el.style.backgroundColor = "#ffffff"
-                    }
-                    if (el.style.borderColor && el.style.borderColor.includes("oklch")) {
-                        el.style.borderColor = "#cccccc"
-                    }
-                }
-            })
-
-            // Add the clone to the document body temporarily
-            document.body.appendChild(clone)
-
-            // Generate canvas from the clone
-            const canvas = await html2canvas(clone, {
-                scale: 2, // Higher scale for better quality
-                useCORS: true,
-                allowTaint: true,
-                backgroundColor: "#ffffff",
-            })
-
-            // Remove the clone from the DOM
-            document.body.removeChild(clone)
-
-            // Create PDF
-            const imgData = canvas.toDataURL("image/png")
-            const pdf = new jsPDF({
-                orientation: "portrait",
-                unit: "mm",
-                format: "a4",
-            })
-
-            // Calculate dimensions
-            const imgWidth = 210 // A4 width in mm
-            const imgHeight = (canvas.height * imgWidth) / canvas.width
-
-            pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight)
-
-            // Generate filename from header name or use default
-            const fileName = header.name ? `${header.name.toLowerCase().replace(/\s+/g, "_")}_resume.pdf` : "resume.pdf"
-
-            // Download PDF
+            const fileName = header.name ? `${header.name.toLowerCase().replace(/\s+/g, '_')}_resume.pdf` : 'resume.pdf'
             pdf.save(fileName)
-        } catch (error) {
-            console.error("Error generating PDF:", error)
-            alert("There was an error generating your PDF. Please try again.")
+        } catch (e) {
+            console.error('Error generating PDF', e)
+            alert('There was an error generating your PDF. Please try again.')
         } finally {
             setIsExporting(false)
         }
     }
 
     return (
-        <Button onClick={handleExport} disabled={isExporting} className="w-full flex items-center justify-center md:justify-start text-sm font-normal cursor-pointer text-[#384347] hover:text-[#5f4dc7]" variant="ghost">
-            {isExporting ? (
-                <>
-                    <Loader2 size={16} className="mr-2 animate-spin" />
-                    <div className="hidden md:block">
-                        Generating PDF...
-                    </div>
-                </>
-            ) : (
-                <>
-                    <Download size={16} className="mr-2" />
-                    <div className="hidden md:block">
-                        Export as PDF
-                    </div>
-                </>
-            )}
-        </Button>
+        <div className="relative">
+            <Button onClick={handleExportPDF} disabled={isExporting} className="w-full flex items-center justify-center md:justify-start text-sm font-normal cursor-pointer text-[#384347] hover:text-[#5f4dc7]" variant="ghost">
+                {isExporting ? (
+                    <>
+                        <Loader2 size={16} className="mr-2 animate-spin" />
+                        <div className="hidden md:block">Preparing...</div>
+                    </>
+                ) : (
+                    <>
+                        <Download size={16} className="mr-2" />
+                        <div className="hidden md:block">Export as PDF</div>
+                    </>
+                )}
+            </Button>
+        </div>
     )
 }

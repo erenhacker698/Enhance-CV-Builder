@@ -10,16 +10,18 @@ import ResumeSection from "@/components/resume-section"
 import type { RootState } from "@/lib/store"
 import type { Section } from "@/lib/types"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
-import { cn } from "@/lib/utils"
+import { cn, resolveFontFamily, getPageBackgroundStyle, getOverlayStyle } from "@/lib/utils"
+import { setOverlayPosition } from "@/lib/features/settings/settingsSlice"
 
 interface ResumeTemplateProps {
-    resumeRef: React.RefObject<HTMLDivElement>
+    resumeRef: React.RefObject<HTMLDivElement | null>
 }
 
 export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplateProps) {
     const dispatch = useDispatch()
     const activeSection = useSelector((state: RootState) => state.resume.activeSection)
     const { sections } = useSelector((state: RootState) => state.resume)
+    const { editorZoom, pageMargins, sectionSpacing, fontSize, lineHeight, fontFamily, pageBackgroundColor, pageBackgroundPattern, pageBackgroundMode, pageBackgroundGradientTo, pageBackgroundGradientAngle, overlayEnabled, overlayImage, overlayOpacity, overlayScale, overlayX, overlayY, overlayPositioning, headingColor } = useSelector((state: RootState) => state.settings)
 
     const [pages, setPages] = useState<Array<{ left: Section[]; right: Section[] }>>([{ left: [], right: [] }])
     const measureContainerRef = useRef<HTMLDivElement>(null)
@@ -44,10 +46,10 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
             if (!measureContainerRef.current || !measureHeaderRef.current) return
 
             const PAGE_HEIGHT = 1123 // A4 height at 96 DPI
-            const PADDING = 36 * 2 // 36px top & bottom
+            const PADDING = pageMargins * 2 // dynamic top & bottom
             const HEADER_HEIGHT = measureHeaderRef.current.offsetHeight
             const HEADER_MARGIN = 24 // mt-6
-            const SECTION_GAP = 24 // space-y-6
+            const SECTION_GAP = sectionSpacing // dynamic
 
             const availableHeight = PAGE_HEIGHT - PADDING - HEADER_HEIGHT - HEADER_MARGIN
 
@@ -92,7 +94,7 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
         }, 100)
 
         return () => clearTimeout(timer)
-    }, [sections, leftSections, rightSections])
+    }, [sections, leftSections, rightSections, pageMargins, sectionSpacing, fontSize, lineHeight, fontFamily])
 
     const handleDragEnd = (result: any) => {
         if (!result.destination) return
@@ -135,33 +137,63 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
     }
 
     return (
-        <div className="resume-page-container" ref={resumeRef}>
+    <div className="resume-page-container" ref={resumeRef} style={{ ['--resume-font-scale' as any]: 1 }}>
             <div
                 ref={measureContainerRef}
                 className="fixed -left-[10000px] top-0 pointer-events-none invisible bg-white"
-                style={{ width: '794px', padding: '36px' }}
+                style={{ width: '794px', padding: `${pageMargins}px`, fontSize: `${fontSize}rem`, lineHeight: lineHeight, fontFamily: resolveFontFamily(fontFamily), ['--resume-heading-color' as any]: headingColor }}
                 aria-hidden
             >
                 <div ref={measureHeaderRef}><ResumeHeader isActive={false} /></div>
-                <div className="grid grid-cols-2 gap-6 mt-6">
-                    <div className="space-y-6">
-                        {leftSections.map(s => <div key={s.id} ref={el => sectionMeasureRefs.current[s.id] = el}><ResumeSection section={s} isActive={false} /></div>)}
+                <div className="grid grid-cols-2 mt-6" style={{ columnGap: '24px' }}>
+                    <div style={{ display: 'grid', rowGap: `${sectionSpacing}px` }}>
+                        {leftSections.map(s => (
+                            <div key={s.id} ref={(el) => { sectionMeasureRefs.current[s.id] = el }}>
+                                <ResumeSection section={s} isActive={false} />
+                            </div>
+                        ))}
                     </div>
-                    <div className="space-y-6">
-                        {rightSections.map(s => <div key={s.id} ref={el => sectionMeasureRefs.current[s.id] = el}><ResumeSection section={s} isActive={false} /></div>)}
+                    <div style={{ display: 'grid', rowGap: `${sectionSpacing}px` }}>
+                        {rightSections.map(s => (
+                            <div key={s.id} ref={(el) => { sectionMeasureRefs.current[s.id] = el }}>
+                                <ResumeSection section={s} isActive={false} />
+                            </div>
+                        ))}
                     </div>
                 </div>
             </div>
 
             <DragDropContext onDragEnd={handleDragEnd}>
-                <div className="pages-container space-y-8">
+                <div className="pages-container space-y-8" style={{ transform: `scale(${editorZoom})`, transformOrigin: 'top center', fontSize: `${fontSize}rem`, lineHeight: lineHeight, fontFamily: resolveFontFamily(fontFamily), ['--resume-heading-color' as any]: headingColor }}>
                     {pages.map((page, pageIndex) => (
-                        <div key={`page-${pageIndex}`} className="resume-page bg-white relative mx-auto shadow-lg" style={{ width: '794px', height: '1123px', padding: '36px' }}>
+                                                <div key={`page-${pageIndex}`} className="resume-page relative mx-auto shadow-lg bg-white" style={{ width: '794px', height: '1123px', padding: `${pageMargins}px`, ...getPageBackgroundStyle(pageBackgroundColor, pageBackgroundPattern, pageBackgroundMode, pageBackgroundGradientTo, pageBackgroundGradientAngle) }}>
                             {pageIndex === 0 && <div onClick={handleHeaderClick}><ResumeHeader isActive={activeSection?.id === null} /></div>}
-                            <div className={cn("grid grid-cols-2 gap-6", pageIndex === 0 && "mt-6")}>
+                                                                                    {overlayEnabled && overlayImage && (
+                                                                                        <div
+                                                                                            aria-label="overlay-pattern"
+                                                                                            onMouseDown={(e) => {
+                                                                    if (!overlayPositioning) return
+                                                                    const pageEl = (e.currentTarget.parentElement as HTMLElement)
+                                                                    const rect = pageEl.getBoundingClientRect()
+                                                                    const update = (evt: MouseEvent) => {
+                                                                        const nx = ((evt.clientX - rect.left) / rect.width) * 100
+                                                                        const ny = ((evt.clientY - rect.top) / rect.height) * 100
+                                                                        dispatch(setOverlayPosition({ x: nx, y: ny }))
+                                                                    }
+                                                                    const up = () => {
+                                                                        window.removeEventListener('mousemove', update)
+                                                                        window.removeEventListener('mouseup', up)
+                                                                    }
+                                                                    window.addEventListener('mousemove', update)
+                                                                    window.addEventListener('mouseup', up)
+                                                                }}
+                                                                                            style={{ ...(getOverlayStyle({ enabled: overlayEnabled, image: overlayImage, opacity: overlayOpacity, scale: overlayScale, x: overlayX, y: overlayY }) as any), pointerEvents: overlayPositioning ? 'auto' : 'none', cursor: overlayPositioning ? 'move' : 'default' }}
+                                                            />
+                                                        )}
+                            <div className={cn("grid grid-cols-2", pageIndex === 0 && "mt-6")} style={{ columnGap: '24px' }}>            
                                 <Droppable droppableId={`left-column-p${pageIndex}`}>
                                     {(provided) => (
-                                        <div className="space-y-6" ref={provided.innerRef} {...provided.droppableProps}>
+                                        <div style={{ display: 'grid', rowGap: `${sectionSpacing}px` }} ref={provided.innerRef} {...provided.droppableProps}>
                                             {page.left.map((section, index) => (
                                                 <Draggable key={section.id} draggableId={section.id} index={index}>
                                                     {(p) => <div ref={p.innerRef} {...p.draggableProps} {...p.dragHandleProps}><ResumeSection section={section} isActive={section.id === activeSection?.id} /></div>}
@@ -173,7 +205,7 @@ export default function ResumeTemplateDoubleColumn({ resumeRef }: ResumeTemplate
                                 </Droppable>
                                 <Droppable droppableId={`right-column-p${pageIndex}`}>
                                     {(provided) => (
-                                        <div className="space-y-6" ref={provided.innerRef} {...provided.droppableProps}>
+                                        <div style={{ display: 'grid', rowGap: `${sectionSpacing}px` }} ref={provided.innerRef} {...provided.droppableProps}>
                                             {page.right.map((section, index) => (
                                                 <Draggable key={section.id} draggableId={section.id} index={index}>
                                                     {(p) => <div ref={p.innerRef} {...p.draggableProps} {...p.dragHandleProps}><ResumeSection section={section} isActive={section.id === activeSection?.id} /></div>}

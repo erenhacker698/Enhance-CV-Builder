@@ -173,14 +173,14 @@ export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSec
                     <div className="grid grid-cols-2 gap-6 mt-6">
                         <div className="space-y-6">
                             {leftSections.map((s) => (
-                                <div key={`measure-left-${s.id}`} ref={(el) => (sectionMeasureRefs.current[s.id] = el)}>
+                                <div key={`measure-left-${s.id}`} ref={(el) => { sectionMeasureRefs.current[s.id] = el }}>
                                     <ResumeSection section={s} isActive={false} />
                                 </div>
                             ))}
                         </div>
                         <div className="space-y-6">
                             {rightSections.map((s) => (
-                                <div key={`measure-right-${s.id}`} ref={(el) => (sectionMeasureRefs.current[s.id] = el)}>
+                                <div key={`measure-right-${s.id}`} ref={(el) => { sectionMeasureRefs.current[s.id] = el }}>
                                     <ResumeSection section={s} isActive={false} />
                                 </div>
                             ))}
@@ -202,7 +202,10 @@ export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSec
                     </div>
 
                     <div className="border border-[e0e0e0] rounded-lg w-full max-w-full sm:w-[560px] shadow-resize-panel p-4">
-                        <DragDropContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+                        <DragDropContext
+                            onDragStart={handleDragStart}
+                            onDragEnd={handleDragEnd}
+                        >
                             <div className="w-full mb-4 bg-blue-100 rounded-md p-3 flex items-center justify-center">
                                 <Lock size={16} className="mr-2" />
                                 <span className="font-normal font-rubik text-sm md:text-base">Header (fixed on page 1)</span>
@@ -210,7 +213,14 @@ export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSec
 
                             <div className="flex gap-4">
                                 {/* Left page column */}
-                                <Droppable droppableId={`left-modal-p${currentPage}`}>
+                                <Droppable droppableId={`left-modal-p${currentPage}`} renderClone={(provided, snapshot, rubric) => {
+                                    const item = page.left[rubric.source.index]
+                                    return (
+                                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="bg-blue-100 rounded-md p-2 mb-2 flex items-center shadow-lg">
+                                            <span className="truncate font-normal font-rubik text-sm md:text-base">{item?.title}</span>
+                                        </div>
+                                    )
+                                }}>
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.droppableProps} className="w-1/2 bg-gray-50 rounded-md p-2 min-h-[200px]">
                                             {page.left.map((section, idx) => (
@@ -219,11 +229,10 @@ export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSec
                                                         <div
                                                             ref={p.innerRef}
                                                             {...p.draggableProps}
-                                                            className={cn("bg-blue-50 rounded-md p-2 mb-2 flex items-center", snapshot.isDragging && "opacity-50")}
+                                                            {...p.dragHandleProps}
+                                                            className={cn("bg-blue-50 rounded-md p-2 mb-2 flex items-center cursor-grab", snapshot.isDragging && "opacity-50")}
                                                         >
-                                                            <div {...p.dragHandleProps} className="mr-2 cursor-grab">
-                                                                <GripVertical size={16} className="text-gray-400" />
-                                                            </div>
+                                                            <GripVertical size={16} className="text-gray-400 mr-2" />
                                                             <span className="truncate font-normal font-rubik text-sm md:text-base">{section.title}</span>
                                                         </div>
                                                     )}
@@ -235,7 +244,14 @@ export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSec
                                 </Droppable>
 
                                 {/* Right page column */}
-                                <Droppable droppableId={`right-modal-p${currentPage}`}>
+                                <Droppable droppableId={`right-modal-p${currentPage}`} renderClone={(provided, snapshot, rubric) => {
+                                    const item = page.right[rubric.source.index]
+                                    return (
+                                        <div ref={provided.innerRef} {...provided.draggableProps} {...provided.dragHandleProps} className="bg-blue-100 rounded-md p-2 mb-2 flex items-center shadow-lg">
+                                            <span className="truncate font-normal font-rubik text-sm md:text-base">{item?.title}</span>
+                                        </div>
+                                    )
+                                }}>
                                     {(provided) => (
                                         <div ref={provided.innerRef} {...provided.droppableProps} className="w-1/2 bg-gray-50 rounded-md p-2 min-h-[200px]">
                                             {page.right.map((section, idx) => (
@@ -244,11 +260,10 @@ export default function RearrangeSectionsModal({ isOpen, onClose }: RearrangeSec
                                                         <div
                                                             ref={p.innerRef}
                                                             {...p.draggableProps}
-                                                            className={cn("bg-blue-50 rounded-md p-2 mb-2 flex items-center", snapshot.isDragging && "opacity-50")}
+                                                            {...p.dragHandleProps}
+                                                            className={cn("bg-blue-50 rounded-md p-2 mb-2 flex items-center cursor-grab", snapshot.isDragging && "opacity-50")}
                                                         >
-                                                            <div {...p.dragHandleProps} className="mr-2 cursor-grab">
-                                                                <GripVertical size={16} className="text-gray-400" />
-                                                            </div>
+                                                            <GripVertical size={16} className="text-gray-400 mr-2" />
                                                             <span className="truncate font-normal font-rubik text-sm md:text-base">{section.title}</span>
                                                         </div>
                                                     )}

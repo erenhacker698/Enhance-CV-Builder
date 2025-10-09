@@ -9,6 +9,7 @@ import { removeEntrySkill, removeSection, removeSectionEntry, setActiveSkillData
 import { cn } from "@/lib/utils"
 import { SectionTypeEnum, type Section } from "@/lib/types"
 import { RootState } from "@/lib/store"
+import { setSectionBackground } from "@/lib/features/resume/resumeSlice"
 
 interface SectionToolbarProps {
     section: Section
@@ -84,6 +85,24 @@ export default function SectionToolbar({
             darkMode ? "bg-slate-700" : "bg-white",
         )}
         >
+                        <div className="flex items-center px-2 gap-2">
+                <input
+                    type="color"
+                    aria-label="Section background"
+                    value={section.backgroundColor || '#ffffff'}
+                    onChange={(e) => dispatch(setSectionBackground({ sectionId: section.id, color: e.target.value }))}
+                    className="w-6 h-6 cursor-pointer border rounded"
+                    onClick={(e) => e.stopPropagation()}
+                    title="Section background color"
+                />
+                                <button
+                                    className="text-xs px-2 py-1 border rounded"
+                                    onClick={(e) => { e.stopPropagation(); dispatch(setSectionBackground({ sectionId: section.id, color: null })) }}
+                                    title="Clear background"
+                                >
+                                    Clear
+                                </button>
+            </div>
             {(section.type !== SectionTypeEnum.SKILLS || activeSection?.entryId) && onAddEntry && (
                 <Button
                     variant="ghost"

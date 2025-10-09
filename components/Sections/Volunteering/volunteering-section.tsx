@@ -9,6 +9,7 @@ import { RootState } from "@/lib/store"
 export default function VolunteeringSection({ section, isActive, darkMode = false, handleEntryToggle, handleContextMenu }: SectionProps) {
   const dispatch = useDispatch()
   const activeSection = useSelector((s: RootState) => s.resume.activeSection)
+  const { primaryColor } = useSelector((s: RootState) => s.settings)
   const items = section.content.volunteering ?? []
 
   const updateItem = (id: string, patch: Partial<VolunteeringItem>) => {
@@ -50,7 +51,8 @@ export default function VolunteeringSection({ section, isActive, darkMode = fals
             <EditableText
               value={v.organization}
               onChange={(value) => updateItem(v.id, { organization: value })}
-              className={cn("editable-field text-teal-500", darkMode && section.column === "right" && "!text-white")}
+              className={cn("editable-field", darkMode && section.column === "right" && "!text-white")}
+              style={{ color: darkMode && section.column === 'right' ? undefined : primaryColor }}
               placeholder="Organization"
             />
 

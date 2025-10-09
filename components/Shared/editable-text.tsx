@@ -10,6 +10,7 @@ interface EditableTextProps {
     onChange: (value: string) => void
     onStartEdit?: () => void
     className?: string
+    style?: React.CSSProperties
     multiline?: boolean
     placeholder?: string
     onKeyDown?: (e: React.KeyboardEvent) => void
@@ -20,6 +21,7 @@ export default function EditableText({
     onChange,
     onStartEdit,
     className,
+    style,
     multiline = false,
     placeholder = "Click to edit",
     onKeyDown
@@ -81,6 +83,7 @@ export default function EditableText({
                         "cursor-text",
                         className,
                     )}
+                    style={style}
                     rows={3}
                     placeholder={placeholder}
                 />
@@ -99,13 +102,14 @@ export default function EditableText({
                     "cursor-text",
                     className,
                 )}
+                style={style}
                 placeholder={placeholder}
             />
         )
     }
 
     return (
-        <div onClick={handleClick} className={cn("cursor-text", !value && "text-gray-400", className)}>
+        <div onClick={handleClick} className={cn("cursor-text", !value && "text-gray-400", className)} style={style}>
             {value || placeholder}
         </div>
     )
