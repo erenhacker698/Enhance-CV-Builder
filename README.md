@@ -1,12 +1,3 @@
-#
-#
-#
-#
-#
-#
-#
-#
-#
 # Enhance CV Builder
 
 [![CI](https://github.com/r00tmebaby/Enhance-CV-Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/r00tmebaby/Enhance-CV-Builder/actions/workflows/ci.yml)
