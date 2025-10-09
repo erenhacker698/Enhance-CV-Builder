@@ -92,7 +92,7 @@ GitHub Actions lives in `.github/workflows/`:
 
 - `ci.yml` (default):
   - Runs on push/PR to `master`
-  - Steps: checkout → setup Node 20 → `npm ci` → `npm run lint` → `npm run typecheck` → `npm run build`
+  - Steps: checkout → setup Node 20 → `npm ci` → `npm run typecheck` → `npm run build`
 
 - `release.yml` (optional):
   - Runs on tag `v*.*.*`
@@ -132,4 +132,28 @@ MIT — see [LICENSE](./LICENSE)
 ---
 
 Built with ❤️ by **r00tmebaby**
-3. Generates a downloadable PDF
+
+---
+
+## 🧪 Run CI locally
+
+Fast parity with CI without pushing:
+
+```bash
+# One-shot local CI
+npm run ci:local
+```
+
+What it does:
+- Clean install (npm ci)
+- Typecheck (tsc --noEmit)
+- Build (next build)
+
+Optional: run the GitHub Actions workflow with act
+
+```bash
+# Requires Docker and act
+act -l                                   # list jobs
+act push -j build \
+  -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
+```
